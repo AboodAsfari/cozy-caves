@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { 
+  AppBar,
+  ThemeProvider, 
+  Toolbar,
+  Stack,
+  Box,
+  Typography,
+} from "@mui/material";
+
+import defaultTheme from "./themes/DarkTheme";
+import Homepage from "./Homepage";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={defaultTheme}>
+      <AppBar position="fixed" component="nav">
+        <Toolbar>
+          <Stack direction={"row"} sx={{ position: "fixed" }}>
+            <Box sx={{ ml: 2, mt: 0 }}>
+              <Typography variant="h6" component="div" style={{fontFamily: "frijole"}}>
+                  Cozy Caves: Map Generator
+              </Typography>
+            </Box>
+          </Stack>
+        </Toolbar>
+      </AppBar>
+
+      <Box sx={{ mt: 8.5 }}>
+        <Homepage />
+      </Box>
+
+    </ThemeProvider>
   );
 }
 
