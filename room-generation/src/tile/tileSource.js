@@ -5,8 +5,8 @@ class TileSource {
     #dimensions;
 
     constructor(imgSource, dimensions) {
-        if (!imgSource || !(dimensions instanceof Point) || dimensions.getX() <= 0 || dimensions.getY() <= 0) throw new Error('Invalid source provided.');
-        this.#imgSource = imgSource;
+        if (!imgSource || Point.isPositivePoint(dimensions)) throw new Error('Invalid source provided.');
+        this.#imgSource = imgSource.toString();
         this.#dimensions = dimensions;
     }
 

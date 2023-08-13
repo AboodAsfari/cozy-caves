@@ -11,8 +11,8 @@ class TileSet {
     }
 
     getTile(tileType) {
-        if (!this.#tileSources.hasOwnProperty(tileType)) throw new Error(`Tile type ${tileType} not found.`); 
-        return this.#tileSources[tileType]; 
+        if (!this.#tileSources.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
+        return this.#tileSources[tileType.toString()]; 
     }
 }
 

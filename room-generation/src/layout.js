@@ -24,12 +24,16 @@ class Layout {
     }
 
     addTile(tile, partitionNum) { 
-        if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().toString(), tile);
+        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
+        else if (partitionNum < -2) throw new Error('Invalid partition number provided.');
         else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
+        else if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().toString(), tile);
         else this.#scalePartitions[partitionNum].set(tile.getPosition().toString(), tile);  
     }
 
     removeTile(pos, deleteExcluded = false) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        
         if (deleteExcluded) this.#excludedTiles.delete(pos);
         this.#unscaledTiles.delete(pos);
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
@@ -37,12 +41,15 @@ class Layout {
         }
     }
 
-    addTag(tag) { this.#tags.push(tag); }
-    removeTag(tag) { this.#tags.splice(this.#tags.indexOf(tag), 1); }
+    addTag(tag) { this.#tags.push(tag.toString()); }
+    removeTag(tag) { this.#tags.splice(this.#tags.indexOf(tag.toString()), 1); }
     newPartition() { this.#scalePartitions.push(new ScalePartition()); }
 
     getTags() { return this.#tags; }
-    getPartition(index) { return this.#scalePartitions[index]; }
+    getPartition(index) {
+        if (index < 0 || index >= this.#scalePartitions.length) return null;
+        return this.#scalePartitions[index]; 
+    }
 }
 
 class ScalePartition {
@@ -56,10 +63,10 @@ class ScalePartition {
     #xDir = 1;
     #yDir = 1;
 
-    #scaledCountX = 0;
-    #scaledCountY = 0;
-    #maxEncountered = { x: 0, y: 0 };
-    #minEncountered = { x: 0, y: 0 };
+    #scaledCountX;
+    #scaledCountY;
+    #maxEncountered;
+    #minEncountered;
     #edgesRight = new Map(); 
     #edgesLeft = new Map();
     #edgesTop = new Map();
@@ -74,8 +81,8 @@ class ScalePartition {
     resetScaling() {
         this.#scaledCountX = 0;
         this.#scaledCountY = 0;
-        this.#maxEncountered = { x: 0, y: 0 };
-        this.#minEncountered = { x: 0, y: 0 };
+        this.#maxEncountered = new Point(0, 0);
+        this.#minEncountered = new Point(0, 0);
         this.#edgesRight.clear();
         this.#edgesLeft.clear();
         this.#edgesTop.clear();
@@ -91,15 +98,27 @@ class ScalePartition {
         // SCALING LOGIC HERE
     }
 
-    setLockRatio(lockRatio) { this.#lockRatio = lockRatio; }
-    setLockX(lockX) { this.#lockX = lockX; }
-    setLockY(lockY) { this.#lockY = lockY; }
-    setScaleByOneX(scaleInMultiplesX) { this.#scaleInMultiplesX = scaleInMultiplesX; }
-    setScaleByOneY(scaleInMultiplesY) { this.#scaleInMultiplesY = scaleInMultiplesY; }
-    setIncrementAmtX(incrementAmtX) { this.#incrementAmtX = incrementAmtX; }
-    setIncrementAmtY(incrementAmtY) { this.#incrementAmtY = incrementAmtY; }
-    setXDir(xDir) { this.#xDir = xDir; }
-    setYDir(yDir) { this.#yDir = yDir; }
+    setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
+    setLockX(lockX) { this.#lockX = !!lockX; }
+    setLockY(lockY) { this.#lockY = !!lockY; }
+    setScaleByOneX(scaleInMultiplesX) { this.#scaleInMultiplesX = !!scaleInMultiplesX; }
+    setScaleByOneY(scaleInMultiplesY) { this.#scaleInMultiplesY = !!scaleInMultiplesY; }
+    setIncrementAmtX(incrementAmtX) { 
+        if (!Number.isInteger(incrementAmtX) || incrementAmtX <= 0) throw new Error('Invalid increment amount provided.');
+        this.#incrementAmtX = incrementAmtX; 
+    }
+    setIncrementAmtY(incrementAmtY) { 
+        if (!Number.isInteger(incrementAmtY) || incrementAmtY <= 0) throw new Error('Invalid increment amount provided.');
+        this.#incrementAmtY = incrementAmtY; 
+    }
+    setXDir(xDir) {
+        if (!Number.isInteger(xDir) || xDir < -1 || xDir > 1) throw new Error('Invalid X direction provided.');
+        this.#xDir = xDir; 
+    }
+    setYDir(yDir) {
+        if (!Number.isInteger(yDir) || yDir < -1 || yDir > 1) throw new Error('Invalid Y direction provided.');
+        this.#yDir = yDir; 
+    }
 
     getLockRatio() { return this.#lockRatio; }
     getLockX() { return this.#lockX; }
@@ -111,7 +130,10 @@ class ScalePartition {
     getXDir() { return this.#xDir; }
     getYDir() { return this.#yDir; }
 
-    addTile(tile) { this.#tiles.set(tile.getPosition().toString(), tile); }
+    addTile(tile) { 
+        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
+        this.#tiles.set(tile.getPosition().toString(), tile); 
+    }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!

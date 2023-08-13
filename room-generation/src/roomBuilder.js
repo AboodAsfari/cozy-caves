@@ -23,7 +23,7 @@ class RoomBuilder {
     }
 
     build() {
-        if (!Point.isNonZeroPoint(this.#size)) throw new Error('Invalid size provided.');
+        if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
         // Generate room here.
 
@@ -32,7 +32,7 @@ class RoomBuilder {
     }
 
     setSize(size) { 
-        if (!Point.isNonZeroPoint(size)) throw new Error('Invalid size provided.');
+        if (!Point.isPositivePoint(size)) throw new Error('Invalid size provided.');
         this.#size = size; 
         return this; 
     }
