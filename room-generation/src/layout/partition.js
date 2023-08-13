@@ -53,17 +53,10 @@ class Partition {
         } else {
             switch (this.#xDir) {
                 case 1:
-                    for (const [key, value] of this.#edgesRight.entries()) {
-                        let edgePos = new Point(value, key);
-                        let edgeTile = this.#scaledTiles.get(edgePos.toString());
-                        for (let i = 1; i <= this.#incrementAmtX; i++) {
-                            let newPos = new Point(edgePos.getX() + i, edgePos.getY());
-                            let newTile = new Tile(edgeTile.getTileType(), newPos);
-                            layout.removeTile(newTile.getPosition());
-                            this.#scaledTiles.set(newPos.toString(), newTile);
-                            this.#evaluatePoint(newTile.getPosition());
-                        }
-                    }
+                    this.#incrementScale(this.#edgesRight, layout);
+                    break;
+                case -1:
+                    this.#incrementScale(this.#edgesLeft, layout);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
@@ -80,23 +73,34 @@ class Partition {
         } else {
             switch (this.#yDir) {
                 case 1:
-                    for (const [key, value] of this.#edgesBottom.entries()) {
-                        let edgePos = new Point(key, value);
-                        let edgeTile = this.#scaledTiles.get(edgePos.toString());
-                        for (let i = 1; i <= this.#incrementAmtY; i++) {
-                            let newPos = new Point(edgePos.getX(), edgePos.getY() + i);
-                            let newTile = new Tile(edgeTile.getTileType(), newPos);
-                            layout.removeTile(newTile.getPosition());
-                            this.#scaledTiles.set(newPos.toString(), newTile);
-                            this.#evaluatePoint(newTile.getPosition());
-                        }
-                    }
+                    this.#incrementScale(this.#edgesBottom, layout);
+                    break;
+                case -1:
+                    this.#incrementScale(this.#edgesTop, layout);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
             }
         }
     }    
+
+    #incrementScale(edgeMap, layout) {
+        let xAxis = edgeMap === this.#edgesRight || edgeMap === this.#edgesLeft;
+        let scaleDir = edgeMap === this.#edgesRight || edgeMap === this.#edgesBottom ? 1 : -1
+        for (const [key, value] of edgeMap.entries()) {
+            let edgePos = xAxis ? new Point(value, key) : new Point(key, value);
+            let edgeTile = this.#scaledTiles.get(edgePos.toString());
+            let incrementAmt = xAxis ? this.#incrementAmtX : this.#incrementAmtY;
+            for (let i = 1; i <= incrementAmt; i++) {
+                let posChange = xAxis ? new Point(i * scaleDir, 0) : new Point(0, i * scaleDir);
+                let newPos = new Point(edgePos.getX() + posChange.getX(), edgePos.getY() + posChange.getY());
+                let newTile = new Tile(edgeTile.getTileType(), newPos);
+                layout.removeTile(newTile.getPosition());
+                this.#scaledTiles.set(newPos.toString(), newTile);
+                this.#evaluatePoint(newTile.getPosition());
+            }
+        }
+    }
 
     #evaluatePoint(pos) {
         if (!this.#edgesLeft.has(pos.getY()) || this.#edgesLeft.get(pos.getY()) > pos.getX()) this.#edgesLeft.set(pos.getY(), pos.getX());
@@ -130,14 +134,23 @@ class Partition {
         if (!Number.isInteger(yDir) || yDir < -1 || yDir > 1) throw new Error('Invalid Y direction provided.');
         this.#yDir = yDir; 
     }
-
     addTile(tile) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         this.#tiles.set(tile.getPosition().toString(), tile); 
     }
     removeScaledTile(pos) {
         if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
-        this.#scaledTiles.delete(pos.toString());
+        if (!this.#scaledTiles.delete(pos.toString())) return;
+
+        this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+        this.#edgesRight.clear();
+        this.#edgesLeft.clear();
+        this.#edgesTop.clear();
+        this.#edgesBottom.clear();
+        for (const value of this.#scaledTiles.values()) {
+            this.#evaluatePoint(value.getPosition());
+        }
     }
 
     ratioLocked() { return this.#lockRatio; }
@@ -149,8 +162,8 @@ class Partition {
     getIncrementAmtY() { return this.#incrementAmtY; }
     getXDir() { return this.#xDir; }
     getYDir() { return this.#yDir; }
-    getMaxEncountered() { return this.#maxEncountered.clone(); }
-    getMinEncountered() { return this.#minEncountered.clone(); }
+    getMaxEncountered() { return this.#scaledTiles.size > 0 ? this.#maxEncountered.clone() : null; }
+    getMinEncountered() { return this.#scaledTiles.size > 0 ? this.#minEncountered.clone() : null; }
     getScaleCountX() { return this.#scaleCountX; }
     getScaleCountY() { return this.#scaleCountY; }
     getTiles() { return this.#tiles; }

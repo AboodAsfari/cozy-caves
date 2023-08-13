@@ -26,12 +26,12 @@ class Layout {
 
         console.log("Pre Scaling: " + this.#getDimensions().toString());
         
-        if (!this.#scaleAxis(true)) return "BAD WIDTH";
-        if (!this.#scaleAxis(false)) return "BAD HEIGHT";
+        if (!this.#scaleAxis(true)) return "BAD WIDTH: " + this.#getDimensions().toString();
+        if (!this.#scaleAxis(false)) return "BAD HEIGHT: " + this.#getDimensions().toString();
 
         this.#satisfyLock(true);
         this.#satisfyLock(false);
-        if (!this.#isValid(this.#getDimensions())) return "BAD FROM RATIO LOCK";
+        if (!this.#isValid(this.#getDimensions())) return "BAD FROM RATIO LOCK: " + this.#getDimensions().toString();
 
         console.log("Post Scaling: " + this.#getDimensions().toString());
         return this.#generateRoom();
@@ -92,6 +92,7 @@ class Layout {
     }
 
     #dimensionCalculationHelper(pos, maxEncountered, minEncountered) {
+        if (!pos) return;
         if (pos.getX() > maxEncountered.getX()) maxEncountered.setX(pos.getX());
         if (pos.getX() < minEncountered.getX()) minEncountered.setX(pos.getX());
         if (pos.getY() > maxEncountered.getY()) maxEncountered.setY(pos.getY());
@@ -152,14 +153,14 @@ exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
 exampleLayout.getPartition(1).setScaleInMultiplesX(false);
 exampleLayout.getPartition(1).setScaleInMultiplesY(false);
-exampleLayout.getPartition(1).setLockRatio(false);
+exampleLayout.getPartition(1).setLockRatio(true);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
 exampleLayout.getPartition(2).setScaleInMultiplesX(false);
 exampleLayout.getPartition(2).setScaleInMultiplesY(false);
-exampleLayout.getPartition(2).setLockRatio(false);
+exampleLayout.getPartition(2).setLockRatio(true);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
