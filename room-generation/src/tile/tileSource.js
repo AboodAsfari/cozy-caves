@@ -1,18 +1,16 @@
+const Point = require("../../../utils/point");
+
 class TileSource {
     #imgSource;
-    #width;
-    #height;
+    #dimensions;
 
-    constructor(imgSource, width, height) {
-        if (!imgSource || this.isValid(width, height)) throw new Error('Invalid source provided.');
+    constructor(imgSource, dimensions) {
+        if (!imgSource || !(dimensions instanceof Point)) throw new Error('Invalid source provided.');
         this.#imgSource = imgSource;
-        this.#width = width;
-        this.#height = height;
+        this.#dimensions = dimensions;
     }
 
-    isValid(width, height) { return width && height && Number.isInteger(width) && Number.isInteger(height) && width > 0 && height > 0; }
-
-    getDimensions() { return { width: this.#width, height: this.#height }; }
+    getDimensions() { return this.#dimensions; }
     getImage() { return this.#imgSource; }
 }
 

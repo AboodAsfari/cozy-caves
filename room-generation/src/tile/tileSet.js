@@ -1,3 +1,4 @@
+const Point = require("../../../utils/point");
 const TileSource = require("./tileSource");
 
 class TileSet {
@@ -16,8 +17,8 @@ class TileSet {
 }
 
 const defaultSet = new TileSet(
-    new TileSource("NONREAL_FLOOR", 32, 32),
-    new TileSource("NONREAL_WALL", 32, 32)
+    new TileSource("NONREAL_FLOOR", new Point(32, 32)),
+    new TileSource("NONREAL_WALL", new Point(32, 32))
 );
 
 module.exports = { defaultSet };

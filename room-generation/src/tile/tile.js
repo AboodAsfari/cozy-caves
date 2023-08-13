@@ -1,11 +1,14 @@
+const Point = require("../../../utils/point");
+
 class Tile {
     #tileType;
     #position;
-    #offset = { x: 0, y: 0 };
+    #offset = new Point(0, 0);
     #rotation = 0;
     #depth = 0;
 
     constructor(tileType, position) {
+        if (!tileType || !(position instanceof Point)) throw new Error('Invalid tile provided.');
         this.#tileType = tileType;
         this.#position = position;
     }
