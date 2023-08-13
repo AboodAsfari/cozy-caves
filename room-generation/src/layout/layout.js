@@ -2,41 +2,74 @@ const Point = require("../../../utils/point");
 const Tile = require("../tile/tile");
 const Partition = require("./partition");
 
+/**
+ * Represents a room layout that can be scaled in order
+ * to generate a room that fits given parameters.
+ * 
+ * @author Abdulrahman Asfari
+ */
 class Layout {
-    #tags = [];
-    #excludedTiles = new Map();
-    #unscaledTiles = new Map();
-    #scalePartitions = [];
+    #tags = []; // Metadata to be used by other modules.
+    #excludedTiles = new Map(); // Tiles to apply after scaling.
+    #unscaledTiles = new Map(); // Tiles that always exist but don't scale.
+    #excludedEditableTiles = new Map(); // Unlike its counterpart, can be edited while scaling.
+    #unscaledEditableTiles = new Map(); // Unlike its counterpart, can be edited while scaling.
+    #scalePartitions = []; // Partitions containing tiles to scale and scaling rules.
 
-    #maxSize;
-    #leniency;
-    #allowOvergrow;
+    // Used when attempt to generate a room.
+    #maxSize; // The maximum size of the room.
+    #leniency; // How much the room size can deviate from max.
+    #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
     #generateRoom() {
         return "ROOM!";
     }
 
+    /**
+     * Attempts to scale the layout until it meets the requirements
+     * for a valid room. Gives up if it cannot generate a valid room.
+     * 
+     * Scales X axis independently, then Y axis. After this it ensures
+     * that any lock ratios are satisfied.
+     *
+     * @param maxSize The maximum size of the room.
+     * @param leniency How much the room size can deviate from max.
+     * @param allowOvergrow Whether leniency allows room to be bigger than max. 
+     * @returns A room object built from the scaled layout, null if invalid layout.
+     */
     scaleRoom(maxSize, leniency, allowOvergrow) {
         if (!(maxSize instanceof Point) || !(leniency instanceof Point)) throw new Error('Invalid size or leniency provided.');
         this.#maxSize = maxSize;
         this.#leniency = leniency;
         this.#allowOvergrow = !!allowOvergrow;
 
+        this.#excludedEditableTiles.clear();
+        this.#unscaledEditableTiles.clear();
+        for (const [key, value] of this.#excludedTiles.entries()) this.#excludedEditableTiles.set(key, value);
+        for (const [key, value] of this.#unscaledTiles.entries()) this.#unscaledEditableTiles.set(key, value);
+            
         this.#scalePartitions.forEach((p) => p.resetScaling());
 
         console.log("Pre Scaling: " + this.#getDimensions().toString());
         
-        if (!this.#scaleAxis(true)) return "BAD WIDTH: " + this.#getDimensions().toString();
-        if (!this.#scaleAxis(false)) return "BAD HEIGHT: " + this.#getDimensions().toString();
+        if (!this.#scaleAxis(true)) return null;
+        if (!this.#scaleAxis(false)) return null;
 
         this.#satisfyLock(true);
         this.#satisfyLock(false);
-        if (!this.#isValid(this.#getDimensions())) return "BAD FROM RATIO LOCK: " + this.#getDimensions().toString();
+        if (!this.#isValid(this.#getDimensions())) return null;
 
         console.log("Post Scaling: " + this.#getDimensions().toString());
         return this.#generateRoom();
     }
 
+    /**
+     * Scales all partitions in an axis continually until the axis is valid
+     * or it recognizes that the axis will never be valid.
+     *
+     * @param xAxis True if scaling axis is X.
+     * @returns True if axis is valid after scaling, false otherwise.
+     */
     #scaleAxis(xAxis) {
         let oldDimensions = new Point(0, 0);
         while (!this.#isValidAxis(this.#getDimensions(), xAxis)) {
@@ -47,9 +80,24 @@ class Layout {
         }
         return true;
     }
-
+    
+    /**
+     * Scales a partition in a given axis. Used to limit the use of repeated code 
+     * in axis scaling.
+     *
+     * @param partition Partition to scale.
+     * @param xAxis True if scaling axis is X.
+     */
     #scaleStepAxis(partition, xAxis) { xAxis ? partition.scaleX(this) : partition.scaleY(this); }
 
+    /**
+     * Attempts to satisfy a lock ratio on a certain axis.
+     * If the ratio is locked and the X and Y axis have been 
+     * scaled a different number of times, it attempts to even
+     * it out.
+     *
+     * @param xAxis True if scaling axis is X.
+     */
     #satisfyLock(xAxis) {
         let satisfiedPartitions = [];
         while (satisfiedPartitions.length < this.#scalePartitions.length) {
@@ -64,17 +112,52 @@ class Layout {
         }
     }
     
+    /**
+     * Checks if the given dimensions are valid.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @returns True if room dimensions valid.
+     */
     #isValid(dimensions) { return this.#isValidX(dimensions) && this.#isValidY(dimensions); }
+
+    /**
+     * Checks if the given dimensions are valid for a given axis.
+     * Used to limit the use of repeated code in axis scaling.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @param xAxis True if scaling axis is X.
+     * @returns True if the axis is valid.
+     */
     #isValidAxis(dimensions, xAxis) { return xAxis ? this.#isValidX(dimensions) : this.#isValidY(dimensions); }
+
+    /**
+     * Checks if the given dimensions are valid for the X axis.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @returns True if the X axis is valid.
+     */
     #isValidX(dimensions) {
         let leniencyAdded = this.#allowOvergrow ? this.#leniency.getX() : 0;
         return dimensions.getX() >= this.#maxSize.getX() - this.#leniency.getX() && dimensions.getX() <= this.#maxSize.getX() + leniencyAdded;
     }
+
+    /**
+     * Checks if the given dimensions are valid for the Y axis.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @returns True if the Y axis is valid.
+     */
     #isValidY(dimensions) {
         let leniencyAdded = this.#allowOvergrow ? this.#leniency.getY() : 0;
         return dimensions.getY() >= this.#maxSize.getY() - this.#leniency.getY() && dimensions.getY() <= this.#maxSize.getY() + leniencyAdded;
     }
 
+    /**
+     * Calculates the dimensions of the room by checking all tiles
+     * in all partitions, as well as unscaled and excluded tiles.
+     *
+     * @returns Current dimensions of the room.
+     */
     #getDimensions() {
         let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
         let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
@@ -91,6 +174,14 @@ class Layout {
         return new Point(width, height);
     }
 
+    /**
+     * Updates the maximum and minimum observed values based on
+     * a given position.
+     *
+     * @param pos Position to check.
+     * @param maxEncountered Reference to maximum encountered position.
+     * @param minEncountered Reference to minimum encountered position.
+     */
     #dimensionCalculationHelper(pos, maxEncountered, minEncountered) {
         if (!pos) return;
         if (pos.getX() > maxEncountered.getX()) maxEncountered.setX(pos.getX());
@@ -99,17 +190,41 @@ class Layout {
         if (pos.getY() < minEncountered.getY()) minEncountered.setY(pos.getY());
     }
 
+    /**
+     * Detects if no change has been made to the dimensions, in order
+     * to prevent an infinite loop of attempting to scale the room.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @param oldDimensions The dimensions of the room last scale cycle.
+     * @param xAxis True if scaling axis is X.
+     * @returns True if loop detected.
+     */
     #detectLoop(dimensions, oldDimensions, xAxis) {
         if (xAxis) return !this.#isValidX(dimensions) && dimensions.getX() === oldDimensions.getX();
         else return !this.#isValidY(dimensions) && dimensions.getY() === oldDimensions.getY();
     }
 
+    /**
+     * Checks if the room has grown outside of the
+     * maximum given size.
+     *
+     * @param dimensions The current dimensions of the room.
+     * @param xAxis True if scaling axis is X.
+     * @returns True if the room is outside of the maximum size.
+     */
     #checkOvergrown(dimensions, xAxis) {
         let leniencyAdded = this.#allowOvergrow ? this.#leniency.getX() : 0;
         if (xAxis) return dimensions.getX() > this.#maxSize.getX() + leniencyAdded;
         else return dimensions.getY() > this.#maxSize.getY() + leniencyAdded;
     }
 
+    /**
+     * Adds a tile to the layout with the given partition number.
+     * -1 for an unscaled tile, and -2 for an excluded tile.
+     * 
+     * @param tile Tile to add.
+     * @param partitionNum Partition number to add tile to.
+     */
     addTile(tile, partitionNum) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         else if (partitionNum < -2) throw new Error('Invalid partition number provided.');
@@ -118,21 +233,55 @@ class Layout {
         else this.#scalePartitions[partitionNum].addTile(tile);  
     }
 
+    /**
+     * Deletes a tile from the editable maps of the layout,
+     * to ensure the actual layout info does not change.
+     *
+     * @param pos Position of tile to remove.
+     * @param deleteExcluded Whether to delete the tile if it's excluded.
+     */
     removeTile(pos, deleteExcluded = false) {
         if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
 
-        if (deleteExcluded) this.#excludedTiles.delete(pos);
-        this.#unscaledTiles.delete(pos);
+        if (deleteExcluded) this.#excludedEditableTiles.delete(pos);
+        this.#unscaledEditableTiles.delete(pos);
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
             this.#scalePartitions[i].removeScaledTile(pos);
         }
     }
 
+    /**
+     * Adds a tag to the layout.
+     *
+     * @param tag String tag to add.
+     */
     addTag(tag) { this.#tags.push(tag.toString()); }
+
+    /**
+     * Removes a tag from the layout.
+     *
+     * @param tag Tag to remove.
+     */
     removeTag(tag) { this.#tags.splice(this.#tags.indexOf(tag.toString()), 1); }
+
+    /**
+     * Fetches the list of tags for this layout.
+     *
+     * @returns List of tags.
+     */
+    getTags() { return this.#tags; }
+
+    /**
+     * Creates a new partition.
+     */
     newPartition() { this.#scalePartitions.push(new Partition()); }
 
-    getTags() { return this.#tags; }
+    /**
+     * Finds and returns a partition.
+     *
+     * @param index Index of the partition to fetch.
+     * @returns The fetched partition
+     */
     getPartition(index) {
         if (index < 0 || index >= this.#scalePartitions.length) return null;
         return this.#scalePartitions[index]; 
