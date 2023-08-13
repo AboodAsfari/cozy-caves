@@ -43,20 +43,32 @@ class Layout {
         }
         console.log("HEIGHT AFTER SCALE: " + this.#getDimensions().getY());
 
+        let satisfiedPartitionsX = [];
+        while (satisfiedPartitionsX.length < this.#scalePartitions.length) {
+            for (let partition of this.#scalePartitions) {
+                if (partition.ratioLocked() && !partition.xLocked() && !partition.yLocked() && partition.getScaleCountX() < partition.getScaleCountY()) {
+                    partition.scaleX(this);
+                } else if (!satisfiedPartitionsX.includes(partition)) {
+                    satisfiedPartitionsX.push(partition);
+                }
+            }
+        }
+
+        let satisfiedPartitionsY = [];
+        while (satisfiedPartitionsY.length < this.#scalePartitions.length) {
+            for (let partition of this.#scalePartitions) {
+                if (partition.ratioLocked() && !partition.xLocked() && !partition.yLocked() && partition.getScaleCountY() < partition.getScaleCountX()) {
+                    partition.scaleY(this);
+                } else if (!satisfiedPartitionsY.includes(partition)) {
+                    satisfiedPartitionsY.push(partition);
+                }
+            }
+        }
+
+        console.log(this.#getDimensions().toString());
+        if (!this.#isValid(dimensions, leniency, this.#getDimensions())) return "BAD COS RATIO LOCK";
+
         return this.#generateRoom();
-        // Each loop, if width/height hasnt changed and still isnt valid, then room is invalid.
-
-        // Keep scaling X in every partition, track how many times scaled.
-        // X SCALING LOGIC HERE.
-        // If width meets min valid width, stop scaling X.
-        // If width over max valid width, room is invalid
-
-        // Keep scaling Y in every partition, track how many times scaled.
-        // Y SCALING LOGIC HERE.
-        // If height meets min valid height, stop scaling Y.
-        // If height over max valid height, room is invalid.
-
-        // Make sure all partitions with locked ratio have equal scaling, and are still valid.
     }
 
     #generateRoom() {
@@ -141,8 +153,8 @@ class ScalePartition {
     #xDir = 1;
     #yDir = 1;
 
-    #scaledCountX;
-    #scaledCountY;
+    #scaleCountX;
+    #scaleCountY;
     #maxEncountered;
     #minEncountered;
     #edgesRight = new Map(); 
@@ -157,8 +169,8 @@ class ScalePartition {
     }
 
     resetScaling() {
-        this.#scaledCountX = 0;
-        this.#scaledCountY = 0;
+        this.#scaleCountX = 0;
+        this.#scaleCountY = 0;
         this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
         this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
         this.#edgesRight.clear();
@@ -176,7 +188,7 @@ class ScalePartition {
     scaleX(layout) {
         if (this.#lockX) return;
 
-        this.#scaledCountX++;
+        this.#scaleCountX++;
         if (this.#scaleInMultiplesX) {
 
         } else {
@@ -206,7 +218,7 @@ class ScalePartition {
     scaleY(layout) {
         if (this.#lockY) return;
 
-        this.#scaledCountY++;
+        this.#scaleCountY++;
         if (this.#scaleInMultiplesY) {
 
         } else {
@@ -266,9 +278,9 @@ class ScalePartition {
         this.#yDir = yDir; 
     }
 
-    getLockRatio() { return this.#lockRatio; }
-    getLockX() { return this.#lockX; }
-    getLockY() { return this.#lockY; }
+    ratioLocked() { return this.#lockRatio; }
+    xLocked() { return this.#lockX; }
+    yLocked() { return this.#lockY; }
     getScaleInMultiplesX() { return this.#scaleInMultiplesX; }
     getScaleInMultiplesY() { return this.#scaleInMultiplesY; }
     getIncrementAmtX() { return this.#incrementAmtX; }
@@ -277,6 +289,8 @@ class ScalePartition {
     getYDir() { return this.#yDir; }
     getMaxEncountered() { return this.#maxEncountered.clone(); }
     getMinEncountered() { return this.#minEncountered.clone(); }
+    getScaleCountX() { return this.#scaleCountX; }
+    getScaleCountY() { return this.#scaleCountY; }
     getTiles() { return this.#tiles; }
 
     addTile(tile) { 
@@ -304,14 +318,14 @@ exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
 exampleLayout.getPartition(1).setScaleInMultiplesX(false);
 exampleLayout.getPartition(1).setScaleInMultiplesY(false);
-exampleLayout.getPartition(1).setLockRatio(false);
+exampleLayout.getPartition(1).setLockRatio(true);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
 exampleLayout.getPartition(2).setScaleInMultiplesX(false);
 exampleLayout.getPartition(2).setScaleInMultiplesY(false);
-exampleLayout.getPartition(2).setLockRatio(false);
+exampleLayout.getPartition(2).setLockRatio(true);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
