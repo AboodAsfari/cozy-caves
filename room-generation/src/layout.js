@@ -7,8 +7,37 @@ class Layout {
     #unscaledTiles = new Map();
     #scalePartitions = [];
 
-    scaleRoom(maxDimensions, leniency) {
-        // Each loop, if width/height hasnt changed and still usbt valid, then room is invalid.
+    scaleRoom(dimensions, leniency) {
+        for (let partition of this.#scalePartitions) {
+            partition.resetScaling();
+        }
+
+        let oldDimensions = new Point(0, 0);
+        
+        while (!this.#isValidX(dimensions, leniency, this.#getDimensions())) {
+            let currDimensions = this.#getDimensions();
+            console.log("WIDTH BEFORE SCALE: " + currDimensions.getX());
+            if (!this.#isValidX (dimensions, leniency, currDimensions) && currDimensions.getX() === oldDimensions.getX()) return "BAD X";
+            oldDimensions = currDimensions;
+            
+            for (let partition of this.#scalePartitions) {
+                partition.scaleX(this);
+            }
+        }
+
+        while (!this.#isValidY(dimensions, leniency, this.#getDimensions())) {
+            let currDimensions = this.#getDimensions();
+
+            if (!this.#isValidY (dimensions, leniency, currDimensions) && currDimensions.getY() === oldDimensions.getY()) return "BAD Y";
+            oldDimensions = currDimensions;
+            
+            for (let partition of this.#scalePartitions) {
+                partition.scaleY(this);
+            }
+        }
+
+        return this.#generateRoom();
+        // Each loop, if width/height hasnt changed and still isnt valid, then room is invalid.
 
         // Keep scaling X in every partition, track how many times scaled.
         // X SCALING LOGIC HERE.
@@ -23,21 +52,63 @@ class Layout {
         // Make sure all partitions with locked ratio have equal scaling, and are still valid.
     }
 
+    #generateRoom() {
+        return "ROOM!";
+    }
+
+    #isValid(goalDimensions, leniency, dimensions) {
+        return this.#isValidX(goalDimensions, leniency, dimensions) && this.#isValidY(goalDimensions, leniency, dimensions);
+    }
+
+    #isValidX(goalDimensions, leniency, dimensions) {
+        return dimensions.getX() >= goalDimensions.getX() - leniency.getX() && dimensions.getX() <= goalDimensions.getX() + leniency.getX();
+    }
+
+    #isValidY(goalDimensions, leniency, dimensions) {
+        return dimensions.getY() >= goalDimensions.getY() - leniency.getY() && dimensions.getY() <= goalDimensions.getY() + leniency.getY();
+    }
+
+    #getDimensions() {
+        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+        for (let tile of this.#unscaledTiles.values()) {
+            if (tile.getPosition().getX() > maxEncountered.getX()) maxEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getX() < minEncountered.getX()) minEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getY() > maxEncountered.getY()) maxEncountered.setY(tile.getPosition().getY());
+            if (tile.getPosition().getY() < minEncountered.getY()) minEncountered.setY(tile.getPosition().getY());
+        }
+        for (let tile of this.#excludedTiles.values()) {
+            if (tile.getPosition().getX() > maxEncountered.getX()) maxEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getX() < minEncountered.getX()) minEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getY() > maxEncountered.getY()) maxEncountered.setY(tile.getPosition().getY());
+            if (tile.getPosition().getY() < minEncountered.getY()) minEncountered.setY(tile.getPosition().getY());
+        }
+        for (let partition of this.#scalePartitions) {
+            if (partition.getMaxEncountered().getX() > maxEncountered.getX()) maxEncountered.setX(partition.getMaxEncountered().getX());
+            if (partition.getMinEncountered().getX() < minEncountered.getX()) minEncountered.setX(partition.getMinEncountered().getX());
+            if (partition.getMaxEncountered().getY() > maxEncountered.getY()) maxEncountered.setY(partition.getMaxEncountered().getY());
+            if (partition.getMinEncountered().getY() < minEncountered.getY()) minEncountered.setY(partition.getMinEncountered().getY());
+        }
+        let width = maxEncountered.getX() - minEncountered.getX() + 1;
+        let height = maxEncountered.getY() - minEncountered.getY() + 1;
+        return new Point(width, height);
+    }
+
     addTile(tile, partitionNum) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         else if (partitionNum < -2) throw new Error('Invalid partition number provided.');
         else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
         else if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().toString(), tile);
-        else this.#scalePartitions[partitionNum].set(tile.getPosition().toString(), tile);  
+        else this.#scalePartitions[partitionNum].addTile(tile);  
     }
 
     removeTile(pos, deleteExcluded = false) {
         if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
-        
+
         if (deleteExcluded) this.#excludedTiles.delete(pos);
         this.#unscaledTiles.delete(pos);
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
-            this.#scalePartitions[i].delete(pos);
+            this.#scalePartitions[i].removeTile(pos);
         }
     }
 
@@ -81,8 +152,8 @@ class ScalePartition {
     resetScaling() {
         this.#scaledCountX = 0;
         this.#scaledCountY = 0;
-        this.#maxEncountered = new Point(0, 0);
-        this.#minEncountered = new Point(0, 0);
+        this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
         this.#edgesRight.clear();
         this.#edgesLeft.clear();
         this.#edgesTop.clear();
@@ -91,18 +162,59 @@ class ScalePartition {
 
         for (const [key, value] of this.#tiles.entries()) {
             this.#scaledTiles.set(key, value);
+            this.#evaluatePoint(value.getPosition());
         }
     }
 
-    scale(layout, selfIndex) {
+    scaleX(layout) {
         // SCALING LOGIC HERE
+        this.#scaledCountX++;
+        if (this.#scaleInMultiplesX) {
+
+        } else {
+            switch (this.#xDir) {
+                case 1:
+                    // console.log("ENCOUNTERED BEFORE X: " + this.#maxEncountered.getX())
+                    for (const [key, value] of this.#edgesRight.entries()) {
+                        let edgePos = new Point(value, key);
+                        let edgeTile = this.#scaledTiles.get(edgePos.toString());
+                        for (let i = 1; i <= this.#scaledCountX; i++) {
+                            let newPos = new Point(edgePos.getX() + 1, edgePos.getY());
+                            let newTile = new Tile(edgeTile.getTileType(), newPos);
+                            layout.removeTile(newTile.getPosition());
+                            this.#scaledTiles.set(newPos.toString(), newTile);
+                            this.#evaluatePoint(newTile.getPosition());
+                        }
+                    }
+                    // console.log("ENCOUNTERED AFTER X: " + this.#maxEncountered.getX())
+                    // console.log("EDGES RIGHT AFTER X: " + this.#edgesRight.size);
+                    break;
+                default: 
+                    throw new Error("Invalid scaling direction used");
+            }
+        }
+    }
+
+    scaleY(layout) {
+        // SCALING LOGIC HERE
+    }    
+
+    #evaluatePoint(pos) {
+        if (!this.#edgesLeft.has(pos.getY()) || this.#edgesLeft.get(pos.getY()) > pos.getX()) this.#edgesLeft.set(pos.getY(), pos.getX());
+        if (!this.#edgesRight.has(pos.getY()) || this.#edgesRight.get(pos.getY()) < pos.getX()) this.#edgesRight.set(pos.getY(), pos.getX());
+        if (!this.#edgesTop.has(pos.getX()) || this.#edgesTop.get(pos.getX()) > pos.getY()) this.#edgesTop.set(pos.getX(), pos.getY());
+        if (!this.#edgesBottom.has(pos.getX()) || this.#edgesBottom.get(pos.getX()) < pos.getY()) this.#edgesBottom.set(pos.getX(), pos.getY());
+        if (this.#maxEncountered.getX() < pos.getX()) this.#maxEncountered.setX(pos.getX());
+        if (this.#maxEncountered.getY() < pos.getY()) this.#maxEncountered.setY(pos.getY());
+        if (this.#minEncountered.getX() > pos.getX()) this.#minEncountered.setX(pos.getX());
+        if (this.#minEncountered.getY() > pos.getY()) this.#minEncountered.setY(pos.getY());
     }
 
     setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
     setLockX(lockX) { this.#lockX = !!lockX; }
     setLockY(lockY) { this.#lockY = !!lockY; }
-    setScaleByOneX(scaleInMultiplesX) { this.#scaleInMultiplesX = !!scaleInMultiplesX; }
-    setScaleByOneY(scaleInMultiplesY) { this.#scaleInMultiplesY = !!scaleInMultiplesY; }
+    setScaleInMultiplesX(scaleInMultiplesX) { this.#scaleInMultiplesX = !!scaleInMultiplesX; }
+    setScaleInMultiplesY(scaleInMultiplesY) { this.#scaleInMultiplesY = !!scaleInMultiplesY; }
     setIncrementAmtX(incrementAmtX) { 
         if (!Number.isInteger(incrementAmtX) || incrementAmtX <= 0) throw new Error('Invalid increment amount provided.');
         this.#incrementAmtX = incrementAmtX; 
@@ -129,32 +241,40 @@ class ScalePartition {
     getIncrementAmtY() { return this.#incrementAmtY; }
     getXDir() { return this.#xDir; }
     getYDir() { return this.#yDir; }
+    getMaxEncountered() { return this.#maxEncountered.clone(); }
+    getMinEncountered() { return this.#minEncountered.clone(); }
+    getTiles() { return this.#tiles; }
 
     addTile(tile) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         this.#tiles.set(tile.getPosition().toString(), tile); 
     }
+
+    removeTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        this.#tiles.delete(pos.toString());
+    }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!
 const exampleLayout = new Layout();
-exampleLayout.addPartition();
-exampleLayout.addPartition();
-exampleLayout.addPartition();
+exampleLayout.newPartition();
+exampleLayout.newPartition();
+exampleLayout.newPartition();
 exampleLayout.getPartition(0).setLockY(true);
 exampleLayout.getPartition(0).setXDir(1);
-exampleLayout.getPartition(0).setScaleByIncrementX(false);
+exampleLayout.getPartition(0).setScaleInMultiplesX(false);
 
 exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
-exampleLayout.getPartition(1).setScaleByIncrementX(false);
-exampleLayout.getPartition(1).setScaleByIncrementY(false);
+exampleLayout.getPartition(1).setScaleInMultiplesX(false);
+exampleLayout.getPartition(1).setScaleInMultiplesY(false);
 exampleLayout.getPartition(1).setLockRatio(false);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
-exampleLayout.getPartition(2).setScaleByIncrementX(false);
-exampleLayout.getPartition(2).setScaleByIncrementY(false);
+exampleLayout.getPartition(2).setScaleInMultiplesX(false);
+exampleLayout.getPartition(2).setScaleInMultiplesY(false);
 exampleLayout.getPartition(2).setLockRatio(false);
 
 exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
@@ -166,6 +286,9 @@ exampleLayout.addTile(new Tile("wall", new Point(1, -1)), 0);
 exampleLayout.addTile(new Tile("wall", new Point(-1, -1)), -1);
 exampleLayout.addTile(new Tile("wall", new Point(-1, 1)), 1);
 exampleLayout.addTile(new Tile("wall", new Point(1, 1)), 1);
+
+// exampleLayout.addTile(new Tile("wall", new Point(1, 0)), 0);
+// exampleLayout.addTile(new Tile("wall", new Point(0, 0)), 0);
 // Temp layout ends here.
 
 module.exports = { Layout, exampleLayout }
