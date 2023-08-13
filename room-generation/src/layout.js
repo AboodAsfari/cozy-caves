@@ -28,19 +28,20 @@ class Layout {
             }
         }
 
-        console.log("WIDTH AFTER X SCALE: " + this.#getDimensions().getX());
-
+        console.log("WIDTH AFTER SCALE: " + this.#getDimensions().getX());
+        console.log("HEIGHT BEFORE SCALE: " + this.#getDimensions().getY());
+        oldDimensions = new Point(0, 0);
         while (!this.#isValidY(dimensions, leniency, this.#getDimensions())) {
             let currDimensions = this.#getDimensions();
-
             if ((!this.#isValidY (dimensions, leniency, currDimensions) && currDimensions.getY() === oldDimensions.getY()) ||
-                currDimensions.getX() > dimensions.getX() + leniency.getX()) return "BAD Y";
+                currDimensions.getY() > dimensions.getY() + leniency.getY()) return "BAD Y";
             oldDimensions = currDimensions;
             
             for (let partition of this.#scalePartitions) {
                 partition.scaleY(this);
             }
         }
+        console.log("HEIGHT AFTER SCALE: " + this.#getDimensions().getY());
 
         return this.#generateRoom();
         // Each loop, if width/height hasnt changed and still isnt valid, then room is invalid.
@@ -203,6 +204,31 @@ class ScalePartition {
 
     scaleY(layout) {
         // SCALING LOGIC HERE
+        this.#scaledCountY++;
+        if (this.#scaleInMultiplesY) {
+
+        } else {
+            switch (this.#yDir) {
+                case 1:
+                    // console.log("ENCOUNTERED BEFORE X: " + this.#maxEncountered.getX())
+                    for (const [key, value] of this.#edgesBottom.entries()) {
+                        let edgePos = new Point(key, value);
+                        let edgeTile = this.#scaledTiles.get(edgePos.toString());
+                        for (let i = 1; i <= this.#incrementAmtY; i++) {
+                            let newPos = new Point(edgePos.getX(), edgePos.getY() + i);
+                            let newTile = new Tile(edgeTile.getTileType(), newPos);
+                            layout.removeTile(newTile.getPosition());
+                            this.#scaledTiles.set(newPos.toString(), newTile);
+                            this.#evaluatePoint(newTile.getPosition());
+                        }
+                    }
+                    // console.log("ENCOUNTERED AFTER X: " + this.#maxEncountered.getX())
+                    // console.log("EDGES RIGHT AFTER X: " + this.#edgesRight.size);
+                    break;
+                default: 
+                    throw new Error("Invalid scaling direction used");
+            }
+        }
     }    
 
     #evaluatePoint(pos) {
