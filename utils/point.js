@@ -3,6 +3,7 @@ class Point {
     #y;
 
     constructor(x, y) {
+        if (!Number.isInteger(x) || !Number.isInteger(y)) throw new Error('Invalid point provided.');
         this.#x = x;
         this.#y = y;
     }
