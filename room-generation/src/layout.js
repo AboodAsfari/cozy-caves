@@ -13,11 +13,14 @@ class Layout {
         }
 
         let oldDimensions = new Point(0, 0);
+
+        console.log("WIDTH BEFORE SCALE: " + this.#getDimensions().getX());
         
         while (!this.#isValidX(dimensions, leniency, this.#getDimensions())) {
             let currDimensions = this.#getDimensions();
-            console.log("WIDTH BEFORE SCALE: " + currDimensions.getX());
-            if (!this.#isValidX (dimensions, leniency, currDimensions) && currDimensions.getX() === oldDimensions.getX()) return "BAD X";
+            if ((!this.#isValidX (dimensions, leniency, currDimensions) && currDimensions.getX() === oldDimensions.getX()) ||
+                currDimensions.getX() > dimensions.getX() + leniency.getX()) return "BAD X";
+            
             oldDimensions = currDimensions;
             
             for (let partition of this.#scalePartitions) {
@@ -25,10 +28,13 @@ class Layout {
             }
         }
 
+        console.log("WIDTH AFTER X SCALE: " + this.#getDimensions().getX());
+
         while (!this.#isValidY(dimensions, leniency, this.#getDimensions())) {
             let currDimensions = this.#getDimensions();
 
-            if (!this.#isValidY (dimensions, leniency, currDimensions) && currDimensions.getY() === oldDimensions.getY()) return "BAD Y";
+            if ((!this.#isValidY (dimensions, leniency, currDimensions) && currDimensions.getY() === oldDimensions.getY()) ||
+                currDimensions.getX() > dimensions.getX() + leniency.getX()) return "BAD Y";
             oldDimensions = currDimensions;
             
             for (let partition of this.#scalePartitions) {
@@ -178,8 +184,8 @@ class ScalePartition {
                     for (const [key, value] of this.#edgesRight.entries()) {
                         let edgePos = new Point(value, key);
                         let edgeTile = this.#scaledTiles.get(edgePos.toString());
-                        for (let i = 1; i <= this.#scaledCountX; i++) {
-                            let newPos = new Point(edgePos.getX() + 1, edgePos.getY());
+                        for (let i = 1; i <= this.#incrementAmtX; i++) {
+                            let newPos = new Point(edgePos.getX() + i, edgePos.getY());
                             let newTile = new Tile(edgeTile.getTileType(), newPos);
                             layout.removeTile(newTile.getPosition());
                             this.#scaledTiles.set(newPos.toString(), newTile);
@@ -264,18 +270,21 @@ exampleLayout.newPartition();
 exampleLayout.getPartition(0).setLockY(true);
 exampleLayout.getPartition(0).setXDir(1);
 exampleLayout.getPartition(0).setScaleInMultiplesX(false);
+exampleLayout.getPartition(0).setIncrementAmtX(1);
 
 exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
 exampleLayout.getPartition(1).setScaleInMultiplesX(false);
 exampleLayout.getPartition(1).setScaleInMultiplesY(false);
 exampleLayout.getPartition(1).setLockRatio(false);
+exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
 exampleLayout.getPartition(2).setScaleInMultiplesX(false);
 exampleLayout.getPartition(2).setScaleInMultiplesY(false);
 exampleLayout.getPartition(2).setLockRatio(false);
+exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
 exampleLayout.addTile(new Tile("wall", new Point(-1, 0)), -1);
