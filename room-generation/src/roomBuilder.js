@@ -1,4 +1,6 @@
-let seedrandom = require('seedrandom');
+const Point = require("../../utils/point");
+
+const seedrandom = require('seedrandom');
 
 class RoomBuilder {
     #builderSeed;
@@ -21,7 +23,7 @@ class RoomBuilder {
     }
 
     build() {
-        if (this.#size.x <= 0 || this.#size.y <= 0) throw new Error('Invalid size provided.');
+        if (!Point.isNonZeroPoint(this.#size)) throw new Error('Invalid size provided.');
 
         // Generate room here.
 
@@ -29,8 +31,16 @@ class RoomBuilder {
         return null; // Return room here.
     }
 
-    setSize(x, y) { this.#size = {x, y}; return this; }
-    setLeniency(leniency) { this.#leniency = leniency; return this; }
+    setSize(size) { 
+        if (!Point.isNonZeroPoint(size)) throw new Error('Invalid size provided.');
+        this.#size = size; 
+        return this; 
+    }
+    setLeniency(leniency) { 
+        if (!(leniency instanceof Point)) throw new Error('Invalid leniency provided.');
+        this.#leniency = leniency; 
+        return this; 
+    }
     setAllowNonRects(allowNonRects) { this.#allowNonRects = allowNonRects; return this; }
     setPopulateWithItems(populateWithItems) { this.#populateWithItems = populateWithItems; return this; }
     setTileset(tileset) { this.#tileset = tileset; return this; }
@@ -38,8 +48,8 @@ class RoomBuilder {
     clearBlacklist() { this.#layoutBlacklist = []; return this; }
 
     #resetParameters() {
-        this.#size = {x: 0, y: 0};
-        this.#leniency = 0;
+        this.#size = new Point(0, 0);
+        this.#leniency = new Point(0, 0);
         this.#allowNonRects = true;
         this.#populateWithItems = false;
         this.#tileset = null; // TEMP.

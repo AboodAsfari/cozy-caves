@@ -1,3 +1,4 @@
+const Point = require("../../utils/point");
 const Tile = require("./tile/tile");
 
 class Layout {
@@ -23,9 +24,9 @@ class Layout {
     }
 
     addTile(tile, partitionNum) { 
-        if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().x + "," + tile.getPosition().y, tile);
-        else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().x + "," + tile.getPosition().y, tile);
-        else this.#scalePartitions[partitionNum].set(tile.getPosition().x + "," + tile.getPosition().y, tile);  
+        if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().toString(), tile);
+        else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
+        else this.#scalePartitions[partitionNum].set(tile.getPosition().toString(), tile);  
     }
 
     removeTile(pos, deleteExcluded = false) {
@@ -110,7 +111,7 @@ class ScalePartition {
     getXDir() { return this.#xDir; }
     getYDir() { return this.#yDir; }
 
-    addTile(tile) { this.#tiles.set(tile.getPosition().x + "," + tile.getPosition().y, tile); }
+    addTile(tile) { this.#tiles.set(tile.getPosition().toString(), tile); }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!
@@ -134,15 +135,15 @@ exampleLayout.getPartition(2).setScaleByIncrementX(false);
 exampleLayout.getPartition(2).setScaleByIncrementY(false);
 exampleLayout.getPartition(2).setLockRatio(false);
 
-exampleLayout.addTile(new Tile("floor", { x: 0, y: 0 }), 2);
-exampleLayout.addTile(new Tile("wall", { x: -1, y: 0 }), -1);
-exampleLayout.addTile(new Tile("wall", { x: 1, y: 0 }), 0);
-exampleLayout.addTile(new Tile("wall", { x: 0, y: 1 }), 1);
-exampleLayout.addTile(new Tile("wall", { x: 0, y: -1 }), -1);
-exampleLayout.addTile(new Tile("wall", { x: 1, y: -1 }), 0);
-exampleLayout.addTile(new Tile("wall", { x: -1, y: -1 }), -1);
-exampleLayout.addTile(new Tile("wall", { x: -1, y: 1 }), 1);
-exampleLayout.addTile(new Tile("wall", { x: 1, y: 1 }), 1);
+exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
+exampleLayout.addTile(new Tile("wall", new Point(-1, 0)), -1);
+exampleLayout.addTile(new Tile("wall", new Point(1, 0)), 0);
+exampleLayout.addTile(new Tile("wall", new Point(0, 1)), 1);
+exampleLayout.addTile(new Tile("wall", new Point(0, -1)), -1);
+exampleLayout.addTile(new Tile("wall", new Point(1, -1)), 0);
+exampleLayout.addTile(new Tile("wall", new Point(-1, -1)), -1);
+exampleLayout.addTile(new Tile("wall", new Point(-1, 1)), 1);
+exampleLayout.addTile(new Tile("wall", new Point(1, 1)), 1);
 // Temp layout ends here.
 
 module.exports = { Layout, exampleLayout }

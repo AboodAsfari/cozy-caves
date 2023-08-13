@@ -8,7 +8,7 @@ class Tile {
     #depth = 0;
 
     constructor(tileType, position) {
-        if (!tileType || !(position instanceof Point)) throw new Error('Invalid tile provided.');
+        if (!tileType || !(position instanceof Point) || position.getX() <= 0 || position.getY() <= 0) throw new Error('Invalid tile provided.');
         this.#tileType = tileType;
         this.#position = position;
     }
