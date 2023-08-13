@@ -1,5 +1,4 @@
 const Point = require("../../utils/point");
-
 const seedrandom = require('seedrandom');
 
 class RoomBuilder {
