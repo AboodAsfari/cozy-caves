@@ -174,7 +174,8 @@ class ScalePartition {
     }
 
     scaleX(layout) {
-        // SCALING LOGIC HERE
+        if (this.#lockX) return;
+
         this.#scaledCountX++;
         if (this.#scaleInMultiplesX) {
 
@@ -203,7 +204,8 @@ class ScalePartition {
     }
 
     scaleY(layout) {
-        // SCALING LOGIC HERE
+        if (this.#lockY) return;
+
         this.#scaledCountY++;
         if (this.#scaleInMultiplesY) {
 
