@@ -26,7 +26,7 @@ class Layout {
 
     #generateRoom() {
         let room = new Room(this.#getDimensions());
-        
+
         let posUpdater = new Point(0, 0);
         if (this.#minEncountered.getX() < 0) posUpdater.setX(-this.#minEncountered.getX());
         if (this.#minEncountered.getY() < 0) posUpdater.setY(-this.#minEncountered.getY());
@@ -69,7 +69,7 @@ class Layout {
         for (const [key, value] of this.#unscaledTiles.entries()) this.#unscaledEditableTiles.set(key, value);
             
         this.#scalePartitions.forEach((p) => p.resetScaling());
-
+        console.log("Requested Room Size: " + maxSize.toString());
         console.log("Pre Scaling: " + this.#getDimensions().toString());
         
         if (!this.#scaleAxis(true)) return null;
