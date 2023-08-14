@@ -11,12 +11,10 @@ let rng = seedrandom('testing seed');
 function generateSplitPosition(min, max, minDistance) {
     const range = max - min - 2 * minDistance + 1;
     const startPosition = min + minDistance;
-    // return startPosition + Math.floor(Math.random() * range);
     return startPosition + Math.floor(rng() * range);
 }
 
 function bsp(mapGrid, x, y, w, h, recursions) {
-    // console.log(recursions + ":" + x + "," + y + "," + w + "," + h); // TESTING PRINT STATEMENT
     //Makes algorithm more likely to alternate between vertical and horizontal partition - More consistent even spread of open spaces
     splitHorizontal = splitHorizontal ? splitHorizontal = rng() > 0.8 : splitHorizontal = rng() > 0.2;
     
@@ -27,7 +25,6 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     
     if (splitHorizontal) {
         const splitPosition = generateSplitPosition(y, y + h, minGap);
-        // console.log(splitPosition); // TESTING PRINT STATEMENT
         for(let i = x; i < x + w; i++) {
             mapGrid[splitPosition][i] = '#';
         }
@@ -45,7 +42,7 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     }
 }
 
-//TESTING SETUP - Generates 50 random BSP maps
+//TESTING SETUP - Generates 10 random BSP maps
 for(let j = 0; j < 10; j++){
     const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
 
