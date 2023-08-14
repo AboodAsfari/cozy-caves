@@ -17,7 +17,7 @@ class TileSource {
      * @param dimensions Dimensions of the image.
      */
     constructor(imgSource, dimensions) {
-        if (!imgSource || Point.isPositivePoint(dimensions)) throw new Error('Invalid source provided.');
+        if (!imgSource || !Point.isPositivePoint(dimensions)) throw new Error('Invalid source provided.');
         this.#imgSource = imgSource.toString();
         this.#dimensions = dimensions;
     }

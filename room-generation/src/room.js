@@ -17,8 +17,8 @@ class Room {
 
     toString() {
         let tileArray = [];
-        for (let i = 0; i < this.#dimensions.getX(); i++) tileArray.push("");
         for (let i = 0; i < this.#dimensions.getY(); i++) {
+            tileArray.push("");
             for (let j = 0; j < this.#dimensions.getX(); j++) {
                 let tile = this.getTile(new Point(j, i).toString());
                 if (!tile) tileArray[i] += "X";
@@ -27,7 +27,8 @@ class Room {
                 tileArray[i] += "  ";
             }
         }
-        return tileArray.join("\n");
+        let finalString = tileArray.join("\n");
+        return finalString.substring(0, finalString.length - 1);
     }
 }
 
