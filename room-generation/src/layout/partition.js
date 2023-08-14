@@ -130,7 +130,7 @@ class Partition {
             for (let i = 1; i <= incrementAmt; i++) {
                 let posChange = xAxis ? new Point(i * scaleDir, 0) : new Point(0, i * scaleDir);
                 let newPos = new Point(edgePos.getX() + posChange.getX(), edgePos.getY() + posChange.getY());
-                let newTile = new Tile(edgeTile.getTileType(), newPos);
+                let newTile = edgeTile.clone(newPos);
                 layout.removeTile(newTile.getPosition());
                 this.#scaledTiles.set(newPos.toString(), newTile);
                 this.#evaluatePoint(newTile.getPosition());
@@ -224,6 +224,7 @@ class Partition {
     getScaleCountX() { return this.#scaleCountX; }
     getScaleCountY() { return this.#scaleCountY; }
     getTiles() { return this.#tiles; }
+    getScaledTiles() { return Array.from(this.#scaledTiles.values()); }
 }
 
 module.exports = Partition;

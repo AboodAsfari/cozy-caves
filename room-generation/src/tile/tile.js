@@ -31,6 +31,15 @@ class Tile {
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
     getDepth() { return this.#depth; }
+
+    /**
+     * Creates a clone of the tile, optionally
+     * at a new position
+     *
+     * @param pos New position to clone tile at.
+     * @returns Cloned tile.
+     */
+    clone(pos = this.#position) { return new Tile(this.#tileType, pos.clone()); }
 }
 
 module.exports = Tile;

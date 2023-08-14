@@ -1,4 +1,5 @@
 const Point = require("../../../utils/point");
+const Room = require("../room");
 const Tile = require("../tile/tile");
 const Partition = require("./partition");
 
@@ -21,8 +22,27 @@ class Layout {
     #leniency; // How much the room size can deviate from max.
     #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
+    #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);; // Smallest encountered X/Y positions in partition.
+
     #generateRoom() {
-        return "ROOM!";
+        let room = new Room(this.#getDimensions());
+        
+        let posUpdater = new Point(0, 0);
+        if (this.#minEncountered.getX() < 0) posUpdater.setX(-this.#minEncountered.getX());
+        if (this.#minEncountered.getY() < 0) posUpdater.setY(-this.#minEncountered.getY());
+
+        const addTiles = (collection) => {
+            for (const value of Array.from(collection)) {
+                let updatedPos = new Point(value.getPosition().getX() + posUpdater.getX(), value.getPosition().getY() + posUpdater.getY());
+                room.addTile(value.clone(updatedPos));
+            }
+        }
+
+        addTiles(this.#unscaledEditableTiles.values());
+        this.#scalePartitions.forEach((partition) => addTiles(partition.getScaledTiles()));
+        addTiles(this.#excludedEditableTiles.values());
+
+        return room;
     }
 
     /**
@@ -160,17 +180,17 @@ class Layout {
      */
     #getDimensions() {
         let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+        this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 
-        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, minEncountered);
-        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, minEncountered);
+        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
+        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
         for (let partition of this.#scalePartitions) {
-            this.#dimensionCalculationHelper(partition.getMaxEncountered(), maxEncountered, minEncountered);
-            this.#dimensionCalculationHelper(partition.getMinEncountered(), maxEncountered, minEncountered);
+            this.#dimensionCalculationHelper(partition.getMaxEncountered(), maxEncountered, this.#minEncountered);
+            this.#dimensionCalculationHelper(partition.getMinEncountered(), maxEncountered, this.#minEncountered);
         }
 
-        let width = maxEncountered.getX() - minEncountered.getX() + 1;
-        let height = maxEncountered.getY() - minEncountered.getY() + 1;
+        let width = maxEncountered.getX() - this.#minEncountered.getX() + 1;
+        let height = maxEncountered.getY() - this.#minEncountered.getY() + 1;
         return new Point(width, height);
     }
 
@@ -302,14 +322,14 @@ exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
 exampleLayout.getPartition(1).setScaleInMultiplesX(false);
 exampleLayout.getPartition(1).setScaleInMultiplesY(false);
-exampleLayout.getPartition(1).setLockRatio(true);
+exampleLayout.getPartition(1).setLockRatio(false);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
 exampleLayout.getPartition(2).setScaleInMultiplesX(false);
 exampleLayout.getPartition(2).setScaleInMultiplesY(false);
-exampleLayout.getPartition(2).setLockRatio(true);
+exampleLayout.getPartition(2).setLockRatio(false);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
