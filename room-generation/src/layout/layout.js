@@ -69,8 +69,6 @@ class Layout {
         for (const [key, value] of this.#unscaledTiles.entries()) this.#unscaledEditableTiles.set(key, value);
             
         this.#scalePartitions.forEach((p) => p.resetScaling());
-        console.log("Requested Room Size: " + maxSize.toString());
-        console.log("Pre Scaling: " + this.#getDimensions().toString());
         
         if (!this.#scaleAxis(true)) return null;
         if (!this.#scaleAxis(false)) return null;
@@ -79,7 +77,6 @@ class Layout {
         this.#satisfyLock(false);
         if (!this.#isValid(this.#getDimensions())) return null;
 
-        console.log("Post Scaling: " + this.#getDimensions().toString());
         return this.#generateRoom();
     }
 

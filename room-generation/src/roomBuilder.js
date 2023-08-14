@@ -1,18 +1,28 @@
 const Point = require("../../utils/point");
 const seedrandom = require('seedrandom');
+const { exampleLayout } = require("./layout/layout");
+const { defaultTileset } = require("./tile/tileSet");
 
 class RoomBuilder {
-    #builderSeed;
-    #numGen;
-    #resetOnBuild;
+    #builderSeed; // Seed used for randomly generated room decisions.
+    #numGen; // Seeded number generator.
+    #resetOnBuild; // Whether to reset parameters on build.
 
-    #size; // NO FUNCTIONALITY YET.
-    #leniency; // NO FUNCTIONALITY YET.
+    #size; // Size to work with for room creation.
+    #leniency; // Leniency in room size.
+    #allowOvergrow; // Whether leniency allows room to be bigger than max.
     #allowNonRects; // NO FUNCTIONALITY YET.
     #populateWithItems; // NO FUNCTIONALITY YET.
     #tileset; // NO FUNCTIONALITY YET.
     #layoutBlacklist; // NO FUNCTIONALITY YET.
 
+    /**
+     * Creates an instance of RoomBuilder. Uses a
+     * random seed if one isn't provided.
+     *
+     * @constructor
+     * @param builderSeed Seed to use for room generation.
+     */
     constructor(builderSeed) {
         if (builderSeed) this.#builderSeed = builderSeed;
         else this.#builderSeed = Math.random();
@@ -21,15 +31,24 @@ class RoomBuilder {
         this.#resetParameters();
     }
 
+    /**
+     * Creates a room that matches the room builders
+     * parameters.
+     *
+     * @returns The created room.
+     */
     build() {
         if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
-        // Generate room here.
+        // Normally, would choose from a pool of layouts based on params.
+        let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow);
 
         if (this.#resetOnBuild) this.#resetParameters();
-        return null; // Return room here.
+        return room;
     }
 
+    // Setters (That return the object as well).
+    setResetOnBuild(resetOnBuild) { this.#resetOnBuild = !!resetOnBuild; return this; }
     setSize(size) { 
         if (!Point.isPositivePoint(size)) throw new Error('Invalid size provided.');
         this.#size = size; 
@@ -40,18 +59,23 @@ class RoomBuilder {
         this.#leniency = leniency; 
         return this; 
     }
+    setAllowOvergrow(allowOvergrow) { this.#allowOvergrow = allowOvergrow; return this; }
     setAllowNonRects(allowNonRects) { this.#allowNonRects = allowNonRects; return this; }
     setPopulateWithItems(populateWithItems) { this.#populateWithItems = populateWithItems; return this; }
     setTileset(tileset) { this.#tileset = tileset; return this; }
     addToBlacklist(layout) { this.#layoutBlacklist.push(layout); return this; }
     clearBlacklist() { this.#layoutBlacklist = []; return this; }
 
+    /**
+     * Resets builder parameters to their defaults.
+     */
     #resetParameters() {
         this.#size = new Point(0, 0);
         this.#leniency = new Point(0, 0);
+        this.#allowOvergrow = false;
         this.#allowNonRects = true;
         this.#populateWithItems = false;
-        this.#tileset = null; // TEMP.
+        this.#tileset = defaultTileset;
         this.#layoutBlacklist = [];
     }
 }

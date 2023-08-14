@@ -30,9 +30,9 @@ class TileSet {
 }
 
 // Default tileset, will be moved once a proper tileset system is implemented.
-const defaultSet = new TileSet(
+const defaultTileset = new TileSet(
     new TileSource("NONREAL_FLOOR", new Point(32, 32)),
     new TileSource("NONREAL_WALL", new Point(32, 32))
 );
 
-module.exports = { defaultSet };
+module.exports = { defaultTileset };
