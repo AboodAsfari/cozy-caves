@@ -1,11 +1,11 @@
 let height = 175; //Will need tuning to find "preset" values
 let width = 175; //Will need tuning to find "preset" values
-const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
 let minGap = 5; //Will need tuning to find "preset" values
 let maxDepth = 10; //Will need tuning to find "preset" values
 let splitHorizontal = Math.random() > 0.5;
 const seedrandom = require('seedrandom');
-let rng = seedrandom('testing seed');
+const seed = Math.random();
+let rng = seedrandom(seed);
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
