@@ -4,18 +4,19 @@ const mapGrid = Array.from({length: height}, () => Array.from({length: width}, (
 let minGap = 5; //Will need tuning to find "preset" values
 let maxDepth = 10; //Will need tuning to find "preset" values
 let splitHorizontal = Math.random() > 0.5;
+const seedrandom = require('seedrandom');
+let rng = seedrandom('testing seed');
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
     const range = max - min - 2 * minDistance + 1;
     const startPosition = min + minDistance;
-    return startPosition + Math.floor(Math.random() * range);
+    return startPosition + Math.floor(rng() * range);
 }
 
 function bsp(mapGrid, x, y, w, h, recursions) {
-    // console.log(recursions + ":" + x + "," + y + "," + w + "," + h); // TESTING PRINT STATEMENT
     //Makes algorithm more likely to alternate between vertical and horizontal partition - More consistent even spread of open spaces
-    splitHorizontal = splitHorizontal ? splitHorizontal = Math.random() > 0.8 : splitHorizontal = Math.random() > 0.2;
+    splitHorizontal = splitHorizontal ? splitHorizontal = rng() > 0.8 : splitHorizontal = rng() > 0.2;
     
     //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
     if (recursions <= 0 || (w < (minGap*2 + 1) && !splitHorizontal) || (h < (minGap*2 +1) && splitHorizontal)) {
@@ -24,7 +25,6 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     
     if (splitHorizontal) {
         const splitPosition = generateSplitPosition(y, y + h, minGap);
-        // console.log(splitPosition); // TESTING PRINT STATEMENT
         for(let i = x; i < x + w; i++) {
             mapGrid[splitPosition][i] = '#';
         }
@@ -42,8 +42,8 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     }
 }
 
-//TESTING SETUP - Generates 50 random BSP maps
-for(let j = 0; j < 50; j++){
+//TESTING SETUP - Generates 10 random BSP maps
+for(let j = 0; j < 10; j++){
     const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
 
     bsp(mapGrid, 0, 0, width, height, maxDepth);
