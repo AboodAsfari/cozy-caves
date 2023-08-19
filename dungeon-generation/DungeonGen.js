@@ -20,7 +20,14 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     
     //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
     if (recursions <= 0 || (w < (minGap*2 + 1) && !splitHorizontal) || (h < (minGap*2 +1) && splitHorizontal)) {
-        return;
+        if (w / 3 > h) {
+            splitHorizontal = false;
+        } else if (h / 3 > w) {
+            splitHorizontal = true;
+        }
+        else {
+            return;
+        }
     }
     
     if (splitHorizontal) {
