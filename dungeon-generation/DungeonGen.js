@@ -1,11 +1,12 @@
-let height = 175; //Will need tuning to find "preset" values
-let width = 175; //Will need tuning to find "preset" values
-let minGap = 5; //Will need tuning to find "preset" values
-let maxDepth = 10; //Will need tuning to find "preset" values
-let splitHorizontal = Math.random() > 0.5;
+//Height/Width, minGap, maxDepth, and seed will either be read from user input or from preset values
+let height = 175; 
+let width = 175; 
+let minGap = 5; 
+let maxDepth = 10; 
 const seedrandom = require('seedrandom');
 const seed = Math.random();
 let rng = seedrandom(seed);
+let splitHorizontal = rng() > 0.5;
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
