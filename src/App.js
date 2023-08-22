@@ -8,10 +8,17 @@ import {
 } from "@mui/material";
 
 import defaultTheme from "./themes/DarkTheme";
-import Homepage from "./Homepage";
+import Homepage from "./home/Homepage";
+
+
 
 
 function App() {
+
+  const getPage = () => {
+    return <Homepage />;
+  }
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppBar position="fixed" component="nav">
@@ -27,7 +34,7 @@ function App() {
       </AppBar>
 
       <Box sx={{ mt: 8.5 }}>
-        <Homepage />
+        {getPage()}
       </Box>
 
     </ThemeProvider>
