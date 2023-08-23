@@ -6,3 +6,5 @@ const TileID = {
     DOUBLE_WALL_CONNECTED: 4,
     TRIPLE_WALL: 5
 }
+
+module.exports = TileID;
