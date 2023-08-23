@@ -12,6 +12,6 @@
     "author": "Cozy Caves Group",
     "license": "ISC",
     "dependencies": {
-        "@cozy-caves/utils": "file:../utils"
+        "@cozy-caves/utils": "^1.0.0"
     }
 }
