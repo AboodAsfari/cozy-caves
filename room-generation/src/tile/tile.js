@@ -7,6 +7,7 @@ const Point = require("@cozy-caves/utils").Point;
  */
 class Tile {
     #tileType; // Type of tile to display.
+    #tileID; // ID of tile to display.
     #position; // Position of the tile in the room.
     #offset = new Point(0, 0); // Rendering offset.
     #rotation = 0; // Rendering rotation.
@@ -27,6 +28,7 @@ class Tile {
 
     // Getters.
     getTileType() { return this.#tileType; }
+    getTileID() { return this.#tileType; }
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
