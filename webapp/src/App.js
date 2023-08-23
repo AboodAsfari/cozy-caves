@@ -9,6 +9,7 @@ import {
 
 import defaultTheme from "./themes/DarkTheme";
 import Homepage from "./home/Homepage";
+import MapPage from "./mapview/MapPage";
 
 
 
@@ -16,7 +17,7 @@ import Homepage from "./home/Homepage";
 function App() {
 
   const getPage = () => {
-    return <Homepage />;
+    return <MapPage />;
   }
 
   return (
@@ -33,7 +34,7 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ mt: 8.5 }}>
+      <Box >
         {getPage()}
       </Box>
 
