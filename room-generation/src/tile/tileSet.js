@@ -1,38 +1,38 @@
 const Point = require("@cozy-caves/utils").Point;
-const TileSource = require("./tileSource");
 
 /**
- * Represents a map of tile sources, accessible by preset tile types.
+ * Represents a map of tile getters, accessible by preset tile types.
  * 
  * @author Abdulrahman Asfari
  */
 class TileSet {
-    #tileSources = {}; // Maps tile types to tile sources.
+    #tileGetters = {}; // Maps tile types to tile getters.
 
     /**
      * Creates an instance of TileSet.
      *
      * @constructor
-     * @param floorSource Tile source for floor.
-     * @param wallSource Tile source for wall.
+     * @param floorGetter Callback method to get floor ID.
+     * @param wallGetter Callback method to get wall ID.
      */
-    constructor(floorSource, wallSource) {
-        if (!floorSource || !wallSource) throw new Error('Invalid source provided.');
-        this.#tileSources["floor"] = floorSource.toString();
-        this.#tileSources["wall"] = wallSource.toString();
+    constructor(floorGetter, wallGetter) {
+        if (typeof floorGetter !== "function" || typeof wallGetter !== "function") throw new Error('Invalid getter provided.'); 
+        this.#tileGetters["floor"] = floorGetter;
+        this.#tileGetters["wall"] = wallGetter;
     }
 
     // Getters.
-    getTile(tileType) {
-        if (!this.#tileSources.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
-        return this.#tileSources[tileType.toString()]; 
+    getTile(tile, room) {
+        let tileType = tile.getTileType();
+        if (!this.#tileGetters.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
+        return this.#tileGetters[tileType.toString()](tile, room); 
     }
 }
 
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTileset = new TileSet(
-    new TileSource("NONREAL_FLOOR", new Point(32, 32)),
-    new TileSource("NONREAL_WALL", new Point(32, 32))
+    () => 0,
+    (tile, room) => tile.getTileType()
 );
 
 module.exports = { defaultTileset };

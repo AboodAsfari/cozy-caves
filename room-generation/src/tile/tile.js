@@ -26,9 +26,12 @@ class Tile {
         this.#position = position;
     }
 
+    // Setters.
+    setTileID(tileID) { this.#tileID = tileID; }
+
     // Getters.
     getTileType() { return this.#tileType; }
-    getTileID() { return this.#tileType; }
+    getTileID() { return this.#tileID; }
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
