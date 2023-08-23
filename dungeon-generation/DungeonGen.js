@@ -4,17 +4,26 @@ const width = 175;
 const minGap = 5; 
 const maxDepth = 10; 
 const totalCoverage = 50;
+
+const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
 const seedrandom = require('seedrandom');
+const RoomBuilder = require("@cozy-caves/room-generation").RoomBuilder;
+const Point = require("@cozy-caves/utils").Point;
+
 const seed = Math.random();
 let rng = seedrandom(seed);
+const roomBuilder = new RoomBuilder(rng());
 let splitHorizontal = rng() > 0.5;
 let rooms = []
+
+
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
     const range = max - min - 2 * minDistance + 1;
     const startPosition = min + minDistance;
     return startPosition + Math.floor(rng() * range);
+    
 }
 
 function bsp(mapGrid, x, y, w, h, recursions) {
@@ -29,13 +38,13 @@ function bsp(mapGrid, x, y, w, h, recursions) {
             splitHorizontal = true;
         }
         else {
-
+            
             //Temporary room object just to store parameters to provide to Room Gen Module
             let roomObj = {
                 x: x,
                 y: y,
                 width: w,
-                height: h,
+                height: h
             };
 
             rooms.push(roomObj);
@@ -55,43 +64,30 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     }
 }
 
-//TESTING SETUP - Generates 10 random BSP maps
-for(let j = 0; j < 10; j++){
-    const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
+function generateMap(){
     bsp(mapGrid, 0, 0, width, height, maxDepth);
 
     //Room Selection - randomly selects rooms until the overall floor coverage is greater than the total desired floor coverage
     let floorCoverage = 0.0;
     let keptRooms = [];
     for(let rm=Math.floor(rng()*rooms.length); floorCoverage < totalCoverage; rm=Math.floor(rng()*rooms.length)){
+        // console.log("rm = " + rm + " | size = " + rooms.length + " | floor cov = " + floorCoverage);
         let roomArea = rooms[rm].width * rooms[rm].height;
         floorCoverage += (roomArea / (width*height)) * 100;
         keptRooms.push(rooms[rm]);
         rooms.splice(rm, 1);
     }
 
-    //TESTING - Represents kept room spaces with a hash
+    let allRooms = [];
     for(let rm = 0; rm < keptRooms.length; rm++){
-        let room = keptRooms[rm];
-        for(let w = 0; w<room.width; w++){
-            for(let h = 0; h<room.height;h++){
-                mapGrid[room.y+h][room.x+w] = '#';
-            }
-        }
+        let w = keptRooms[rm].width;
+        let h = keptRooms[rm].height;
+        keptRooms[rm].width = (w/3 < minGap) ? Math.floor(rng() * (w - minGap + 1)) + minGap : Math.floor(rng() * (w - (w/3)) + 1);
+        keptRooms[rm].height = (h/3 < minGap) ? Math.floor(rng() * (h - minGap + 1)) + minGap : Math.floor(rng() * (h - (h/3)) + 1);
+        const room = roomBuilder.setSize(new Point(keptRooms[rm].width, keptRooms[rm].height)).setLeniency(new Point(1, 1)).setAllowOvergrow(false).build();
+        allRooms.push(room);
     }
-
-    //TESTING - Represents the top left x,y position of each room space as an @ to differentiate where each room space begins 
-    for (let i = 0; i < keptRooms.length; i++){
-        mapGrid[keptRooms[i].y][keptRooms[i].x] = '@';
-    }  
-
-    for (let i = 0; i < height; i++) {
-        // Join the elements in the row to form a string representation
-        const rowString = mapGrid[i].join(' ');
-        
-        // Print the row
-        console.log(`${rowString}`);
-    }
-    rooms = []; //Just clears rooms for next iteration
-    console.log("");
+    return allRooms;
 }
+
+module.exports = generateMap
