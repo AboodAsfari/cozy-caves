@@ -1,4 +1,5 @@
 const Point = require("@cozy-caves/utils").Point;
+const TileID = require("@cozy-caves/utils").TileID;
 
 /**
  * Represents a map of tile getters, accessible by preset tile types.
@@ -31,7 +32,7 @@ class TilerLogic {
 
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
-    () => 0,
+    () => TileID.FLOOR,
     (tile, room) => tile.getTileType()
 );
 
