@@ -3,16 +3,22 @@ const Point = require("@cozy-caves/utils").Point;
 class Room {
     #tiles = new Map();
     #dimensions;
+    #position;
 
     constructor(dimensions) {
         if (!Point.isPositivePoint(dimensions)) throw new Error('Invalid dimensions provided.');
         this.#dimensions = dimensions;
     }
 
+    setPosition(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        this.#position = pos; 
+    }
+
     addTile(tile) { this.#tiles.set(tile.getPosition().toString(), tile); }
     getTile(pos) { return this.#tiles.get(pos.toString()); }
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }
-
+    getPosition() { return this.#position; }
     getDimensions() { return this.#dimensions; }
 
     toString() {
