@@ -1,12 +1,14 @@
 //Height/Width, minGap, maxDepth, and seed will either be read from user input or from preset values
-let height = 175; 
-let width = 175; 
-let minGap = 5; 
-let maxDepth = 10; 
+const height = 175; 
+const width = 175; 
+const minGap = 5; 
+const maxDepth = 10; 
+const totalCoverage = 50;
 const seedrandom = require('seedrandom');
 const seed = Math.random();
 let rng = seedrandom(seed);
 let splitHorizontal = rng() > 0.5;
+let rooms = []
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
@@ -27,25 +29,28 @@ function bsp(mapGrid, x, y, w, h, recursions) {
             splitHorizontal = true;
         }
         else {
+
+            //Temporary room object just to store parameters to provide to Room Gen Module
+            let roomObj = {
+                x: x,
+                y: y,
+                width: w,
+                height: h,
+            };
+
+            rooms.push(roomObj);
             return;
         }
     }
     
     if (splitHorizontal) {
         const splitPosition = generateSplitPosition(y, y + h, minGap);
-        for(let i = x; i < x + w; i++) {
-            mapGrid[splitPosition][i] = '#';
-        }
         bsp(mapGrid, x, y, w, splitPosition - y, recursions - 1);
-        bsp(mapGrid, x, splitPosition + 1, w, h - (splitPosition - y) - 1, recursions - 1);
+        bsp(mapGrid, x, splitPosition, w, h - (splitPosition - y), recursions - 1);
     } else {
         const splitPosition = generateSplitPosition(x, x + w, minGap);
-        for(let i = y; i < y + h; i++) {
-            mapGrid[i][splitPosition] = '#';
-
-        }
         bsp(mapGrid, x, y, splitPosition - x, h, recursions - 1);
-        bsp(mapGrid, splitPosition + 1, y, w - (splitPosition - x) - 1, h, recursions - 1);
+        bsp(mapGrid, splitPosition, y, w - (splitPosition - x), h, recursions - 1);
 
     }
 }
@@ -53,8 +58,32 @@ function bsp(mapGrid, x, y, w, h, recursions) {
 //TESTING SETUP - Generates 10 random BSP maps
 for(let j = 0; j < 10; j++){
     const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
-
     bsp(mapGrid, 0, 0, width, height, maxDepth);
+
+    //Room Selection - randomly selects rooms until the overall floor coverage is greater than the total desired floor coverage
+    let floorCoverage = 0.0;
+    let keptRooms = [];
+    for(let rm=Math.floor(rng()*rooms.length); floorCoverage < totalCoverage; rm=Math.floor(rng()*rooms.length)){
+        let roomArea = rooms[rm].width * rooms[rm].height;
+        floorCoverage += (roomArea / (width*height)) * 100;
+        keptRooms.push(rooms[rm]);
+        rooms.splice(rm, 1);
+    }
+
+    //TESTING - Represents kept room spaces with a hash
+    for(let rm = 0; rm < keptRooms.length; rm++){
+        let room = keptRooms[rm];
+        for(let w = 0; w<room.width; w++){
+            for(let h = 0; h<room.height;h++){
+                mapGrid[room.y+h][room.x+w] = '#';
+            }
+        }
+    }
+
+    //TESTING - Represents the top left x,y position of each room space as an @ to differentiate where each room space begins 
+    for (let i = 0; i < keptRooms.length; i++){
+        mapGrid[keptRooms[i].y][keptRooms[i].x] = '@';
+    }  
 
     for (let i = 0; i < height; i++) {
         // Join the elements in the row to form a string representation
@@ -63,6 +92,6 @@ for(let j = 0; j < 10; j++){
         // Print the row
         console.log(`${rowString}`);
     }
-    console.log("");
+    rooms = []; //Just clears rooms for next iteration
     console.log("");
 }
