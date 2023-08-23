@@ -1,5 +1,5 @@
 const Point = require("@cozy-caves/utils").Point;
-const Room = require("../room");
+const Room = require("../room/room");
 const Tile = require("../tile/tile");
 const { tilerChooser } = require("../tile/tilerLogic");
 const Partition = require("./partition");

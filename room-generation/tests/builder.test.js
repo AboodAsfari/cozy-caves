@@ -1,6 +1,6 @@
 const log = require("console").log;
 const Point = require("@cozy-caves/utils").Point;
-const RoomBuilder = require("../src/roomBuilder");
+const RoomBuilder = require("../src/room/roomBuilder");
 
 test('Rect room generation', () => {
     let testInputs = [
