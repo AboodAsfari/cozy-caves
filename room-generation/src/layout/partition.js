@@ -1,4 +1,4 @@
-const Point = require("../../../utils/point");
+const Point = require("../../../utils/src/point");
 const Tile = require("../tile/tile");
 
 class Partition {

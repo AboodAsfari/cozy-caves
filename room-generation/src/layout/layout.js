@@ -1,4 +1,4 @@
-const Point = require("../../../utils/point");
+const Point = require("../../../utils/src/point");
 const Room = require("../room");
 const Tile = require("../tile/tile");
 const Partition = require("./partition");

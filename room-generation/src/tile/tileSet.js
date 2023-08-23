@@ -1,4 +1,4 @@
-const Point = require("../../../utils/point");
+const Point = require("../../../utils/src/point");
 const TileSource = require("./tileSource");
 
 /**

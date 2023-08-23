@@ -1,4 +1,4 @@
-const Point = require("../../../utils/point");
+const Point = require("../../../utils/src/point");
 
 /**
  * Represents an image source / image dimensions pair.
