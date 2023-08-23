@@ -1,6 +1,7 @@
 const Point = require("@cozy-caves/utils").Point;
 const Room = require("../room");
 const Tile = require("../tile/tile");
+const { tilerChooser } = require("../tile/tilerLogic");
 const Partition = require("./partition");
 
 /**
@@ -24,7 +25,7 @@ class Layout {
 
     #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);; // Smallest encountered X/Y positions in partition.
 
-    #generateRoom() {
+    #generateRoom(tilerType) {
         let room = new Room(this.#getDimensions());
 
         let posUpdater = new Point(0, 0);
@@ -41,6 +42,7 @@ class Layout {
         addTiles(this.#unscaledEditableTiles.values());
         this.#scalePartitions.forEach((partition) => addTiles(partition.getScaledTiles()));
         addTiles(this.#excludedEditableTiles.values());
+        room.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler(tilerType).getID(tile, room)));
 
         return room;
     }
@@ -55,9 +57,10 @@ class Layout {
      * @param maxSize The maximum size of the room.
      * @param leniency How much the room size can deviate from max.
      * @param allowOvergrow Whether leniency allows room to be bigger than max. 
+     * @param tilerType The sprite decision logic to use when generating room.
      * @returns A room object built from the scaled layout, null if invalid layout.
      */
-    scaleRoom(maxSize, leniency, allowOvergrow) {
+    scaleRoom(maxSize, leniency, allowOvergrow, tilerType) {
         if (!(maxSize instanceof Point) || !(leniency instanceof Point)) throw new Error('Invalid size or leniency provided.');
         this.#maxSize = maxSize;
         this.#leniency = leniency;
@@ -77,7 +80,7 @@ class Layout {
         this.#satisfyLock(false);
         if (!this.#isValid(this.#getDimensions())) return null;
 
-        return this.#generateRoom();
+        return this.#generateRoom(tilerType);
     }
 
     /**

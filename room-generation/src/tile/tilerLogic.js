@@ -5,7 +5,7 @@ const Point = require("@cozy-caves/utils").Point;
  * 
  * @author Abdulrahman Asfari
  */
-class TileSet {
+class TilerLogic {
     #tileGetters = {}; // Maps tile types to tile getters.
 
     /**
@@ -22,7 +22,7 @@ class TileSet {
     }
 
     // Getters.
-    getTile(tile, room) {
+    getID(tile, room) {
         let tileType = tile.getTileType();
         if (!this.#tileGetters.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
         return this.#tileGetters[tileType.toString()](tile, room); 
@@ -30,9 +30,17 @@ class TileSet {
 }
 
 // Default tileset, will be moved once a proper tileset system is implemented.
-const defaultTileset = new TileSet(
+const defaultTiler = new TilerLogic(
     () => 0,
     (tile, room) => tile.getTileType()
 );
 
-module.exports = { defaultTileset };
+const tilerChooser = {
+    getTiler(tiler) {
+        if (!tiler || this.hasOwnProperty(tiler.toString())) return defaultTiler;
+        return this[tiler.toString() + "Tiler"];
+    }, 
+    defaultTiler
+}
+
+module.exports = { tilerChooser };

@@ -1,7 +1,6 @@
 const Point = require("@cozy-caves/utils").Point;
 const seedrandom = require('seedrandom');
 const { exampleLayout } = require("./layout/layout");
-const { defaultTileset } = require("./tile/tileSet");
 
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
