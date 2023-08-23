@@ -7,11 +7,15 @@
         "test": "tests"
     },
     "scripts": {
-        "test": "exit 1"
+        "test": "jest"
     },
     "author": "Cozy Caves Group",
     "license": "ISC",
     "dependencies": {
-        "@cozy-caves/utils": "file:../utils"
+        "@cozy-caves/utils": "^1.0.0",
+        "seedrandom": "^3.0.5"
+    },
+    "devDependencies": {
+        "jest": "^29.6.3"
     }
 }

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@cozy-caves/room-generation": "file:../room-generation",
-    "@cozy-caves/utils": "file:../utils",
+    "@cozy-caves/room-generation": "^1.0.0",
+    "@cozy-caves/utils": "^1.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.4",
@@ -14,14 +14,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "seedrandom": "^3.0.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:room": "jest room-generation/tests",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
