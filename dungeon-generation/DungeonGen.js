@@ -1,11 +1,12 @@
-let height = 175; //Will need tuning to find "preset" values
-let width = 175; //Will need tuning to find "preset" values
-const mapGrid = Array.from({length: height}, () => Array.from({length: width}, () => '_'));
-let minGap = 5; //Will need tuning to find "preset" values
-let maxDepth = 10; //Will need tuning to find "preset" values
-let splitHorizontal = Math.random() > 0.5;
+//Height/Width, minGap, maxDepth, and seed will either be read from user input or from preset values
+let height = 175; 
+let width = 175; 
+let minGap = 5; 
+let maxDepth = 10; 
 const seedrandom = require('seedrandom');
-let rng = seedrandom('testing seed');
+const seed = Math.random();
+let rng = seedrandom(seed);
+let splitHorizontal = rng() > 0.5;
 
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
@@ -20,7 +21,14 @@ function bsp(mapGrid, x, y, w, h, recursions) {
     
     //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
     if (recursions <= 0 || (w < (minGap*2 + 1) && !splitHorizontal) || (h < (minGap*2 +1) && splitHorizontal)) {
-        return;
+        if (w / 3 > h) {
+            splitHorizontal = false;
+        } else if (h / 3 > w) {
+            splitHorizontal = true;
+        }
+        else {
+            return;
+        }
     }
     
     if (splitHorizontal) {
