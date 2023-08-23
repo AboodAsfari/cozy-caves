@@ -14,6 +14,7 @@
     "author": "Cozy Caves Group",
     "license": "ISC",
     "dependencies": {
+        "delaunator": "^5.0.0",
         "@cozy-caves/item-and-prop-generation": "^1.0.2",
         "@cozy-caves/utils": "^1.1.1",
         "seedrandom": "^3.0.5"
