@@ -1,0 +1,17 @@
+{
+    "name": "@cozy-caves/room-generation",
+    "version": "1.0.0",
+    "description": "Generates rooms from a pool of scalable layouts.",
+    "main": "src/roomBuilder.js",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "exit 1"
+    },
+    "author": "Cozy Caves Group",
+    "license": "ISC",
+    "dependencies": {
+        "@cozy-caves/utils": "file:../utils"
+    }
+}

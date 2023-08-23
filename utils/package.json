@@ -1,0 +1,11 @@
+{
+  "name": "@cozy-caves/utils",
+  "version": "1.0.0",
+  "description": "Utilities used by other Cozy Caves modules",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cozy Caves Group",
+  "license": "ISC"
+}
