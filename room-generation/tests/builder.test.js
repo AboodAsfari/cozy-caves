@@ -1,5 +1,5 @@
 const log = require("console").log;
-const Point = require("../../utils/point");
+const Point = require("@cozy-caves/utils").Point;
 const RoomBuilder = require("../src/roomBuilder");
 
 test('Rect room generation', () => {

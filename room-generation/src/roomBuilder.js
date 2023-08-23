@@ -1,4 +1,4 @@
-const Point = require("../../utils/src/point");
+const Point = require("@cozy-caves/utils").Point;
 const seedrandom = require('seedrandom');
 const { exampleLayout } = require("./layout/layout");
 const { defaultTileset } = require("./tile/tileSet");

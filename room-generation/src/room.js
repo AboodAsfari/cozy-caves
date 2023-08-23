@@ -1,4 +1,4 @@
-const Point = require("../../utils/src/point");
+const Point = require("@cozy-caves/utils").Point;
 
 class Room {
     #tiles = new Map();

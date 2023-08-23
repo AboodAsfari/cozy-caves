@@ -4,11 +4,14 @@
     "description": "Generates rooms from a pool of scalable layouts.",
     "main": "src/roomBuilder.js",
     "directories": {
-      "test": "tests"
+        "test": "tests"
     },
     "scripts": {
-      "test": "exit 1"
+        "test": "exit 1"
     },
     "author": "Cozy Caves Group",
-    "license": "ISC"
-  }
+    "license": "ISC",
+    "dependencies": {
+        "@cozy-caves/utils": "file:../utils"
+    }
+}

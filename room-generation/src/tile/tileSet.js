@@ -1,4 +1,4 @@
-const Point = require("../../../utils/src/point");
+const Point = require("@cozy-caves/utils").Point;
 const TileSource = require("./tileSource");
 
 /**
