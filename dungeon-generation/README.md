@@ -13,6 +13,8 @@ Recursively divides the bounding space into smaller and smaller regions until th
 
 **seed** - Determines the sequence of randomly generated numbers throughout the algorithm, by default will be a purely randomly generated number but setting to a particular value allows for reproducible results. Current testing setup shows a sequence of maps being generated all through the same seed, new executions with the same seed will produce the same sequence of maps - Once integration with other modules is done and testing setup is no longer needed then a single reproducible map should be generated.
 
+**totalCoverage** - Determines the desired amount of the overall map area that should be covered by rooms. 
+
 ## Integration with other modules
 TBD
 
