@@ -13,7 +13,7 @@ class RoomBuilder {
     #allowOvergrow; // Whether leniency allows room to be bigger than max.
     #allowNonRects; // NO FUNCTIONALITY YET.
     #populateWithItems; // NO FUNCTIONALITY YET.
-    #tileset; // NO FUNCTIONALITY YET.
+    #tilerType; // NO FUNCTIONALITY YET.
     #layoutBlacklist; // NO FUNCTIONALITY YET.
 
     /**
@@ -41,7 +41,7 @@ class RoomBuilder {
         if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
         // Normally, would choose from a pool of layouts based on params.
-        let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow);
+        let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
@@ -62,7 +62,7 @@ class RoomBuilder {
     setAllowOvergrow(allowOvergrow) { this.#allowOvergrow = allowOvergrow; return this; }
     setAllowNonRects(allowNonRects) { this.#allowNonRects = allowNonRects; return this; }
     setPopulateWithItems(populateWithItems) { this.#populateWithItems = populateWithItems; return this; }
-    setTileset(tileset) { this.#tileset = tileset; return this; }
+    setTilerType(tilerType) { this.#tilerType = tilerType; return this; }
     addToBlacklist(layout) { this.#layoutBlacklist.push(layout); return this; }
     clearBlacklist() { this.#layoutBlacklist = []; return this; }
 
@@ -75,7 +75,7 @@ class RoomBuilder {
         this.#allowOvergrow = false;
         this.#allowNonRects = true;
         this.#populateWithItems = false;
-        this.#tileset = defaultTileset;
+        this.#tilerType = "default";
         this.#layoutBlacklist = [];
     }
 }
