@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "item_categories": {
+        "type": "object",
+        "patternProperties": {
+            "^.+$": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                "name": { "type": "string" },
+                "desc": { "type": "string" },
+                "rarity": { "type": "string", "enum": ["common", "uncommon", "rare", "epic", "legendary"] },
+                "properties": { "type": "string" }
+                },
+                "required": ["name", "desc", "rarity", "properties"]
+            },
+            "minItems": 1
+            }
+        },
+        "additionalProperties": false
+        }
+    },
+    "required": ["item_categories"]
+}

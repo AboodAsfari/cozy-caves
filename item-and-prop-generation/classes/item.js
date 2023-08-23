@@ -13,7 +13,6 @@ class Item {
     // Rendering variables.
     #offset = new Point(0, 0);
     #rotation = 0;
-    #depth = 0;
 
     /**
      * Constructs a tile based on the metadata provided.
@@ -23,24 +22,23 @@ class Item {
      * @param name The name of the item.
      * @param desc A brief narrative description of the item's appearance
      *             and functionality.
+     * @param category The category the specific item falls under.
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
      * @param properties Any special properties or effects associated with the item
-     * @param img Path to the image file
      */
-    constructor(name, desc, rarity, properties, img) {
+    constructor(name, desc, category, rarity, properties) {
         this.name = name;
         this.desc = desc;
+        this.category = category;
         this.rarity = rarity;
         this.properties = properties;
-        this.img = img;
     }
 
     // Getters.
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
-    getDepth() { return this.#depth; }
 
     // Setters.
     setPosition(position) { 
@@ -48,3 +46,5 @@ class Item {
         this.#position = position; 
     }
 }
+
+module.exports = Item;
