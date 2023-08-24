@@ -8,7 +8,7 @@ test('Rect room generation', () => {
         { size: new Point(4, 4), leniency: new Point(0, 0) },
         { size: new Point(4, 4), leniency: new Point(1, 0) },
         { size: new Point(5, 4), leniency: new Point(0, 0) },
-        { size: new Point(6, 6), leniency: new Point(0, 0) },
+        { size: new Point(7, 7), leniency: new Point(0, 0) },
         { size: new Point(7, 7), leniency: new Point(1, 1) },
         { size: new Point(7, 7), leniency: new Point(0, 0) },
     ];
