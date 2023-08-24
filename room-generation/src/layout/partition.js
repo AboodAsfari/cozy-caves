@@ -77,7 +77,9 @@ class Partition {
                     this.#incrementScale(this.#edgesLeft, layout);
                     break;
                 case 0:
-                    // CENTER LOGIC HERE.
+                    if (this.#incrementAmtX % 2 != 0) throw new Error("Number needs to be even for centre scaling.");
+                    this.#incrementScale(this.#edgesLeft, layout, true);
+                    this.#incrementScale(this.#edgesRight, layout, true);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
@@ -120,13 +122,14 @@ class Partition {
      * @param edgeMap Edge map to use as the increment origin.
      * @param layout Parent layout.
      */
-    #incrementScale(edgeMap, layout) {
+    #incrementScale(edgeMap, layout, halved = false) {
         let xAxis = edgeMap === this.#edgesRight || edgeMap === this.#edgesLeft;
         let scaleDir = edgeMap === this.#edgesRight || edgeMap === this.#edgesBottom ? 1 : -1
         for (const [key, value] of edgeMap.entries()) {
             let edgePos = xAxis ? new Point(value, key) : new Point(key, value);
             let edgeTile = this.#scaledTiles.get(edgePos.toString());
             let incrementAmt = xAxis ? this.#incrementAmtX : this.#incrementAmtY;
+            if (halved) incrementAmt /= 2;
             for (let i = 1; i <= incrementAmt; i++) {
                 let posChange = xAxis ? new Point(i * scaleDir, 0) : new Point(0, i * scaleDir);
                 let newPos = new Point(edgePos.getX() + posChange.getX(), edgePos.getY() + posChange.getY());
