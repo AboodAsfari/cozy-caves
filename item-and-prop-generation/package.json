@@ -1,0 +1,11 @@
+{
+  "name": "@cozy-caves/item-and-prop-generation",
+  "version": "1.0.0",
+  "description": "Populates room with items and props",
+  "main": "randomGenerator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cozy Caves Group",
+  "license": "ISC"
+}
