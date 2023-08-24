@@ -107,7 +107,9 @@ class Partition {
                     this.#incrementScale(this.#edgesTop, layout);
                     break;
                 case 0:
-                    // CENTER LOGIC HERE.
+                    if (this.#incrementAmtY % 2 != 0) throw new Error("Number needs to be even for centre scaling.");
+                    this.#incrementScale(this.#edgesBottom, layout, true);
+                    this.#incrementScale(this.#edgesTop, layout, true);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
