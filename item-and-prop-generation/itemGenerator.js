@@ -4,55 +4,45 @@ const Item = require("./classes/item");
 const schema = require("./metadata/item_schema.json");
 
 class ItemGenerator {
-    #commonItems = {};
-    #uncommonItems = {};
-    #rareItems = {};
-    #epicItems = {};
-    #legendaryItems = {};
+
+    rarityList = ["common", "uncommon", "rare", "epic", "legendary"];
     
     constructor () {
-        
-    }
-
-    getItemByRarity(rarity) {
-        this.rarity = rarity;
-
-        const rarityLists = {
-            "common": this.#commonItems,
-            "uncommon": this.#uncommonItems,
-            "rare": this.#rareItems,
-            "epic": this.#epicItems,
-            "legendary": this.#legendaryItems
-        };
-
-        if (rarity in rarityLists) {
-            this.populateList(rarity, rarityLists[rarity]);
-        } else {
-            throw new Error('Invalid rarity category.');
-        }
-        
-        // returns a random item from that list
-        return rarityLists[rarity][Math.random() * rarityLists[rarity].length];
-    }
-    
-    
-    populateList(filter, list){
-        // validating metadata against schema
         const validate = new Ajv().compile(schema);
-        const categories = metadata.item_categories;
-
         // does not match the format
         if (!validate(metadata)) {
             throw new Error("Invalid JSON data");
         }
+    }
+
+    getItemByRarity(rarity) { // can just return a list instead of having a private list
+        if (!this.rarityList.includes(rarity)) throw new Error('Invalid rarity category.');
+        
+        const categories = metadata.item_categories;
+        const temp = []; // temporary list to store items
 
         // groups all items by rarity regardless of their category
         categories.forEach((category, i) => {
-            const selection = category.filter(item => item.rarity === filter);
+            const selection = category.filter(item => item.rarity === rarity);
             selection.forEach((item, i) => {
-                list.push(new Item(item.name, item.desc, categories[category], item.rarity, item.properties));
+                temp.push(new Item(item.name, item.desc, categories[category], item.rarity, item.properties));
             });
         });
+
+        if (temp.length === 0) throw new Error('No items found for rarity: ' + rarity);
+
+        //this random index gives a fair chance to every item that is in the list
+        let randomIndex = Math.floor() * temp.length;
+        return temp[randomIndex];
+    }
+
+    getItemByCategory(category){
+        const temp = metadata[category];
+        if (temp.length === 0) throw new Error('No items found for category: ' + category);
+
+        // this random index gives a fair chance to every item that is in the list
+        let randomIndex = Math.floor() * temp.length;
+        return temp[randomIndex];
     }
 }
 

@@ -1,4 +1,4 @@
-const Point = require("../../../utils/point");
+const Point = require("../../utils/src/point");
 
 /**
  * An item representation.
@@ -10,7 +10,7 @@ class Item {
 
     #position = new Point(0, 0); // Position of the item in the room.
 
-    // Rendering variables.
+    // Rendering elements.
     #offset = new Point(0, 0);
     #rotation = 0;
 
@@ -45,6 +45,11 @@ class Item {
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#position = position; 
     }
+    setOffset(offset) { 
+        if (!(offset instanceof Point)) throw new Error("Offset must be provided as Point.");
+        this.#offset = offset; 
+    }
+    setRotation(rotation) { this.#rotation = rotation; }
 }
 
 module.exports = Item;
