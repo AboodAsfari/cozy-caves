@@ -5,10 +5,10 @@ class Partition {
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
     #lockY = false; // Whether Y can scale.
-    #scaleInMultiplesX = true; // Whether X scaling will be in multiples or increments.
-    #scaleInMultiplesY = true; // Whether Y scaling will be in multiples or increments.
-    #incrementAmtX = 1; // Amount to increment by if using X increments.
-    #incrementAmtY = 1; // Amount to increment by if using Y increments.
+    #splitScalingOnX = true; // Whether X scaling will be in increments or using split scaling.
+    #splitScalingOnY = true; // Whether Y scaling will be in increments or using split scaling.
+    #incrementAmtX = 1; // Amount to increment by.
+    #incrementAmtY = 1; // Amount to increment by.
     #xDir = 1; // Direction to scale in the X axis.
     #yDir = 1; // Direction to scale in the Y axis.
 
@@ -66,7 +66,7 @@ class Partition {
         if (this.#lockX) return;
 
         this.#scaleCountX++;
-        if (this.#scaleInMultiplesX) {
+        if (this.#splitScalingOnX) {
             // MULTIPLES LOGIC HERE.
         } else {
             switch (this.#xDir) {
@@ -77,7 +77,9 @@ class Partition {
                     this.#incrementScale(this.#edgesLeft, layout);
                     break;
                 case 0:
-                    // CENTER LOGIC HERE.
+                    if (this.#incrementAmtX % 2 != 0) throw new Error("Number needs to be even for centre scaling.");
+                    this.#incrementScale(this.#edgesLeft, layout, true);
+                    this.#incrementScale(this.#edgesRight, layout, true);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
@@ -94,7 +96,7 @@ class Partition {
         if (this.#lockY) return;
 
         this.#scaleCountY++;
-        if (this.#scaleInMultiplesY) {
+        if (this.#splitScalingOnY) {
             // MULTIPLES LOGIC HERE.
         } else {
             switch (this.#yDir) {
@@ -105,7 +107,9 @@ class Partition {
                     this.#incrementScale(this.#edgesTop, layout);
                     break;
                 case 0:
-                    // CENTER LOGIC HERE.
+                    if (this.#incrementAmtY % 2 != 0) throw new Error("Number needs to be even for centre scaling.");
+                    this.#incrementScale(this.#edgesBottom, layout, true);
+                    this.#incrementScale(this.#edgesTop, layout, true);
                     break;
                 default: 
                     throw new Error("Invalid scaling direction used");
@@ -120,13 +124,14 @@ class Partition {
      * @param edgeMap Edge map to use as the increment origin.
      * @param layout Parent layout.
      */
-    #incrementScale(edgeMap, layout) {
+    #incrementScale(edgeMap, layout, halved = false) {
         let xAxis = edgeMap === this.#edgesRight || edgeMap === this.#edgesLeft;
         let scaleDir = edgeMap === this.#edgesRight || edgeMap === this.#edgesBottom ? 1 : -1
         for (const [key, value] of edgeMap.entries()) {
             let edgePos = xAxis ? new Point(value, key) : new Point(key, value);
             let edgeTile = this.#scaledTiles.get(edgePos.toString());
             let incrementAmt = xAxis ? this.#incrementAmtX : this.#incrementAmtY;
+            if (halved) incrementAmt /= 2;
             for (let i = 1; i <= incrementAmt; i++) {
                 let posChange = xAxis ? new Point(i * scaleDir, 0) : new Point(0, i * scaleDir);
                 let newPos = new Point(edgePos.getX() + posChange.getX(), edgePos.getY() + posChange.getY());
@@ -190,8 +195,8 @@ class Partition {
     setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
     setLockX(lockX) { this.#lockX = !!lockX; }
     setLockY(lockY) { this.#lockY = !!lockY; }
-    setScaleInMultiplesX(scaleInMultiplesX) { this.#scaleInMultiplesX = !!scaleInMultiplesX; }
-    setScaleInMultiplesY(scaleInMultiplesY) { this.#scaleInMultiplesY = !!scaleInMultiplesY; }
+    setSplitScalingOnX(splitScalingOnX) { this.#splitScalingOnX = !!splitScalingOnX; }
+    setSplitScalingOnY(splitScalingOnY) { this.#splitScalingOnY = !!splitScalingOnY; }
     setIncrementAmtX(incrementAmtX) { 
         if (!Number.isInteger(incrementAmtX) || incrementAmtX <= 0) throw new Error('Invalid increment amount provided.');
         this.#incrementAmtX = incrementAmtX; 
@@ -213,8 +218,8 @@ class Partition {
     ratioLocked() { return this.#lockRatio; }
     xLocked() { return this.#lockX; }
     yLocked() { return this.#lockY; }
-    scalesInMultiplesX() { return this.#scaleInMultiplesX; }
-    scalesInMultiplesY() { return this.#scaleInMultiplesY; }
+    isSplitScalingOnX() { return this.#splitScalingOnX; }
+    isSplitScalingOnY() { return this.#splitScalingOnY; }
     getIncrementAmtX() { return this.#incrementAmtX; }
     getIncrementAmtY() { return this.#incrementAmtY; }
     getXDir() { return this.#xDir; }
