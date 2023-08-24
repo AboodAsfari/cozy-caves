@@ -1,4 +1,4 @@
-//Height/Width, minGap, maxDepth, and seed will either be read from user input or from preset values
+//Height/Width, minGap, maxDepth, seed, and totalCoverage will either be read from user input or from preset values
 const height = 175; 
 const width = 175; 
 const minGap = 5; 
@@ -16,8 +16,6 @@ const roomBuilder = new RoomBuilder(rng());
 let splitHorizontal = rng() > 0.5;
 let rooms = []
 
-
-
 //Keeping range for random partition placement more consistent for better spacing
 function generateSplitPosition(min, max, minDistance) {
     const range = max - min - 2 * minDistance + 1;
@@ -27,7 +25,8 @@ function generateSplitPosition(min, max, minDistance) {
 }
 
 function bsp(mapGrid, x, y, w, h, recursions) {
-    //Makes algorithm more likely to alternate between vertical and horizontal partition - More consistent even spread of open spaces
+    //Makes algorithm more likely to alternate between vertical and horizontal partition
+    //Done for more consistent even spread of open spaces
     splitHorizontal = splitHorizontal ? splitHorizontal = rng() > 0.8 : splitHorizontal = rng() > 0.2;
     
     //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
@@ -38,7 +37,6 @@ function bsp(mapGrid, x, y, w, h, recursions) {
             splitHorizontal = true;
         }
         else {
-            
             //Temporary room object just to store parameters to provide to Room Gen Module
             let roomObj = {
                 x: x,
@@ -46,7 +44,6 @@ function bsp(mapGrid, x, y, w, h, recursions) {
                 width: w,
                 height: h
             };
-
             rooms.push(roomObj);
             return;
         }
@@ -71,20 +68,33 @@ function generateMap(){
     let floorCoverage = 0.0;
     let keptRooms = [];
     for(let rm=Math.floor(rng()*rooms.length); floorCoverage < totalCoverage; rm=Math.floor(rng()*rooms.length)){
-        // console.log("rm = " + rm + " | size = " + rooms.length + " | floor cov = " + floorCoverage);
         let roomArea = rooms[rm].width * rooms[rm].height;
         floorCoverage += (roomArea / (width*height)) * 100;
         keptRooms.push(rooms[rm]);
         rooms.splice(rm, 1);
     }
 
+    //Using room builder to generate random rooms
     let allRooms = [];
     for(let rm = 0; rm < keptRooms.length; rm++){
-        let w = keptRooms[rm].width;
-        let h = keptRooms[rm].height;
-        keptRooms[rm].width = (w/3 < minGap) ? Math.floor(rng() * (w - minGap + 1)) + minGap : Math.floor(rng() * (w - (w/3)) + 1);
-        keptRooms[rm].height = (h/3 < minGap) ? Math.floor(rng() * (h - minGap + 1)) + minGap : Math.floor(rng() * (h - (h/3)) + 1);
+        let spaceW = keptRooms[rm].width;
+        let spaceH = keptRooms[rm].height;
+        
+        //Chooses random width and height for room from maximum space to 2 thirds of maximum space
+        //If 2 thirds of max space goes below minGap value then lower limit becomes minGap 
+        keptRooms[rm].width = ((2*spaceW/3) < minGap) ? Math.floor(rng() * (spaceW - minGap + 1)) + minGap : Math.floor(rng() * (spaceW - (2*spaceW/3)) + 1);
+        keptRooms[rm].height = ((2*spaceH/3) < minGap) ? Math.floor(rng() * (spaceH - minGap + 1)) + minGap : Math.floor(rng() * (spaceH - (2*spaceH/3)) + 1);
         const room = roomBuilder.setSize(new Point(keptRooms[rm].width, keptRooms[rm].height)).setLeniency(new Point(1, 1)).setAllowOvergrow(false).build();
+        
+        //Chooses random X and Y position of the room 
+        //Absolute position + relative position within allocated space
+        //Upper limit for each direction is max dimension minus room dimension
+        //Lower limit is 0 to allow for not shifting the room
+        let xPos = keptRooms[rm].x + Math.floor(rng() * (spaceW - keptRooms[rm].width + 1));
+        let yPos = keptRooms[rm].y + Math.floor(rng() * (spaceH - keptRooms[rm].height + 1));
+
+        room.setPosition(new Point(xPos, yPos));
+
         allRooms.push(room);
     }
     return allRooms;
