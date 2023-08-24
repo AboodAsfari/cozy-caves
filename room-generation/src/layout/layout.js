@@ -315,20 +315,20 @@ exampleLayout.newPartition();
 exampleLayout.newPartition();
 exampleLayout.getPartition(0).setLockY(true);
 exampleLayout.getPartition(0).setXDir(1);
-exampleLayout.getPartition(0).setScaleInMultiplesX(false);
+exampleLayout.getPartition(0).setSplitScalingOnX(false);
 exampleLayout.getPartition(0).setIncrementAmtX(1);
 
 exampleLayout.getPartition(1).setXDir(1);
 exampleLayout.getPartition(1).setYDir(1);
-exampleLayout.getPartition(1).setScaleInMultiplesX(false);
-exampleLayout.getPartition(1).setScaleInMultiplesY(false);
+exampleLayout.getPartition(1).setSplitScalingOnX(false);
+exampleLayout.getPartition(1).setSplitScalingOnY(false);
 exampleLayout.getPartition(1).setLockRatio(false);
 exampleLayout.getPartition(1).setIncrementAmtX(1);
 
 exampleLayout.getPartition(2).setXDir(1);
 exampleLayout.getPartition(2).setYDir(1);
-exampleLayout.getPartition(2).setScaleInMultiplesX(false);
-exampleLayout.getPartition(2).setScaleInMultiplesY(false);
+exampleLayout.getPartition(2).setSplitScalingOnX(false);
+exampleLayout.getPartition(2).setSplitScalingOnY(false);
 exampleLayout.getPartition(2).setLockRatio(false);
 exampleLayout.getPartition(2).setIncrementAmtX(1);
 
