@@ -5,3 +5,12 @@
 body {
     background-color: #363535;
 }
+
+.ToolIcon {
+    font-size: 30;
+}
+
+.ToolIcon:hover {
+    cursor: pointer;
+    color: #7da36d !important;
+}
