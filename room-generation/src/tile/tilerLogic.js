@@ -30,10 +30,36 @@ class TilerLogic {
     }
 }
 
+const getNeighboringWall = (pos, room, posChange) => {
+    let neighbor = room.getTile(pos.add(posChange));
+    if (neighbor && neighbor.getTileType() === "wall") return neighbor;
+    return null; 
+};
+
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
     () => TileID.FLOOR,
-    (tile, room) => tile.getTileType()
+    (tile, room) => {
+        let pos = tile.getPosition();
+        let leftNeighbor =  getNeighboringWall(pos, room, new Point(-1, 0));
+        let rightNeighbor = getNeighboringWall(pos, room, new Point(1, 0));
+        let topNeighbor = getNeighboringWall(pos, room, new Point(0, -1));
+        let bottomNeighbor = getNeighboringWall(pos, room, new Point(0, 1));
+
+        if (rightNeighbor && bottomNeighbor) {
+            tile.setScale(new Point(1, 1));
+            return TileID.CORNER_WALL;
+        } else if (leftNeighbor && bottomNeighbor) {
+            tile.setScale(new Point(-1, 1));
+            return TileID.CORNER_WALL;
+        } else if (leftNeighbor && topNeighbor) {
+            tile.setScale(new Point(-1, -1));
+            return TileID.CORNER_WALL;
+        } else if (rightNeighbor && topNeighbor) {
+            tile.setScale(new Point(1, -1));
+            return TileID.CORNER_WALL;
+        } else return TileID.EDGE_WALL;
+    }
 );
 
 const tilerChooser = {
