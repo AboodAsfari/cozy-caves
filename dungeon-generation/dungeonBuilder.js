@@ -25,13 +25,14 @@ class DungeonBuilder {
     };
 
     /**
-     * Creates an instance of DungeonBuilder. Will
-     * use a random seed if not provided
+     * Creates an instance of the dungeon builder. Will
+     * Use a random seed if one is not provided.
      * 
      * @constructor
+     * @param seed Optional seed for dungeon generation
      */
-    constructor() {
-        this.#dungeonSeed = Math.random();
+    constructor(seed = null) {
+        this.#dungeonSeed = seed ? seed : Math.random();
         this.#rng = seedrandom(this.#dungeonSeed);
         this.#roomBuilder = new RoomBuilder(this.#rng());
         this.#splitHorizontal = this.#rng() > 0.5;
