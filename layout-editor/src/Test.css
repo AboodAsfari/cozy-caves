@@ -1,0 +1,9 @@
+.grid {
+    width: 100px;
+    height: 100px; 
+    /* -webkit-box-shadow:inset 0px 0px 0px 0px #000;
+    -moz-box-shadow:inset 0px 0px 0px 0px #000;
+    box-shadow:inset 0px 0px 0px 4px #000; */
+    border: 4px solid black;
+    background-color: lightgray;
+}
