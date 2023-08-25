@@ -1,10 +1,9 @@
 import  React from 'react';
-import { Point } from "@cozy-caves/utils";
 import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
-import { RoomBuilder } from "@cozy-caves/room-generation";
-import  Viewport from "./Viewport";
+import  Viewport from './Viewport';
 
+const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
@@ -37,18 +36,23 @@ const RendererCanvas = (props) => {
     return size;
   };
 
-  const dimensions = new Point(10, 10);
 
-  const [ room, setRoom ] = useState(new RoomBuilder().setSize(dimensions).setLeniency(new Point(0, 0)).build());
+  const [ dungeon, setDungeon ] = useState(new DungeonBuilder().setPreset("Small").build());
   const size = 193
   const offsetX = 0
   const offsetY = 0
   const scaleX = 0.5
   const scaleY = 0.5
 
-  const drawTile = (tile) => {
+  const drawTile = (tile, roomPos) => {
     const img = tile.getTileType() === "floor" ? "Floor" : "Wall"
-    return <Sprite image={"resources/"+img+".jpg"} scale={{x:scaleX, y:scaleY}} x={((tile.getPosition().getX() * size)*scaleX) + offsetX} y={(tile.getPosition().getY() * size)*scaleY + offsetY} />
+    let xPos = (tile.getPosition().getX() + roomPos.getX()) * size * scaleX 
+    let yPos = (tile.getPosition().getY() + roomPos.getY()) * size * scaleY
+    return <Sprite image={"resources/"+img+".jpg"} scale={{x:scaleX, y:scaleY}} x={xPos} y={yPos} />
+  }
+
+  const drawDungeon = () => {
+    return dungeon.map((room) => room.getTiles().map((tile) => drawTile(tile, room.getPosition())))
   }
 
   // get the current window size
@@ -63,7 +67,7 @@ const RendererCanvas = (props) => {
           worldWidth={width * 4}
           worldHeight={height * 4}
         >
-          { room.getTiles().map((tile) => drawTile(tile)) }
+         { drawDungeon() }
         </Viewport>
       </Stage>
     </>
