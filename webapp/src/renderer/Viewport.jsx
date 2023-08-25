@@ -14,6 +14,7 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         events: props.app.renderer.events,
         interaction: props.app.renderer.plugins.interaction,
         disableOnContextMenu: true,
+        sortableChildren: true,
         ...viewportProps
         });
         viewport.drag().pinch().wheel()

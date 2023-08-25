@@ -1,6 +1,7 @@
 import  React from 'react';
 import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
+import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
@@ -8,12 +9,15 @@ const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
 
+  // const tileIDImageMap = TileID.map((id) => { return { id: id, img: `resources/${id}.png` }})
+  const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/${k}.png` }]));
+  console.log(tileIDImageMap)
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
 
   const stageOptions = {
     antialias: true,
     autoDensity: true,
-    backgroundColor: '0xefefef',
+    backgroundColor: 0xefefef,
   };
 
   const useResize = () => {
@@ -25,7 +29,7 @@ const RendererCanvas = (props) => {
           setSize([window.innerWidth, window.innerHeight])        
         })
       };
-      
+
       window.addEventListener('resize', onResize);
       
       return () => {
@@ -38,17 +42,22 @@ const RendererCanvas = (props) => {
 
 
   const [ dungeon, setDungeon ] = useState(new DungeonBuilder().setPreset("Small").build());
-  const size = 193
-  const offsetX = 0
-  const offsetY = 0
+  const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
 
   const drawTile = (tile, roomPos) => {
-    const img = tile.getTileType() === "floor" ? "Floor" : "Wall"
-    let xPos = (tile.getPosition().getX() + roomPos.getX()) * size * scaleX 
-    let yPos = (tile.getPosition().getY() + roomPos.getY()) * size * scaleY
-    return <Sprite image={"resources/"+img+".jpg"} scale={{x:scaleX, y:scaleY}} x={xPos} y={yPos} />
+
+    let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
+    let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
+    return <Sprite 
+              image={tileIDImageMap.get(tile.getTileID()).img}
+              anchor={0.5}
+              scale={{x:scaleX*tile.getScale().getX(), y:scaleY*tile.getScale().getY()}} 
+              position={{x:xPos, y:yPos}}
+              angle={tile.getRotation()}
+              zIndex={tile.getDepth()}
+            />
   }
 
   const drawDungeon = () => {
