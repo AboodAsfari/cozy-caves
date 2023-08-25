@@ -1,13 +1,42 @@
-import { React, useState } from 'react';
+import  React from 'react';
 import { Point } from "@cozy-caves/utils";
 import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
+import { RoomBuilder } from "@cozy-caves/room-generation";
+import  Viewport from "./Viewport";
 
-const RoomBuilder = require("@cozy-caves/room-generation");
+const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
+
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
-  
+
+  const stageOptions = {
+    antialias: true,
+    autoDensity: true,
+    backgroundColor: '0xefefef',
+  };
+
+  const useResize = () => {
+    const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
+    
+    useEffect(() => {
+      const onResize = () => {
+        requestAnimationFrame(() => {
+          setSize([window.innerWidth, window.innerHeight])        
+        })
+      };
+      
+      window.addEventListener('resize', onResize);
+      
+      return () => {
+        window.removeEventListener('resize', onResize);
+      }
+    }, []);
+    
+    return size;
+  };
+
   const dimensions = new Point(10, 10);
 
   const [ room, setRoom ] = useState(new RoomBuilder().setSize(dimensions).setLeniency(new Point(0, 0)).build());
@@ -22,11 +51,23 @@ const RendererCanvas = (props) => {
     return <Sprite image={"resources/"+img+".jpg"} scale={{x:scaleX, y:scaleY}} x={((tile.getPosition().getX() * size)*scaleX) + offsetX} y={(tile.getPosition().getY() * size)*scaleY + offsetY} />
   }
 
+  // get the current window size
+  const [width, height] = useResize();
+
   return (
-      <Stage width={window.innerWidth} height={window.innerHeight} options={{backgroundColor:'#433a3b'}} >
-        { room.getTiles().map((tile) => drawTile(tile)) }
+    <>
+      <Stage width={width} height={height} options={stageOptions}>
+        <Viewport
+          screenWidth={width}
+          screenHeight={height}
+          worldWidth={width * 4}
+          worldHeight={height * 4}
+        >
+          { room.getTiles().map((tile) => drawTile(tile)) }
+        </Viewport>
       </Stage>
-    );
+    </>
+  );
 };
 
 export default RendererCanvas;
