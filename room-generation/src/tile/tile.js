@@ -10,6 +10,7 @@ class Tile {
     #tileID; // ID of tile to display.
     #position; // Position of the tile in the room.
     #offset = new Point(0, 0); // Rendering offset.
+    #scale = new Point(1, 1); // Image scale.
     #rotation = 0; // Rendering rotation.
     #depth = 0; // Rendering depth.
 
@@ -28,14 +29,20 @@ class Tile {
 
     // Setters.
     setTileID(tileID) { this.#tileID = tileID; }
+    setOffset(offset) { this.#offset = offset; }
+    setScale(scale) { this.#scale = scale; }
+    setRotation(rotation) { this.#rotation = rotation; }
+    setDepth(depth) { this.#depth = depth; }
 
     // Getters.
     getTileType() { return this.#tileType; }
     getTileID() { return this.#tileID; }
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
+    getScale() { return this.#scale; }
     getRotation() { return this.#rotation; }
     getDepth() { return this.#depth; }
+    
 
     /**
      * Creates a clone of the tile, optionally
