@@ -1,6 +1,6 @@
 {
   "name": "@cozy-caves/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Utilities used by other Cozy Caves modules",
   "main": "index.js",
   "scripts": {
