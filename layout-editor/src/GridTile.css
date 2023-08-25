@@ -1,0 +1,25 @@
+.GridTileOutline {
+    width: 5%;
+    aspect-ratio : 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #7da36d;
+}
+.GridTile {
+    width: 90%;
+    aspect-ratio : 1 / 1;
+    background-color: #171717;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+
+.GridTile:hover {
+    background-color: #606e5e;
+}
+
+.GridTile.FilledTile {
+    background-color: #6b5d61;
+    user-select: none;
+}
