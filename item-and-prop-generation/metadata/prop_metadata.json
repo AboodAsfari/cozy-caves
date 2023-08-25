@@ -1,0 +1,106 @@
+{
+    "prop_categories": {
+        "Decorations": [
+            {
+                "name": "Tables and Chairs",
+                "desc": "Found in taverns, inns, or dining areas, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
+                "rarity": "common"
+            },
+            {
+                "name": "Bookshelves",
+                "desc": "These can be placed in libraries, wizard towers, or study rooms. They may hold valuable books with lore, spells, or hints for quests.",
+                "rarity": "common"
+            },
+            {
+                "name": "Barrels and Crates",
+                "desc": "Commonly found in storage areas, warehouses, or dungeons, these containers may contain supplies, loot, or even hidden passages.",
+                "rarity": "common"
+            }
+        ],
+        "Environmental Details": [
+            {
+                "name": "Cobwebs and Dust",
+                "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
+                "rarity": "common"
+            },
+            {
+                "name": "Runes and Glyphs",
+                "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
+                "rarity": "common"
+            },
+            {
+                "name": "Banners and Tapestries",
+                "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
+                "rarity": "common"
+            }
+        ],
+        "Atmospheric Elements": [
+            {
+                "name": "Fireplace and Hearth",
+                "desc": "Warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
+                "rarity": "common"
+            },
+            {
+                "name": "Steam Vents",
+                "desc": "Vents that release hot steam and can be used strategically in combat or puzzle-solving.",
+                "rarity": "common"
+            },
+            {
+                "name": "Frozen Statues",
+                "desc": "Statues covered in ice, which players can melt to reveal hidden passages or items.",
+                "rarity": "common"
+            }
+        ],
+        "Treasure Hoards": [
+            {
+                "name": "Jeweled Chests",
+                "desc": "Elaborate chests filled with valuable treasures, guarded by monsters or traps.",
+                "rarity": "uncommon"
+            },
+            {
+                "name": "Golden Altars",
+                "desc": "Altars adorned with gold and gems that require offerings or rituals to gain rewards.",
+                "rarity": "uncommon"
+            },
+            {
+                "name": "Precious Gems",
+                "desc": "Scattered gems throughout the map, valuable as trade items or components for magical rituals.",
+                "rarity": "uncommon"
+            }
+        ],
+        "Cursed Objects": [
+            {
+                "name": "Haunted Mirrors",
+                "desc": "Mirrors that reveal unsettling reflections or transport players to parallel dimensions.",
+                "rarity": "uncommon"
+            },
+            {
+                "name": "Cursed Jewelry",
+                "desc": "Accessories that bestow powers but come with dangerous side effects, like a necklace that grants invisibility but drains life force.",
+                "rarity": "rare"
+            },
+            {
+                "name": "Possessed Objects",
+                "desc": "Everyday items like swords, paintings, or candles that may be temporarily inhabited by malevolent spirits.",
+                "rarity": "uncommon"
+            }
+        ],
+        "Mystical Relics": [
+            {
+                "name": "Artifact Pedestals",
+                "desc": "Pedestals that display ancient artifacts, each with unique powers. Players can interact with these relics or use them to uncover their hidden abilities.",
+                "rarity": "rare"
+            },
+            {
+                "name": "Mystic Obelisks",
+                "desc": "Tall, mysterious obelisks that may grant blessings or curses to those who interact with them.",
+                "rarity": "rare"
+            },
+            {
+                "name": "Time-worn Tomes",
+                "desc": "Old books scattered throughout the map, containing forgotten knowledge, spells, or quests for players to discover.",
+                "rarity": "uncommon"
+            }
+        ]  
+    }
+}

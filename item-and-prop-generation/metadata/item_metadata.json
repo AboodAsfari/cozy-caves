@@ -1,0 +1,272 @@
+{
+    "item_categories": {
+        "Potions and Elixirs": [
+            {
+                "name": "Healing Potion",
+                "desc": "A vial of rejuvenating liquid that swiftly restores a portion of the drinker's vitality, providing a precious lifeline in dire situations.",
+                "rarity": "common",
+                "properties": "Restores a moderate amount of health instantly."
+            },
+            {
+                "name": "Potion of Invisibility",
+                "desc": "A phial containing a shimmering potion that bestows temporary invisibility, enabling stealthy maneuvers and evasion.",
+                "rarity": "uncommon",
+                "properties": "Grants temporary invisibility, allowing the user to move undetected."
+            },
+            {
+                "name": "Potion of Fire Resistance",
+                "desc": "A potion that grants temporary protection against the searing heat of flames, bolstering the drinker's resilience to fire-based attacks.",
+                "rarity": "uncommon",
+                "properties": "Provides temporary resistance to fire damage and immunity to fire-based conditions."
+            },
+            {
+                "name": "Potion of Strength",
+                "desc": "A concoction that temporarily enhances the imbiber's physical might, empowering them with increased brawn and fortitude.",
+                "rarity": "rare",
+                "properties": "Temporarily increases the user's physical strength and carrying capacity."
+            }
+        ],
+        "Scrolls": [
+            {
+                "name": "Scroll of Identify",
+                "desc": "An inscribed parchment that imparts the ability to discern the arcane nature of items, unraveling their hidden potential.",
+                "rarity": "common",
+                "properties": "Allows the reader to identify magical properties of items."
+            },
+            {
+                "name": "Scroll of Mage Armor",
+                "desc": "A scroll containing an incantation that conjures a protective ethereal barrier around the reader, enhancing their defense.",
+                "rarity": "uncommon",
+                "properties": "Conjures a shimmering barrier that enhances the reader's defense against attacks."
+            },
+            {
+                "name": "Scroll of Dimension Door",
+                "desc": "An ancient script detailing a mystical transportation spell, enabling the reader to traverse short distances instantaneously.",
+                "rarity": "rare",
+                "properties": "Allows the reader to instantly teleport to a nearby location."
+            }
+        ],
+        "Weapons and Armor": [
+            {
+                "name": "Longsword",
+                "desc": "A versatile and well-balanced one-handed weapon, favored by adventurers for its adaptability in close combat.",
+                "rarity": "common",
+                "properties": "A well-balanced one-handed sword suitable for various combat situations."
+            },
+            {
+                "name": "Shortbow",
+                "desc": "A ranged weapon capable of launching projectiles with precision, providing a means to engage foes from a distance.",
+                "rarity": "uncommon",
+                "properties": "Allows the user to shoot arrows with accuracy and range."
+            },
+            {
+                "name": "Leather Armor",
+                "desc": "Supple and lightweight armor that offers moderate protection without hindering agility.",
+                "rarity": "common",
+                "properties": "Lightweight and flexible armor that provides moderate protection."
+            },
+            {
+                "name": "Chain Mail",
+                "desc": "A sturdy suit of interlocking metal rings, providing solid defense while maintaining mobility.",
+                "rarity": "uncommon",
+                "properties": "Durable armor made of interlocking metal rings that offers good defense and mobility."
+            }
+        ],
+        "Magical Items": [
+            {
+                "name": "Ring of Protection",
+                "desc": "A magical ring that envelops the wearer in a subtle shield, augmenting their armor class and fortifying their defenses.",
+                "rarity": "uncommon",
+                "properties": "Creates an invisible shield around the wearer, enhancing their armor class and resistance to attacks."
+            },
+            {
+                "name": "Amulet of Health",
+                "desc": "An enchanted amulet that bestows improved vitality upon the wearer, bolstering their constitution and hit points.",
+                "rarity": "rare",
+                "properties": "Enhances the wearer's health, granting additional hit points and vitality."
+            },
+            {
+                "name": "Cloak of Elvenkind",
+                "desc": "A finely crafted cloak that grants the wearer an uncanny ability to blend into shadows and move with remarkable stealth.",
+                "rarity": "uncommon",
+                "properties": "Allows the wearer to blend into shadows and move silently, enhancing their stealth capabilities."
+            }
+        ],
+        "Traps and Tools": [
+            {
+                "name": "Thieves' Tools",
+                "desc": "A meticulously crafted set of tools essential for adeptly picking locks, disarming traps, and executing stealthy maneuvers.",
+                "rarity": "common",
+                "properties": "Includes a set of tools used for lock-picking, trap-disarming, and other covert activities."
+            },
+            {
+                "name": "Bear Trap",
+                "desc": "A menacing contraption designed to ensnare unsuspecting creatures, immobilizing them with its powerful jaws.",
+                "rarity": "uncommon",
+                "properties": "A spring-loaded trap that clamps down on creatures, immobilizing them until released."
+            },
+            {
+                "name": "Tripwire Alarm",
+                "desc": "A cunningly deployed mechanism triggered by movement, emitting an alerting signal to thwart potential intruders.",
+                "rarity": "uncommon",
+                "properties": "Emits an audible alarm when triggered by movement, alerting nearby individuals."
+            }
+        ],
+        "Treasure and Valuables": [
+            {
+                "name": "Gold Coins",
+                "desc": "Gleaming currency recognized throughout realms, serving as a universal medium for trade and acquisition.",
+                "rarity": "common",
+                "properties": "Standard currency used for trade and acquisition of goods and services."
+            },
+            {
+                "name": "Gemstones",
+                "desc": "Precious and alluring gems that hold substantial monetary value, as well as potential applications in magical rituals.",
+                "rarity": "uncommon",
+                "properties": "Valuable gemstones that can be traded or used in magical rituals."
+            },
+            {
+                "name": "Art Objects",
+                "desc": "Elegantly crafted paintings, sculptures, and artistic creations that showcase opulence and artistic prowess, often sought after by collectors.",
+                "rarity": "rare",
+                "properties": "Exquisite art pieces that demonstrate craftsmanship and luxury, sought after by collectors."
+            }
+        ],
+        "Key Items": [
+            {
+                "name": "Ornate Key",
+                "desc": "A finely detailed key designed for a specific lock, granting access to secured areas or revealing hidden chambers.",
+                "rarity": "uncommon",
+                "properties": "Unlocks specific locks or reveals concealed passages and compartments."
+            },
+            {
+                "name": "Rune Stone",
+                "desc": "An intricately engraved stone that acts as a catalyst for activating enigmatic portals, bridging distant locations.",
+                "rarity": "rare",
+                "properties": "Activates mysterious portals, allowing instantaneous travel across distances."
+            },
+            {
+                "name": "Puzzle Box",
+                "desc": "An enigmatic container concealing intricate mechanisms, secrets, or vital clues, requiring intellectual finesse to unlock its mysteries.",
+                "rarity": "uncommon",
+                "properties": "Holds complex mechanisms or crucial clues, challenging the mind to unlock its secrets."
+            }
+        ],
+        "Dungeoneering Supplies": [
+            {
+                "name": "Rope and Grappling Hook",
+                "desc": "Essential tools for navigating treacherous terrain, facilitating climbing, descents, and strategic movement.",
+                "rarity": "common",
+                "properties": "Aids in climbing, rappelling, and traversing difficult terrain during explorations."
+            },
+            {
+                "name": "Lantern",
+                "desc": "A reliable source of illumination that pierces through the darkness, banishing obscurity and revealing hidden passages.",
+                "rarity": "uncommon",
+                "properties": "Provides steady illumination, dispelling darkness and revealing hidden details."
+            },
+            {
+                "name": "Rations",
+                "desc": "Nourishing sustenance vital for sustaining adventurers during perilous journeys and arduous quests.",
+                "rarity": "common",
+                "properties": "Provides nourishment to adventurers, sustaining them during their travels and quests."
+            }
+        ],
+        "Cursed Items": [
+            {
+                "name": "Cursed Dagger",
+                "desc": "A malevolent blade imbued with a sinister curse, inflicting detrimental effects upon its wielder.",
+                "rarity": "rare",
+                "properties": "Carries a malevolent curse that harms the wielder with each strike."
+            },
+            {
+                "name": "Haunted Amulet",
+                "desc": "An innocuous-looking amulet that unwittingly attracts malevolent spirits, potentially subjecting the bearer to eerie encounters.",
+                "rarity": "uncommon",
+                "properties": "Attracts and binds malevolent spirits, leading to eerie and unsettling experiences for the bearer."
+            },
+            {
+                "name": "Mysterious Scroll",
+                "desc": "A cryptic scroll holding unpredictable magical energies, bestowing unexpected outcomes when invoked.",
+                "rarity": "rare",
+                "properties": "Contains chaotic magical energies that produce unpredictable effects when activated."
+            }
+        ],
+        "Quest-related Items": [
+            {
+                "name": "Strange Relic",
+                "desc": "An enigmatic artifact intertwined with an ongoing quest, harboring clues, significance, or a connection to an overarching narrative.",
+                "rarity": "uncommon",
+                "properties": "Connected to a larger quest, holding clues or significance in the unfolding story."
+            },
+            {
+                "name": "Holy Symbol",
+                "desc": "A revered emblem crucial for conducting sacred rituals and engaging in divine interactions, pivotal for devout characters.",
+                "rarity": "common",
+                "properties": "Used as a focus in sacred rituals and to communicate with deities, important to devout characters."
+            },
+            {
+                "name": "Missing Heirloom",
+                "desc": "A sought-after item essential to fulfilling the task of a noble patron or unraveling a complex storyline, bearing relevance to the adventure's trajectory.",
+                "rarity": "rare",
+                "properties": "Central to a task or storyline, sought after by patrons or crucial for uncovering secrets in the narrative."
+            }
+        ],
+        "Epic and Legendary Items": [
+            {
+                "name": "Blade of the Archmage",
+                "desc": "A powerful sword that can channel the arcane energy of its wielder, allowing them to cast potent spells and deal extra magical damage with each strike.",
+                "rarity": "epic",
+                "properties": "Channels wielder's arcane energy, casts spells, and deals extra magical damage."
+            },
+            {
+                "name": "Dragonheart Shield",
+                "desc": "A shield crafted from the scale of an ancient dragon, providing resistance to dragon breath attacks and granting the wielder the ability to breathe a cone of elemental energy.",
+                "rarity": "epic",
+                "properties": "Resists dragon breath attacks, grants elemental breath ability."
+            },
+            {
+                "name": "Sword of Kas",
+                "desc": "A sentient and malevolent sword once wielded by the lich Vecna's lieutenant, Kas. The blade is capable of slaying gods and granting its wielder immense power.",
+                "rarity": "legendary",
+                "properties": "Grants the wielder the ability to deal tremendous damage and cast powerful spells. It can sever limbs and absorb souls."
+            },
+            {
+                "name": "Deck of Many Things",
+                "desc": "A deck of cards, each representing a different magical effect. When drawn, the cards can bring about both incredible boons and catastrophic consequences.",
+                "rarity": "legendary",
+                "properties": "Drawing cards from the deck can result in gaining immense wealth, experiencing sudden shifts in alignment, summoning powerful entities, or losing everything."
+            },
+            {
+                "name": "The Hand and Eye of Vecna",
+                "desc": "These are the severed and preserved hand and eye of the powerful lich Vecna. When attached to a character, they grant incredible abilities, but at the cost of corrupting the user.",
+                "rarity": "legendary",
+                "properties": "The Hand grants immense strength and allows the casting of spells, while the Eye provides clairvoyant abilities and access to powerful magic."
+            },
+            {
+                "name": "Talisman of Pure Good and Talisman of Ultimate Evil",
+                "desc": "These are two opposite artifacts, each capable of vanquishing creatures of extreme alignment. The Talisman of Pure Good can obliterate evil beings, and the Talisman of Ultimate Evil can do the same to good beings.",
+                "rarity": "legendary",
+                "properties": "These talismans can be used to unleash a devastating energy blast that eradicates creatures of opposing alignment."
+            },
+            {
+                "name": "Staff of the Magi",
+                "desc": "A powerful staff that enhances the spellcasting abilities of its wielder. It also offers protection against magic and the ability to absorb spells.",
+                "rarity": "legendary",
+                "properties": "Enhances spellcasting abilities, provides spell absorption, and grants various magical protections."
+            },
+            {
+                "name": "Vorpal Sword",
+                "desc": "A blade of legendary power that can instantly sever the head of a creature on a critical hit, killing even the mightiest foes in a single blow.",
+                "rarity": "legendary",
+                "properties": "On a critical hit, this sword can instantly slay the target if it fails a saving throw."
+            },
+            {
+                "name": "Ring of Three Wishes",
+                "desc": "A ring that grants its wearer the ability to make three wishes. These wishes can have a wide range of effects, from restoring health to altering reality.",
+                "rarity": "legendary",
+                "properties": "Allows the user to make three wishes, but the nature of the wishes can have unintended consequences."
+            }
+        ]    
+    }
+}
