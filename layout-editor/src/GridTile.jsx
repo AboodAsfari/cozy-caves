@@ -39,9 +39,9 @@ const GridTile = (props) => {
   }
 
   return (
-    <Box className="GridTileOutline" onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} 
-      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton })  } }>
-      <Box className={"GridTile" + (filled ? " FilledTile" : "")}>
+    <Box className="GridTileOutline" onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
+      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton }) }}>
+      <Box className={"GridTile" + (filled ? " FilledTile" : "")} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> {!filled ? "" : layout.getTile(pos).getTileType() === "floor" ? "F" : "W"} </Typography> 
         {/* Todo: Make typography unselectable and mouse ignores it. */}
       </Box>
