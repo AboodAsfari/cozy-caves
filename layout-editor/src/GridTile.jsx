@@ -24,24 +24,25 @@ const GridTile = (props) => {
   } = props;
 
   const [filled, setFilled] = useState(false);
+  const [updater, setUpdater] = useState(false);
 
   const handleMouseDown = (e) => {
-    console.log(e)
     setDragButton(e.button);
 
     if (currTool === Tools.PEN) {
-      if (layout.getTile(pos) || e.button === 1) return;
-      let newTile = e.button === 0 ? new Tile("floor", pos) : new Tile("wall", pos); 
+      if (e.button !== 0) return;
+      let newTile = !e.altKey ? new Tile("floor", pos) : new Tile("wall", pos); 
       layout.addTile(newTile, -1);
       setFilled(true);
+      setUpdater(!updater);
     } 
   }
 
   return (
     <Box className="GridTileOutline" onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} 
-      onMouseUp={() => setDragButton(-1)} onMouseOver={() => { if (dragButton !== -1) handleMouseDown({ button: dragButton })  } }>
+      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton })  } }>
       <Box className={"GridTile" + (filled ? " FilledTile" : "")}>
-        <Typography sx={{ fontSize: 40, textAlign: "center" }}> {!filled ? "" : layout.getTile(pos).getTileType() === "floor" ? "F" : "W"} </Typography> 
+        <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> {!filled ? "" : layout.getTile(pos).getTileType() === "floor" ? "F" : "W"} </Typography> 
         {/* Todo: Make typography unselectable and mouse ignores it. */}
       </Box>
     </Box>
