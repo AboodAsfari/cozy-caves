@@ -11,7 +11,7 @@ const RendererCanvas = (props) => {
 
   // const tileIDImageMap = TileID.map((id) => { return { id: id, img: `resources/${id}.png` }})
   const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/${k}.png` }]));
-  console.log(tileIDImageMap)
+
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
 
   const stageOptions = {
