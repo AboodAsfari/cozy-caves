@@ -20,22 +20,25 @@ class PropGenerator {
             throw new Error("Invalid type. Expecting a Prop object.");
         }
 
-        const itemGenerator = new ItemGenerator();
-        const rarity = this.getRandomRarity(itemGenerator.rarityList);
-        prop.addItem(itemGenerator.getItemByRarity(rarity));
+        const rarity = this.getRandomRarity();
+        prop.addItem(ItemGenerator.getItemByRarity(rarity));
     }
 
-    getRandomRarity(rarityList) {
+    getRandomRarity() {
         const rand = Math.random() * 100 + 1;
 
         if (rand <= 50) {
-            return rarityList[0];
+            return ItemGenerator.rarityList[0];
         } else if (rand <= 75) {
-            return rarityList[1];
+            return ItemGenerator.rarityList[1];
         } else if (rand <= 90) {
-            return rarityList[2];
+            return ItemGenerator.rarityList[2];
+        } else if (rand <= 97) {
+            return ItemGenerator.rarityList[3];
+        } else if (rand <= 100) {
+            return ItemGenerator.rarityList[4];
         } else {
-            return rarityList[0];
+            return ItemGenerator.rarityList[0];
         }
     }
 

@@ -2,7 +2,7 @@ const Point = require("../../../utils/src/point");
 const Item = require("./item");
 
 /**
- * Prop representation.
+ * Prop representation on the map. This will be rendered.
  * 
  * @author Naomi Parte
  * 
@@ -45,6 +45,7 @@ class Prop {
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
+    getItems(){ return this.#items; }
 
     // Setters.
     setPosition(position) { 
