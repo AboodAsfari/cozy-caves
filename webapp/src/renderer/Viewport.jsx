@@ -16,7 +16,11 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         disableOnContextMenu: true,
         ...viewportProps
         });
-        viewport.drag().pinch().wheel().clampZoom({
+        viewport.drag().pinch().wheel()
+        .decelerate({
+            friction: 0.90,
+        })
+        .clampZoom({
             minScale: 0.1,
             maxScale: 8,
         });
