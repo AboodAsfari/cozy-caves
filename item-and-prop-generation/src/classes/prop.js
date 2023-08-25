@@ -1,14 +1,14 @@
-const Point = require("../../utils/src/point");
+const Point = require("../../../utils/src/point");
 
 /**
- * An item representation.
+ * Prop representation.
  * 
  * @author Naomi Parte
  * 
  */
-class Item {
+class Prop {
 
-    #position = new Point(0, 0); // Position of the item in the room.
+    #position = new Point(0, 0); // Position of the prop in the room.
 
     // Rendering elements.
     #offset = new Point(0, 0);
@@ -19,20 +19,17 @@ class Item {
      * The position won't be known until the generator sets it.
      * 
      * @constructor
-     * @param name The name of the item.
-     * @param desc A brief narrative description of the item's appearance
+     * @param name The name of the prop.
+     * @param desc A brief narrative description of the prop's appearance
      *             and functionality.
-     * @param category The category the specific item falls under.
-     * @param rarity The rarity level, influencing its likelihood of appearing in the
+     *  @param category The category the specific prop falls under. This influences its likelihood of appearing in the
      *               generated map
-     * @param properties Any special properties or effects associated with the item
+     * @param img Path to the image file
      */
-    constructor(name, desc, category, rarity, properties) {
+    constructor(name, desc, category) {
         this.name = name;
         this.desc = desc;
         this.category = category;
-        this.rarity = rarity;
-        this.properties = properties;
     }
 
     // Getters.
@@ -49,7 +46,7 @@ class Item {
         if (!(offset instanceof Point)) throw new Error("Offset must be provided as Point.");
         this.#offset = offset; 
     }
+
     setRotation(rotation) { this.#rotation = rotation; }
 }
-
-module.exports = Item;
+module.exports = Prop;

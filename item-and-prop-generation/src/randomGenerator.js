@@ -1,6 +1,6 @@
 const ItemGenerator = require('itemGenerator.js');
 const PropGenerator = require('propGenerator.js');
-const Room = require('../room-generation/src/room');
+const Room = require('../../room-generation/src/room');
 
 
 function itemSelection() {
