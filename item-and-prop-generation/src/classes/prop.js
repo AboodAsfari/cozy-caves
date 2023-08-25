@@ -26,18 +26,18 @@ class Prop {
      *             and functionality.
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
-     * @param containItem t/f on whether or not the prop has hidden items.
+     * @param containsItem t/f on whether or not the prop has hidden items.
      */
-    constructor(name, desc, rarity, containItem) {
+    constructor(name, desc, rarity, containsItem) {
         this.name = name;
         this.desc = desc;
         this.rarity = rarity;
-        this.containItem = containItem;
+        this.containsItem = containsItem;
     }
 
     addItem(item){
         if (!(item instanceof Item)) throw new Error("Invalid type. Expecting item.");
-        if (!this.containItem) throw new Error("This prop cannot contain item"); 
+        if (!this.containsItem) throw new Error("This prop cannot contain item"); 
         this.#items.push(item);
     }
 

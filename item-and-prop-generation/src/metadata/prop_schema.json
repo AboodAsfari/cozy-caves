@@ -2,10 +2,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-      "item_categories": {
+      "prop_categories": {
         "type": "object",
         "patternProperties": {
-          "^[A-Za-z0-9 ]+$": {
+          "^[A-Za-z0-9_]+$": {
             "type": "array",
             "items": {
               "type": "object",
@@ -18,19 +18,21 @@
                 },
                 "rarity": {
                   "type": "string",
-                  "enum": ["common", "uncommon", "rare", "epic", "legendary"]
+                  "enum": ["common", "uncommon", "rare"]
                 },
-                "properties": {
-                  "type": "string"
+                "contains_items": {
+                  "type": "boolean"
                 }
               },
-              "required": ["name", "desc", "rarity"]
+              "required": ["name", "desc", "rarity", "contains_items"],
+              "additionalProperties": false
             }
           }
         },
-        "minProperties": 1
+        "additionalProperties": false
       }
     },
-    "required": ["item_categories"]
+    "required": ["prop_categories"],
+    "additionalProperties": false
   }
   
