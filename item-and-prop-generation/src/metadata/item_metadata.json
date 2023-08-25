@@ -9,9 +9,10 @@
             },
             {
                 "name": "Potion of Invisibility",
-                "desc": "A phial containing a shimmering potion that bestows temporary invisibility, enabling stealthy maneuvers and evasion.",
+                "desc": "A vial containing a shimmering potion that bestows temporary invisibility, enabling stealthy maneuvers and evasion.",
                 "rarity": "uncommon",
                 "properties": "Grants temporary invisibility, allowing the user to move undetected."
+            
             },
             {
                 "name": "Potion of Fire Resistance",
@@ -186,6 +187,11 @@
                 "properties": "Attracts and binds malevolent spirits, leading to eerie and unsettling experiences for the bearer."
             },
             {
+                "name": "Haunted Mirrors",
+                "desc": "Mirrors that reveal unsettling reflections or transport players to parallel dimensions.",
+                "rarity": "uncommon"
+            },
+            {
                 "name": "Mysterious Scroll",
                 "desc": "A cryptic scroll holding unpredictable magical energies, bestowing unexpected outcomes when invoked.",
                 "rarity": "rare",
@@ -210,6 +216,16 @@
                 "desc": "A sought-after item essential to fulfilling the task of a noble patron or unraveling a complex storyline, bearing relevance to the adventure's trajectory.",
                 "rarity": "rare",
                 "properties": "Central to a task or storyline, sought after by patrons or crucial for uncovering secrets in the narrative."
+            },
+            {
+                "name": "Mystic Obelisks",
+                "desc": "Tall, mysterious obelisks that may grant blessings or curses to those who interact with them.",
+                "rarity": "rare"
+            },
+            {
+                "name": "Time-worn Tomes",
+                "desc": "Old books scattered throughout the map, containing forgotten knowledge, spells, or quests for players to discover.",
+                "rarity": "uncommon"
             }
         ],
         "Epic and Legendary Items": [
