@@ -1,18 +1,10 @@
 import React from 'react';
 import { Typography,Box, Button } from "@mui/material";
-import { Point } from "@cozy-caves/utils";
 /* 
 This needs to be split into multiple components
 some of the boxes can probably 
 */
-
-const RoomBuilder = require("@cozy-caves/room-generation");
-
 const Homepage = (props) => {
-    React.useEffect(() => {
-        // TESTING
-        console.log(new RoomBuilder().setSize(new Point(5, 5)).setLeniency(new Point(0, 0)).build().toString());
-    });
 
   return (
     <Box>
