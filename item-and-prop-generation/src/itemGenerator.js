@@ -4,7 +4,6 @@ const Item = require("./classes/item");
 const schema = require("./metadata/item_schema.json");
 
 class ItemGenerator {
-
     rarityList = ["common", "uncommon", "rare", "epic", "legendary"];
     
     constructor () {
@@ -15,30 +14,25 @@ class ItemGenerator {
         }
     }
 
-    getItemByRarity(rarity) { // can just return a list instead of having a private list
-        if (!this.rarityList.includes(rarity)) throw new Error('Invalid rarity category.');
+    getItemByRarity(rarity) { 
+        if (!this.rarityList.includes(rarity)) throw new Error('Invalid rarity category: ${rarity}.');
         
         const categories = metadata.item_categories;
-        const temp = []; // temporary list to store items
-
         // groups all items by rarity regardless of their category
-        categories.forEach((category, i) => {
-            const selection = category.filter(item => item.rarity === rarity);
-            selection.forEach((item, i) => {
-                temp.push(new Item(item.name, item.desc, categories[category], item.rarity, item.properties));
-            });
-        });
+        const filteredItems = categories.reduce((items, category) => {
+            return items.concat(category.filter(i => i.rarity === rarity));
+        }, []);
+        if (filteredItems.length === 0) throw new Error("No items found for rarity: ${rarity}");
 
-        if (temp.length === 0) throw new Error('No items found for rarity: ' + rarity);
-
-        //this random index gives a fair chance to every item that is in the list
-        let randomIndex = Math.floor() * temp.length;
-        return temp[randomIndex];
+        // Generate a random index based on the length of the filtered items
+        const randomIndex = Math.floor(Math.random() * filteredItems.length);
+        const i = filteredItems[randomIndex];
+        return Item(i.name, i.desc, i.rarity, i.properties);
     }
 
     getItemByCategory(category){
         const temp = metadata[category];
-        if (temp.length === 0) throw new Error('No items found for category: ' + category);
+        if (temp.length === 0) throw new Error('No items found for category: ${category}');
 
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor() * temp.length;

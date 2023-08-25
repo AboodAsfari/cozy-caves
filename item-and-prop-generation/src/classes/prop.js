@@ -1,4 +1,5 @@
 const Point = require("../../../utils/src/point");
+const Item = require("./item");
 
 /**
  * Prop representation.
@@ -9,6 +10,7 @@ const Point = require("../../../utils/src/point");
 class Prop {
 
     #position = new Point(0, 0); // Position of the prop in the room.
+    #items = [];
 
     // Rendering elements.
     #offset = new Point(0, 0);
@@ -22,14 +24,21 @@ class Prop {
      * @param name The name of the prop.
      * @param desc A brief narrative description of the prop's appearance
      *             and functionality.
-     *  @param category The category the specific prop falls under. This influences its likelihood of appearing in the
+     * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
-     * @param img Path to the image file
+     * @param containItem t/f on whether or not the prop has hidden items.
      */
-    constructor(name, desc, category) {
+    constructor(name, desc, rarity, containItem) {
         this.name = name;
         this.desc = desc;
-        this.category = category;
+        this.rarity = rarity;
+        this.containItem = containItem;
+    }
+
+    addItem(item){
+        if (!(item instanceof Item)) throw new Error("Invalid type. Expecting item.");
+        if (!this.containItem) throw new Error("This prop cannot contain item"); 
+        this.#items.push(item);
     }
 
     // Getters.
