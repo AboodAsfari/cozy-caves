@@ -2,105 +2,145 @@
     "prop_categories": {
         "Decorations": [
             {
-                "name": "Tables and Chairs",
+                "name": "Table",
                 "desc": "Found in taverns, inns, or dining areas, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
             },
             {
-                "name": "Bookshelves",
-                "desc": "These can be placed in libraries, wizard towers, or study rooms. They may hold valuable books with lore, spells, or hints for quests.",
-                "rarity": "common"
+                "name": "Chair",
+                "desc": "Provide seating for role-playing interactions, resting, or tactical positioning during combat encounters.",
+                "rarity": "common",
+                "contains_items": false
             },
             {
-                "name": "Barrels and Crates",
-                "desc": "Commonly found in storage areas, warehouses, or dungeons, these containers may contain supplies, loot, or even hidden passages.",
-                "rarity": "common"
+                "name": "Bed",
+                "desc": "Found in taverns, inns, or bedrooms, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Potted Plants",
+                "desc": "Plants suspended from ceilings, adding a natural and refreshing element to interiors.",
+                "rarity": "common",
+                "contains_items": false
+            }
+        ],
+        "Storages": [
+            {
+                "name": "Barrel",
+                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
+                "rarity": "common",
+                "contains_items": true
+            },
+            {
+                "name": "Bookshelf",
+                "desc": "Can be placed in libraries, wizard towers, or study rooms. May hold valuable books with lore, spells, or hints for quests.",
+                "rarity": "common",
+                "contains_items": true
+            },
+            {
+                "name": "Cabinet",
+                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, or loot.",
+                "rarity": "common",
+                "contains_items": true
+            },
+            {
+                "name": "Crate",
+                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
+                "rarity": "common",
+                "contains_items": true
             }
         ],
         "Environmental Details": [
             {
-                "name": "Cobwebs and Dust",
+                "name": "Cobwebs",
                 "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
             },
             {
-                "name": "Runes and Glyphs",
+                "name": "Dust",
+                "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Runes",
                 "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
             },
             {
-                "name": "Banners and Tapestries",
+                "name": "Glyphs",
+                "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Banners",
                 "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Tapestries",
+                "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
+                "rarity": "common",
+                "contains_items": false
             }
         ],
         "Atmospheric Elements": [
             {
-                "name": "Fireplace and Hearth",
-                "desc": "Warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
-                "rarity": "common"
+                "name": "Candles",
+                "desc": "Candles placed in decorative holders, providing both illumination and ambiance to the surroundings.",
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Fireplace",
+                "desc": "Provides warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
+                "rarity": "common",
+                "contains_items": false
+            },
+            {
+                "name": "Hearth",
+                "desc": "An area around the fireplace that serves as a gathering point for warmth and comfort. Players can strategize and interact.",
+                "rarity": "common",
+                "contains_items": false
             },
             {
                 "name": "Steam Vents",
                 "desc": "Vents that release hot steam and can be used strategically in combat or puzzle-solving.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
             },
             {
                 "name": "Frozen Statues",
                 "desc": "Statues covered in ice, which players can melt to reveal hidden passages or items.",
-                "rarity": "common"
+                "rarity": "common",
+                "contains_items": false
             }
         ],
         "Treasure Hoards": [
             {
-                "name": "Jeweled Chests",
-                "desc": "Elaborate chests filled with valuable treasures, guarded by monsters or traps.",
-                "rarity": "uncommon"
+                "name": "Jeweled Chest",
+                "desc": "An laborate chest filled with valuable treasures, guarded by monsters or traps.",
+                "rarity": "uncommon",
+                "contains_items": true
             },
             {
-                "name": "Golden Altars",
-                "desc": "Altars adorned with gold and gems that require offerings or rituals to gain rewards.",
-                "rarity": "uncommon"
+                "name": "Golden Altar",
+                "desc": "An altar adorned with gold and gems that require offerings or rituals to gain rewards.",
+                "rarity": "uncommon",
+                "contains_items": true
             },
             {
-                "name": "Precious Gems",
-                "desc": "Scattered gems throughout the map, valuable as trade items or components for magical rituals.",
-                "rarity": "uncommon"
+                "name": "Pouch of Gems",
+                "desc": "A tiny sack containing scattered gems throughout the map, valuable as trade items or components for magical rituals.",
+                "rarity": "uncommon",
+                "contains_items": true
             }
-        ],
-        "Cursed Objects": [
-            {
-                "name": "Haunted Mirrors",
-                "desc": "Mirrors that reveal unsettling reflections or transport players to parallel dimensions.",
-                "rarity": "uncommon"
-            },
-            {
-                "name": "Cursed Jewelry",
-                "desc": "Accessories that bestow powers but come with dangerous side effects, like a necklace that grants invisibility but drains life force.",
-                "rarity": "rare"
-            },
-            {
-                "name": "Possessed Objects",
-                "desc": "Everyday items like swords, paintings, or candles that may be temporarily inhabited by malevolent spirits.",
-                "rarity": "uncommon"
-            }
-        ],
-        "Mystical Relics": [
-            {
-                "name": "Artifact Pedestals",
-                "desc": "Pedestals that display ancient artifacts, each with unique powers. Players can interact with these relics or use them to uncover their hidden abilities.",
-                "rarity": "rare"
-            },
-            {
-                "name": "Mystic Obelisks",
-                "desc": "Tall, mysterious obelisks that may grant blessings or curses to those who interact with them.",
-                "rarity": "rare"
-            },
-            {
-                "name": "Time-worn Tomes",
-                "desc": "Old books scattered throughout the map, containing forgotten knowledge, spells, or quests for players to discover.",
-                "rarity": "uncommon"
-            }
-        ]  
+        ]
     }
 }
