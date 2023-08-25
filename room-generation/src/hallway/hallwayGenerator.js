@@ -100,6 +100,10 @@ function minimumSpanningTree(rooms) {
     for (const room in rooms) {
         disjointSet.makeSet(room);
     }
+    console.log(midpoints);
+    const delaunay = new Delaunator(midpoints);
+    let triangles = delaunay.triangles;
+    console.log(triangles);
 
     console.log(disjointSet);
 
