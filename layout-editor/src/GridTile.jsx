@@ -12,15 +12,25 @@ const GridTile = (props) => {
   const {
     pos,
     currTool,
+    setCurrTool,
     layout,
     dragButton,
     setDragButton,
     primaryBrush,
-    secondaryBrush
+    setPrimaryBrush,
+    secondaryBrush,
+    setSecondaryBrush
   } = props;
 
   const [filled, setFilled] = useState(false);
+  const [tileType, setTileType] = useState("none");
   const [updater, setUpdater] = useState(false);
+
+  const getExtraClasses = () => {
+    let extraClasses = "";
+    if (currTool === Tools.PICKER) extraClasses += " ColorPickable";
+    return extraClasses;
+  }
 
   const handleMouseDown = (e) => {
     setDragButton(e.button);
@@ -29,22 +39,35 @@ const GridTile = (props) => {
       if (e.button !== 0) return;
       if ((!e.altKey && primaryBrush === "none") || (e.altKey && secondaryBrush === "none")) {
         setFilled(false);
+        setTileType("none");
         layout.removeTile(pos);
         return;
       };
-      let newTile = !e.altKey ? new Tile(primaryBrush, pos) : new Tile(secondaryBrush, pos); 
+      let newTileType = !e.altKey ? primaryBrush : secondaryBrush;
+      let newTile = new Tile(newTileType, pos); 
       layout.addTile(newTile, -1);
       setFilled(true);
+      setTileType(newTileType);
       setUpdater(!updater);
-    } 
+    } else if (currTool === Tools.ERASER) {
+      // Remove tiles
+    } else if (currTool === Tools.SELECTOR) {
+      // Select tiles
+    } else if (currTool === Tools.PICKER) {
+      if (e.button === 2) setCurrTool(Tools.PEN);
+      if (e.button !== 0) return;
+      if (!e.altKey) setPrimaryBrush(tileType);
+      else setSecondaryBrush(tileType);
+      setCurrTool(Tools.PEN);
+    }
   }
 
   return (
-    <Box className="GridTileOutline" onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
+    <Box className={"GridTileOutline " + getExtraClasses()} onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
       onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton }) }}>
       <Box className={"GridTile" + (filled ? " FilledTile" : "")} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
-          {!filled ? "" : layout.getTile(pos).getTileType() === "floor" ? "F" : "W"} 
+          {!filled ? "" : tileType === "floor" ? "F" : "W"} 
         </Typography> 
       </Box>
     </Box>

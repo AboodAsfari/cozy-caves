@@ -18,7 +18,7 @@ import BrushSelector from "./BrushSelector";
 const MenuBar = (props) => {
   const {
     currTool,
-    setCurTool,
+    setCurrTool,
     primaryBrush,
     setPrimaryBrush,
     secondaryBrush,
@@ -32,19 +32,19 @@ const MenuBar = (props) => {
 
   const getToolbarItems = () => {
     let ret = [];
-    ret.push(<ToolbarButton key={0} iconName="stylus" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.PEN} />);
+    ret.push(<ToolbarButton key={0} iconName="stylus" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PEN} />);
     if (currTool === Tools.PEN) {
-      let primaryIcon = <BrushSelector key={3} size={20} brush={primaryBrush} setBrush={setPrimaryBrush} />;
-      let secondaryIcon = <BrushSelector key={4} size={15} mr={2} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
-      let brushSwapper = <SwapHorizIcon key={5} className="ToolIcon" sx={{ fontSize: 30, mt: 0.5, mr: 1 }} onClick={swapBrushes} />
+      let primaryIcon = <BrushSelector key={0.1} size={20} brush={primaryBrush} setBrush={setPrimaryBrush} />;
+      let secondaryIcon = <BrushSelector key={0.2} size={15} mr={2} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
+      let brushSwapper = <SwapHorizIcon key={0.3} className="ToolIcon" sx={{ fontSize: 30, mt: 0.5, mr: 1 }} onClick={swapBrushes} />
 
       ret.push(primaryIcon);
       ret.push(brushSwapper);
       ret.push(secondaryIcon);
-
-    }
-    ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.ERASER} />);
-    ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.SELECTOR} />);
+    } 
+    ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.ERASER} />);
+    ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurrTool} desiredTool={Tools.SELECTOR} />);
+    ret.push(<ToolbarButton key={3} iconName="colorize" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PICKER} />);
 
     return ret;
   }

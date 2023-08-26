@@ -23,3 +23,7 @@
     background-color: #6b5d61;
     user-select: none;
 }
+
+.ColorPickable {
+    cursor: url(../../public/colorPicker.png), auto;
+}
