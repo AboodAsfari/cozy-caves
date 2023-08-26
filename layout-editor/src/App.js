@@ -8,13 +8,18 @@ import {
   Typography,
   Grid,
   Button,
-  Divider
+  Divider,
+  Slide,
+  Collapse,
+  Menu,
+  MenuItem
 } from "@mui/material";
 import GridTile from "./GridTile";
 import "./App.css";
 import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
-import CreateIcon from '@mui/icons-material/Create';
+import CheckIcon from '@mui/icons-material/Check';
+import { TransitionGroup } from 'react-transition-group';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -23,25 +28,41 @@ const App = () => {
   const height = 8;
   const [layout, setLayout] = useState(new Layout());
   const [currTool, setCurTool] = useState(Tools.PEN);
+  const [primaryBrush, setPrimaryBrush] = useState("floor");
+  const [secondaryBrush, setSecondaryBrush] = useState("wall");
   const [dragButton, setDragButton] = useState(-1);
 
-  const handleMouseUp = (e) => {
-    if (e.button === 2 && dragButton === 2) {
-      // Stop dropdown menu here.
-    } 
-  };
+  const getToolbarItems = () => {
+    let ret = [];
+    ret.push(<ToolbarButton key={0} iconName="stylus" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.PEN} />);
+    if (currTool === Tools.PEN) {
+      let primaryIcon = <BrushSelector key={3} size={20} brush={primaryBrush} setBrush={setPrimaryBrush} />;
+      let secondaryIcon = <BrushSelector key={4} size={15} mt={0.6} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
+
+      ret.push(primaryIcon);
+      ret.push(secondaryIcon);
+    }
+    ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.ERASER} />);
+    ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.SELECTOR} />);
+
+    return ret;
+  }
 
   return (
-    <Box onMouseUp={handleMouseUp}>
+    <Box>
       <AppBar position="sticky" component="nav">
         <Toolbar className="Toolbar">
           <Stack direction={"row"} sx={{ alignItems: "center" }}>
             <NavButton buttonText="File" />
             <NavButton buttonText="View" />
             <Divider variant="middle" flexItem sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white" }} />
-            <ToolbarButton iconName="stylus" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.PEN} />
-            <ToolbarButton iconName="ink_eraser" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.ERASER} />
-            <ToolbarButton iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.SELECTOR} />
+            <TransitionGroup style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+              {getToolbarItems().map((item, i) => 
+                <Collapse orientation="horizontal" key={item.key}>
+                  {item}
+                </Collapse>
+              )}
+            </TransitionGroup>
           </Stack>
         </Toolbar>
       </AppBar>
@@ -92,6 +113,56 @@ const ToolbarButton = (props) => {
       style={{ fontSize: 30, userSelect: "none", color: currTool === desiredTool ? "#7da36d" : "white", marginRight: 10 }}> 
       {iconName} 
     </span>    
+  );
+}
+
+const BrushSelector = (props) => {
+  const {
+    size,
+    mt,
+    brush,
+    setBrush
+  } = props;
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const getBrushIcon = (brush) => {
+    if (brush === "none") return "noTileIcon.png";
+    if (brush === "floor") return "floorIcon.png";
+    if (brush === "wall") return "wallIcon.png";
+  }
+
+  return (
+    <>
+    <Box className="PenBrushIcon" sx={{ width: size, height: size, mt: mt }} onClick={(e) => setAnchorEl(e.currentTarget)}> 
+        <img className="PixelArt" src={getBrushIcon(brush)} alt="brush selector" style={{ width: "100%", height: "100%"}} /> 
+    </Box>
+
+    <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} 
+      sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+      <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="none" />
+      <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="floor" />
+      <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="wall" />
+    </Menu>
+    </>
+  );
+}
+
+const BrushMenuItem = (props) => {
+  const {
+    brush,
+    setBrush,
+    handleClose,
+    getBrushIcon,
+    brushName
+  } = props;
+
+  return (
+    <MenuItem onClick={() => { setBrush(brushName); handleClose(); }} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+      <img className="PixelArt" src={getBrushIcon(brushName)} alt="brush selector" style={{ width: "20px", height: "100%" }} /> 
+      <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {brushName[0].toUpperCase() + brushName.slice(1).toLowerCase()} </Typography>
+      {brush === brushName && <CheckIcon />}
+    </MenuItem>
   );
 }
 

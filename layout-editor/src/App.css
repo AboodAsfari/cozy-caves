@@ -14,3 +14,29 @@ body {
     cursor: pointer;
     color: #7da36d !important;
 }
+
+.PixelArt {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.PenBrushIcon {
+    margin-right: 10px;
+    user-select: none;
+}
+
+.PenBrushIcon:hover {
+    cursor: pointer;
+}
+
+.BrushMenuItem {
+    background-color: #7d7a7a !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    color: white !important;
+}
+
+.BrushMenuItem:hover {
+    background-color: #545454 !important;
+}
