@@ -4,7 +4,6 @@ import {
   } from "@mui/material";
   import "./styles/GridTile.css";
 import Tools from "./Tools";
-import { useState } from "react";
 import { Point } from "@cozy-caves/utils";
   
 const Tile = require("@cozy-caves/room-generation").Tile;

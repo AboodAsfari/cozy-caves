@@ -25,13 +25,13 @@
 }
 
 .ColorPickable {
-    cursor: url(../../public/colorPicker.png), auto;
+    cursor: url(../../public/colorPicker.png) 0 32, auto;
 }
 
 .Erasable {
-    cursor: url(../../public/eraser.png), auto;
+    cursor: url(../../public/eraser.png) 6 25, auto;
 }
 
 .Fillable {
-    cursor: url(../../public/paintBucket.png), auto;
+    cursor: url(../../public/paintBucket.png) 0 24, auto;
 }
