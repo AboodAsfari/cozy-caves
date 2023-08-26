@@ -71,7 +71,8 @@ const App = () => {
         {[...Array(height)].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-4px" }} spacing="-4px">
             {[...Array(width)].map((x, j) => 
-              <GridTile key={j} pos={new Point(j, i)} currTool={currTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} /> )}
+              <GridTile key={j} pos={new Point(j, i)} currTool={currTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} 
+                primaryBrush={primaryBrush} secondaryBrush={secondaryBrush} /> )}
           </Stack>
         )}
       </Box>

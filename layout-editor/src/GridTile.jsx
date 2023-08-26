@@ -20,7 +20,9 @@ const GridTile = (props) => {
     currTool,
     layout,
     dragButton,
-    setDragButton
+    setDragButton,
+    primaryBrush,
+    secondaryBrush
   } = props;
 
   const [filled, setFilled] = useState(false);
@@ -31,7 +33,12 @@ const GridTile = (props) => {
 
     if (currTool === Tools.PEN) {
       if (e.button !== 0) return;
-      let newTile = !e.altKey ? new Tile("floor", pos) : new Tile("wall", pos); 
+      if ((!e.altKey && primaryBrush === "none") || (e.altKey && secondaryBrush === "none")) {
+        setFilled(false);
+        layout.removeTile(pos);
+        return;
+      };
+      let newTile = !e.altKey ? new Tile(primaryBrush, pos) : new Tile(secondaryBrush, pos); 
       layout.addTile(newTile, -1);
       setFilled(true);
       setUpdater(!updater);
