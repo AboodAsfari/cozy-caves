@@ -2,7 +2,7 @@ import {
     Box,
     Typography,
   } from "@mui/material";
-  import "./GridTile.css";
+  import "./styles/GridTile.css";
 import Tools from "./Tools";
 import { useState } from "react";
   

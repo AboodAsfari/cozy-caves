@@ -2,8 +2,18 @@
     background-color: #171717;
 }
 
-body {
-    background-color: #363535;
+.NavButton {
+    color: white !important;
+    background-color: transparent;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    text-transform: none;
+    margin-left: 0.5rem !important;
+}
+
+.NavButton:hover {
+    color: #7da36d !important;
+    background-color: transparent !important;
 }
 
 .ToolIcon {
@@ -13,12 +23,6 @@ body {
 .ToolIcon:hover {
     cursor: pointer;
     color: #7da36d !important;
-}
-
-.PixelArt {
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
 }
 
 .PenBrushIcon {

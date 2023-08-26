@@ -1,0 +1,13 @@
+.Toolbar {
+    background-color: #171717;
+}
+
+body {
+    background-color: #363535;
+}
+
+.PixelArt {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
