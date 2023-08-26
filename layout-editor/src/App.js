@@ -1,26 +1,25 @@
 import React, { useState } from "react";
 import { 
   AppBar,
-  ThemeProvider, 
   Toolbar,
   Stack,
   Box,
   Typography,
-  Grid,
   Button,
   Divider,
-  Slide,
   Collapse,
   Menu,
   MenuItem
 } from "@mui/material";
-import GridTile from "./GridTile";
 import "./App.css";
+import { TransitionGroup } from 'react-transition-group';
+
+import GridTile from "./GridTile";
 import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
+
 import CheckIcon from '@mui/icons-material/Check';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import { TransitionGroup } from 'react-transition-group';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 

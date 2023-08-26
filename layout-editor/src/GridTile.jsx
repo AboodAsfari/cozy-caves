@@ -1,12 +1,6 @@
 import { 
-    AppBar,
-    ThemeProvider, 
-    Toolbar,
-    Stack,
     Box,
     Typography,
-    Grid,
-    Button,
   } from "@mui/material";
   import "./GridTile.css";
 import Tools from "./Tools";
