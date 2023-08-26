@@ -29,6 +29,7 @@ const GridTile = (props) => {
   const getExtraClasses = () => {
     let extraClasses = "";
     if (currTool === Tools.PICKER) extraClasses += " ColorPickable";
+    if (currTool === Tools.ERASER) extraClasses += " Erasable";
     return extraClasses;
   }
 
@@ -38,9 +39,9 @@ const GridTile = (props) => {
     if (currTool === Tools.PEN) {
       if (e.button !== 0) return;
       if ((!e.altKey && primaryBrush === "none") || (e.altKey && secondaryBrush === "none")) {
+        layout.removeTile(pos);
         setFilled(false);
         setTileType("none");
-        layout.removeTile(pos);
         return;
       };
       let newTileType = !e.altKey ? primaryBrush : secondaryBrush;
@@ -50,7 +51,9 @@ const GridTile = (props) => {
       setTileType(newTileType);
       setUpdater(!updater);
     } else if (currTool === Tools.ERASER) {
-      // Remove tiles
+      layout.removeTile(pos);
+      setFilled(false);
+        setTileType("none");
     } else if (currTool === Tools.SELECTOR) {
       // Select tiles
     } else if (currTool === Tools.PICKER) {

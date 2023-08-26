@@ -43,7 +43,7 @@ const MenuBar = (props) => {
       ret.push(secondaryIcon);
     } 
     ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.ERASER} />);
-    ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurrTool} desiredTool={Tools.SELECTOR} />);
+    ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.SELECTOR} />);
     ret.push(<ToolbarButton key={3} iconName="colorize" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PICKER} />);
 
     return ret;

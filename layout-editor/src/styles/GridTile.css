@@ -27,3 +27,7 @@
 .ColorPickable {
     cursor: url(../../public/colorPicker.png), auto;
 }
+
+.Erasable {
+    cursor: url(../../public/eraser.png), auto;
+}
