@@ -19,6 +19,7 @@ import "./App.css";
 import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
 import CheckIcon from '@mui/icons-material/Check';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { TransitionGroup } from 'react-transition-group';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
@@ -32,15 +33,23 @@ const App = () => {
   const [secondaryBrush, setSecondaryBrush] = useState("wall");
   const [dragButton, setDragButton] = useState(-1);
 
+  const swapBrushes = () => {
+    setPrimaryBrush(secondaryBrush);
+    setSecondaryBrush(primaryBrush);
+  }
+
   const getToolbarItems = () => {
     let ret = [];
     ret.push(<ToolbarButton key={0} iconName="stylus" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.PEN} />);
     if (currTool === Tools.PEN) {
       let primaryIcon = <BrushSelector key={3} size={20} brush={primaryBrush} setBrush={setPrimaryBrush} />;
-      let secondaryIcon = <BrushSelector key={4} size={15} mt={0.6} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
+      let secondaryIcon = <BrushSelector key={4} size={15} mr={2} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
+      let brushSwapper = <SwapHorizIcon key={5} className="ToolIcon" sx={{ fontSize: 30, mt: 0.5, mr: 1 }} onClick={swapBrushes} />
 
       ret.push(primaryIcon);
+      ret.push(brushSwapper);
       ret.push(secondaryIcon);
+
     }
     ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.ERASER} />);
     ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurTool={setCurTool} desiredTool={Tools.SELECTOR} />);
@@ -120,7 +129,7 @@ const ToolbarButton = (props) => {
 const BrushSelector = (props) => {
   const {
     size,
-    mt,
+    mr,
     brush,
     setBrush
   } = props;
@@ -135,7 +144,7 @@ const BrushSelector = (props) => {
 
   return (
     <>
-    <Box className="PenBrushIcon" sx={{ width: size, height: size, mt: mt }} onClick={(e) => setAnchorEl(e.currentTarget)}> 
+    <Box className="PenBrushIcon" sx={{ width: size, height: size, mr: mr }} onClick={(e) => setAnchorEl(e.currentTarget)}> 
         <img className="PixelArt" src={getBrushIcon(brush)} alt="brush selector" style={{ width: "100%", height: "100%"}} /> 
     </Box>
 
