@@ -16,27 +16,30 @@ import MenuBar from "./Toolbar/MenuBar";
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
-  const width = 10;
-  const height = 8;
-  const [layout, setLayout] = React.useState(new Layout());
+  const gridSize = new Point(10, 8);
+  const layout = React.useRef(new Layout()).current;
+  const [tileMap, setTileMap] = React.useState({});
   const [currTool, setCurrTool] = React.useState(Tools.PEN);
   const [primaryBrush, setPrimaryBrush] = React.useState("floor");
   const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
+  const [fillBrush, setFillBrush] = React.useState("floor");
   const [dragButton, setDragButton] = React.useState(-1);
+  const [updater, setUpdater] = React.useState(false);
 
   return (
     <Box>
       <AppBar position="sticky" component="nav">
-        <MenuBar currTool={currTool} setCurrTool={setCurrTool} primaryBrush={primaryBrush} 
-          setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} />
+        <MenuBar currTool={currTool} setCurrTool={setCurrTool} primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} 
+          secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} fillBrush={fillBrush} setFillBrush={setFillBrush} />
       </AppBar>
 
       <Box sx={{ mt: 2.5 }}>
-        {[...Array(height)].map((x, i) => 
+        {[...Array(gridSize.getY())].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-4px" }} spacing="-4px">
-            {[...Array(width)].map((x, j) => 
+            {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} 
-                primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} /> )}
+                primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
+                fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} /> )}
           </Stack>
         )}
       </Box>

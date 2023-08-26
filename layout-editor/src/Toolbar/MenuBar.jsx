@@ -22,7 +22,9 @@ const MenuBar = (props) => {
     primaryBrush,
     setPrimaryBrush,
     secondaryBrush,
-    setSecondaryBrush
+    setSecondaryBrush,
+    fillBrush,
+    setFillBrush
   } = props;
 
   const swapBrushes = () => {
@@ -45,7 +47,11 @@ const MenuBar = (props) => {
     ret.push(<ToolbarButton key={1} iconName="ink_eraser" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.ERASER} />);
     ret.push(<ToolbarButton key={2} iconName="arrow_selector_tool" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.SELECTOR} />);
     ret.push(<ToolbarButton key={3} iconName="colorize" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PICKER} />);
-
+    ret.push(<ToolbarButton key={4} iconName="colors" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.FILL} />);
+    if (currTool === Tools.FILL) {
+      let selector = <BrushSelector key={4.1} size={20} brush={fillBrush} setBrush={setFillBrush} />;
+      ret.push(selector);
+    } 
     return ret;
   }
 

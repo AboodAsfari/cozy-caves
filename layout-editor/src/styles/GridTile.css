@@ -31,3 +31,7 @@
 .Erasable {
     cursor: url(../../public/eraser.png), auto;
 }
+
+.Fillable {
+    cursor: url(../../public/paintBucket.png), auto;
+}
