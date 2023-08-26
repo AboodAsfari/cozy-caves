@@ -56,22 +56,33 @@ const GridTile = (props) => {
     } else if (currTool === Tools.SELECTOR) {
       // Select tiles
     } else if (currTool === Tools.PICKER) {
-      if (e.button === 2) setCurrTool(Tools.PEN);
-      if (e.button !== 0) return;
       let tileType = !!layout.getTile(pos) ? layout.getTile(pos).getTileType() : "none";
-      if (!e.altKey) setPrimaryBrush(layout);
-      else setSecondaryBrush(tileType);
-      setCurrTool(Tools.PEN);
+      if (e.button === 1) return;
+      else if (e.button === 0) {
+        if (!e.altKey) setPrimaryBrush(layout);
+        else setSecondaryBrush(tileType);
+        setCurrTool(Tools.PEN);
+      } else if (e.button === 2) {
+        setFillBrush(tileType);
+        setCurrTool(Tools.FILL);
+      }
+      
     } else if (currTool === Tools.FILL) {
-      let typeToFill = !!layout.getTile(pos) ? layout.getTile(pos).getTileType() : "none";
+      let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
       let toFill = [pos];
       let added = [];
       while (toFill.length > 0) {
         let curr = toFill.pop(0);
         added.push(curr.toString());
         let newTile = new Tile(fillBrush, pos); 
-        layout.addTile(newTile, -1);
-        setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
+        if (fillBrush === "none") {
+          layout.removeTile(curr);
+          setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
+        } else {
+          layout.addTile(newTile, -1);
+          setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
+        }
+        
         let directions = [ new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1) ];
         for (let dir of directions) {
           let newPos = curr.add(dir);
@@ -82,7 +93,7 @@ const GridTile = (props) => {
           if (skipPoint) continue;
 
           if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tileMap[newPos.toString()]) || 
-            (!!tileMap[newPos.toString()] && layout.getTile(newPos).getTileType() === typeToFill))) toFill.push(newPos);
+            (!!tileMap[newPos.toString()] && tileMap[newPos.toString()].getTileType() === typeToFill))) toFill.push(newPos);
         } 
       }
     }

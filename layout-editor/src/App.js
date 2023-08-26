@@ -24,7 +24,18 @@ const App = () => {
   const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
   const [fillBrush, setFillBrush] = React.useState("floor");
   const [dragButton, setDragButton] = React.useState(-1);
-  const [updater, setUpdater] = React.useState(false);
+
+  React.useEffect(() => {
+    document.addEventListener("mouseup", handleMouse, []);
+
+    return () => {
+      document.removeEventListener("mouseup", handleMouse, []);
+    }
+  });
+
+  const handleMouse = () => {
+    setDragButton(-1);
+  }
 
   return (
     <Box>
