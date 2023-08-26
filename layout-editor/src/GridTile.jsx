@@ -56,10 +56,10 @@ const GridTile = (props) => {
     } else if (currTool === Tools.SELECTOR) {
       // Select tiles
     } else if (currTool === Tools.PICKER) {
-      let tileType = !!layout.getTile(pos) ? layout.getTile(pos).getTileType() : "none";
+      let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
       if (e.button === 1) return;
       else if (e.button === 0) {
-        if (!e.altKey) setPrimaryBrush(layout);
+        if (!e.altKey) setPrimaryBrush(tileType);
         else setSecondaryBrush(tileType);
         setCurrTool(Tools.PEN);
       } else if (e.button === 2) {
