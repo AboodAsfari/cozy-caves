@@ -1,0 +1,46 @@
+.Toolbar {
+    background-color: #171717;
+}
+
+.NavButton {
+    color: white !important;
+    background-color: transparent;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    text-transform: none;
+    margin-left: 0.5rem !important;
+}
+
+.NavButton:hover {
+    color: #7da36d !important;
+    background-color: transparent !important;
+}
+
+.ToolIcon {
+    font-size: 30;
+}
+
+.ToolIcon:hover {
+    cursor: pointer;
+    color: #7da36d !important;
+}
+
+.PenBrushIcon {
+    margin-right: 10px;
+    user-select: none;
+}
+
+.PenBrushIcon:hover {
+    cursor: pointer;
+}
+
+.BrushMenuItem {
+    background-color: #7d7a7a !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    color: white !important;
+}
+
+.BrushMenuItem:hover {
+    background-color: #545454 !important;
+}

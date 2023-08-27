@@ -136,7 +136,7 @@ class Partition {
                 let posChange = xAxis ? new Point(i * scaleDir, 0) : new Point(0, i * scaleDir);
                 let newPos = new Point(edgePos.getX() + posChange.getX(), edgePos.getY() + posChange.getY());
                 let newTile = edgeTile.clone(newPos);
-                layout.removeTile(newTile.getPosition());
+                layout.removeEditableTile(newTile.getPosition());
                 this.#scaledTiles.set(newPos.toString(), newTile);
                 this.#evaluatePoint(newTile.getPosition());
             }
@@ -168,6 +168,26 @@ class Partition {
     addTile(tile) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         this.#tiles.set(tile.getPosition().toString(), tile); 
+    }
+
+    /**
+     * Removes a tile from the static tile map.
+     * 
+     * @param tile Tile to remove. 
+     */
+    removeTile(tile) {
+        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
+        this.#tiles.delete(tile.getPosition().toString());
+    }
+
+    /**
+     * Gets a tile from the static tile map.
+     * 
+     * @param pos Position of tile to get.
+     */
+    getTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        return this.#tiles.get(pos.toString());
     }
 
     /**

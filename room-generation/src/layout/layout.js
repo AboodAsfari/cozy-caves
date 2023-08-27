@@ -254,17 +254,45 @@ class Layout {
     }
 
     /**
+     * Deletes a tile from the layout.
+     * 
+     * @param pos Position of tile to remove.
+     */
+    removeTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        this.#excludedTiles.delete(pos.toString());
+        this.#unscaledTiles.delete(pos.toString());
+        for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
+            this.#scalePartitions[i].removeTile(pos);
+        }
+    }
+
+    /**
+     * Gets a tile from the layout.
+     * 
+     * @param pos Position of tile to get.
+     */
+    getTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        if (this.#excludedTiles.has(pos.toString())) return this.#excludedTiles.get(pos.toString());
+        else if (this.#unscaledTiles.has(pos.toString())) return this.#unscaledTiles.get(pos.toString());
+        for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
+            if (this.#scalePartitions[i].getTile(pos)) return this.#scalePartitions[i].getTile(pos);
+        }
+    }
+
+    /**
      * Deletes a tile from the editable maps of the layout,
      * to ensure the actual layout info does not change.
      *
      * @param pos Position of tile to remove.
      * @param deleteExcluded Whether to delete the tile if it's excluded.
      */
-    removeTile(pos, deleteExcluded = false) {
+    removeEditableTile(pos, deleteExcluded = false) {
         if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
 
-        if (deleteExcluded) this.#excludedEditableTiles.delete(pos);
-        this.#unscaledEditableTiles.delete(pos);
+        if (deleteExcluded) this.#excludedEditableTiles.delete(pos.toString());
+        this.#unscaledEditableTiles.delete(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
             this.#scalePartitions[i].removeScaledTile(pos);
         }
