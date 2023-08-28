@@ -46,25 +46,32 @@ const GridTile = (props) => {
     if (currTool === Tools.FILL) extraClasses += " Fillable";
     if (currTool === Tools.SELECTOR && isInSelection(pos)) {
       extraClasses += " SelectedTileOutline";
-      if (mouseInfo.dragButton === -1 || mouseInfo.selectDragStart.toString() !== new Point(-1, -1).toString()) extraClasses += " Draggable";
+      if (mouseInfo.dragButton === -1 || mouseInfo.selectDragStart.toString() !== "-1,-1") extraClasses += " Draggable";
     }
     return extraClasses;
   }
 
   const getTileClasses = () => {
     let extraClasses = "";
-    if ((getOverlayMap()[pos.toString()] !== null) && (!!tileMap[pos] || getOverlayMap()[pos.toString()] !== undefined)) extraClasses += " FilledTile";
+    let overlayValue = getOverlayMap()[pos.toString()];
+    if ((overlayValue !== null) && (!!tileMap[pos] || overlayValue !== undefined)) extraClasses += " FilledTile";
     if (currTool === Tools.SELECTOR && isInSelection(pos)) extraClasses += " SelectedTile";
     return extraClasses;
   }
 
   const getLabel = () => {
-    let overlayMap = getOverlayMap();
-    if (overlayMap[pos.toString()] === null || (overlayMap[pos.toString()] === undefined && !tileMap[pos.toString()])) return ""; 
+    let overlayValue = getOverlayMap()[pos.toString()];
+    if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return ""; 
+
     let tileType;
-    if (overlayMap[pos.toString()] !== undefined) tileType = overlayMap[pos.toString()].getTileType();
+    if (overlayValue !== undefined) tileType = overlayValue.getTileType();
     else tileType = tileMap[pos.toString()].getTileType();
     return tileType === "wall" ? "W" : "F";
+  }
+
+  const handleMouseOver = (e) => {
+    let syntheticEvent = { ...e, button: mouseInfo.dragButton, synthetic: true };
+    if (mouseInfo.dragButton !== -1) handleMouseDown(syntheticEvent);
   }
 
   const handleMouseDown = (e) => {
@@ -147,8 +154,8 @@ const GridTile = (props) => {
   }
 
   return (
-    <Box className={"GridTileOutline " + getOutlineClasses()} onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
-      onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))} onMouseOver={(e) => { if (mouseInfo.dragButton !== -1) handleMouseDown({ ...e, button: mouseInfo.dragButton, synthetic: true }) }}>
+    <Box className={"GridTileOutline " + getOutlineClasses()} onMouseDown={handleMouseDown} onMouseOver={handleMouseOver}
+      onDragStart={e => e.preventDefault()} onContextMenu={e => e.preventDefault()} onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))}>
       <Box className={"GridTile " + getTileClasses()} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
           {getLabel()} 

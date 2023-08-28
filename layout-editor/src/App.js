@@ -32,12 +32,12 @@ const App = () => {
   });
 
   React.useEffect(() => {
-    document.removeEventListener("mousedown", handleMouseDown, []);
     document.addEventListener("mousedown", handleMouseDown, []);
     document.addEventListener("mouseup", handleMouseUp, []);
     document.addEventListener("keydown", handleKeyPress, []);
 
     return () => {
+      document.removeEventListener("mousedown", handleMouseDown, []);
       document.removeEventListener("mouseup", handleMouseUp, []);
       document.removeEventListener("keydown", handleKeyPress, []);
     }
@@ -50,13 +50,17 @@ const App = () => {
       selectEnd: new Point(-1, -1)
     }));
   }
-  
+
   const handleMouseUp = () => {
     setMouseInfo(prev => ({...prev, dragButton: -1}));
 
-    let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), 
-      mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
-    if (mouseInfo.selectStart.toString() !== new Point(-1, -1).toString() && mouseInfo.selectEnd.toString() !== new Point(-1, -1).toString()) {
+    let dragEnd = mouseInfo.selectDragEnd;
+    let dragStart = mouseInfo.selectDragStart;
+    let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
+    let selectStart = mouseInfo.selectStart;
+    let selectEnd = mouseInfo.selectEnd;
+
+    if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
       let overlayMap = getOverlayMap();
       for (let key in overlayMap) {
         let value = overlayMap[key];
@@ -99,24 +103,35 @@ const App = () => {
   }
 
   const changeTool = (tool) => {
+    console.log(10)
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),
       selectEnd: new Point(-1, -1)
     }));
     setCurrTool(tool);
+    console.log(20)
   }
 
-  const isInSelection = (pos) => {
-    let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
-    let minPoint = new Point(Math.min(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()) + dragDiff.getX(), Math.min(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()) + dragDiff.getY());
-    let maxPoint = new Point(Math.max(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()) + dragDiff.getX(), Math.max(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()) + dragDiff.getY()); 
-    return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
-      && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
-  }
+  const isInSelection = (pos, useDrag = true) => {
+    let selectStart = mouseInfo.selectStart;
+    let selectEnd = mouseInfo.selectEnd;
+    let minX = Math.min(selectStart.getX(), selectEnd.getX());
+    let maxX = Math.max(selectStart.getX(), selectEnd.getX());
+    let minY = Math.min(selectStart.getY(), selectEnd.getY());
+    let maxY = Math.max(selectStart.getY(), selectEnd.getY());
+    let minPoint;
+    let maxPoint; 
+    if (useDrag) {
+      let dragEnd = mouseInfo.selectDragEnd;
+      let dragStart = mouseInfo.selectDragStart;
+      let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
+      minPoint = new Point(minX + dragDiff.getX(), minY + dragDiff.getY());
+      maxPoint = new Point(maxX + dragDiff.getX(), maxY + dragDiff.getY()); 
+    } else {
+      minPoint = new Point(minX, minY);
+      maxPoint = new Point(maxX, maxY);
+    }
 
-  const isInDraglessSelection = (pos) => {
-    let minPoint = new Point(Math.min(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()), Math.min(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()));
-    let maxPoint = new Point(Math.max(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()), Math.max(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY())); 
     return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
       && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
   }
@@ -124,13 +139,15 @@ const App = () => {
   const getOverlayMap = () => {
     let overlayMap = {};
     for (let posStr in tileMap) {
-      if (!tileMap[posStr] || !isInDraglessSelection(tileMap[posStr].getPosition())) continue;
+      if (!tileMap[posStr] || !isInSelection(tileMap[posStr].getPosition(), false)) continue;
       overlayMap[posStr] = null;
     }
     for (let posStr in tileMap) {
-      if (!tileMap[posStr] || !isInDraglessSelection(tileMap[posStr].getPosition())) continue;
+      if (!tileMap[posStr] || !isInSelection(tileMap[posStr].getPosition(), false)) continue;
       let pos = tileMap[posStr].getPosition();
-      let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
+      let dragEnd = mouseInfo.selectDragEnd;
+      let dragStart = mouseInfo.selectDragStart;
+      let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
       overlayMap[pos.add(dragDiff).toString()] = tileMap[posStr];
     }
     return overlayMap;
