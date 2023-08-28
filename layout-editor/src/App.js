@@ -23,28 +23,40 @@ const App = () => {
   const [primaryBrush, setPrimaryBrush] = React.useState("floor");
   const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
   const [fillBrush, setFillBrush] = React.useState("floor");
-  const [dragButton, setDragButton] = React.useState(-1);
-  const [selectStart, setSelectStart] = React.useState(new Point(-1, -1));
-  const [selectEnd, setSelectEnd] = React.useState(new Point(-1, -1));
-  const [selectDragStart, setSelectDragStart] = React.useState(new Point(-1, -1));
-  const [selectDragEnd, setSelectDragEnd] = React.useState(new Point(-1, -1));
+  const [mouseInfo, setMouseInfo] = React.useState({
+    dragButton: -1,
+    selectStart: new Point(-1, -1),
+    selectEnd: new Point(-1, -1),
+    selectDragStart: new Point(-1, -1),
+    selectDragEnd: new Point(-1, -1),
+  });
 
   React.useEffect(() => {
+    document.removeEventListener("mousedown", handleMouseDown, []);
+    document.addEventListener("mousedown", handleMouseDown, []);
     document.addEventListener("mouseup", handleMouseUp, []);
     document.addEventListener("keydown", handleKeyPress, []);
-    document.addEventListener("mousedown", handleMouseDown, []);
 
     return () => {
       document.removeEventListener("mouseup", handleMouseUp, []);
       document.removeEventListener("keydown", handleKeyPress, []);
-      document.removeEventListener("mousedown", handleMouseDown, []);
     }
   });
 
+  const handleMouseDown = (e) => {
+    if (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
+    setMouseInfo(prev => ({...prev,
+      selectStart: new Point(-1, -1),
+      selectEnd: new Point(-1, -1)
+    }));
+  }
+  
   const handleMouseUp = () => {
-    setDragButton(-1);
-    let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
-    if (selectStart.toString() !== new Point(-1, -1).toString() && selectEnd.toString() !== new Point(-1, -1).toString()) {
+    setMouseInfo(prev => ({...prev, dragButton: -1}));
+
+    let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), 
+      mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
+    if (mouseInfo.selectStart.toString() !== new Point(-1, -1).toString() && mouseInfo.selectEnd.toString() !== new Point(-1, -1).toString()) {
       let overlayMap = getOverlayMap();
       for (let key in overlayMap) {
         let value = overlayMap[key];
@@ -59,10 +71,12 @@ const App = () => {
         }
       }
 
-      setSelectStart(prev => prev.add(dragDiff));
-      setSelectEnd(prev => prev.add(dragDiff));
-      setSelectDragStart(new Point(-1, -1));
-      setSelectDragEnd(new Point(-1, -1));
+      setMouseInfo(prev => ({...prev, 
+        selectStart: prev.selectStart.add(dragDiff), 
+        selectEnd: prev.selectEnd.add(dragDiff),
+        selectDragStart: new Point(-1, -1),
+        selectDragEnd: new Point(-1, -1),
+      }));
     } 
   }
 
@@ -76,34 +90,33 @@ const App = () => {
           setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
         }
       }
-      setSelectStart(new Point(-1, -1));
-      setSelectEnd(new Point(-1, -1));
+
+      setMouseInfo(prev => ({...prev, 
+        selectStart: new Point(-1, -1),
+        selectEnd: new Point(-1, -1)
+      }));
     }
   }
 
-  const handleMouseDown = (e) => {
-    if (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
-    setSelectStart(new Point(-1, -1));
-    setSelectEnd(new Point(-1, -1));
-  }
-
   const changeTool = (tool) => {
-    setSelectStart(new Point(-1, -1));
-    setSelectEnd(new Point(-1, -1));
+    setMouseInfo(prev => ({...prev,
+      selectStart: new Point(-1, -1),
+      selectEnd: new Point(-1, -1)
+    }));
     setCurrTool(tool);
   }
 
   const isInSelection = (pos) => {
-    let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
-    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()) + dragDiff.getX(), Math.min(selectStart.getY(), selectEnd.getY()) + dragDiff.getY());
-    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()) + dragDiff.getX(), Math.max(selectStart.getY(), selectEnd.getY()) + dragDiff.getY()); 
+    let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
+    let minPoint = new Point(Math.min(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()) + dragDiff.getX(), Math.min(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()) + dragDiff.getY());
+    let maxPoint = new Point(Math.max(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()) + dragDiff.getX(), Math.max(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()) + dragDiff.getY()); 
     return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
       && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
   }
 
   const isInDraglessSelection = (pos) => {
-    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()), Math.min(selectStart.getY(), selectEnd.getY()));
-    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()), Math.max(selectStart.getY(), selectEnd.getY())); 
+    let minPoint = new Point(Math.min(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()), Math.min(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY()));
+    let maxPoint = new Point(Math.max(mouseInfo.selectStart.getX(), mouseInfo.selectEnd.getX()), Math.max(mouseInfo.selectStart.getY(), mouseInfo.selectEnd.getY())); 
     return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
       && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
   }
@@ -117,7 +130,7 @@ const App = () => {
     for (let posStr in tileMap) {
       if (!tileMap[posStr] || !isInDraglessSelection(tileMap[posStr].getPosition())) continue;
       let pos = tileMap[posStr].getPosition();
-      let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
+      let dragDiff = new Point(mouseInfo.selectDragEnd.getX() - mouseInfo.selectDragStart.getX(), mouseInfo.selectDragEnd.getY() - mouseInfo.selectDragStart.getY());
       overlayMap[pos.add(dragDiff).toString()] = tileMap[posStr];
     }
     return overlayMap;
@@ -134,12 +147,12 @@ const App = () => {
         {[...Array(gridSize.getY())].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
-              <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} 
+              <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} 
                 primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
                 fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} 
-                selectStart={selectStart} setSelectStart={setSelectStart} selectEnd={selectEnd} setSelectEnd={setSelectEnd} isInSelection={isInSelection} 
-                selectDragStart={selectDragStart} setSelectDragStart={setSelectDragStart} selectDragEnd={selectDragEnd} setSelectDragEnd={setSelectDragEnd} 
-                getOverlayMap={getOverlayMap} /> )}
+                isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
+              /> 
+            )}
           </Stack>
         )}
       </Box>

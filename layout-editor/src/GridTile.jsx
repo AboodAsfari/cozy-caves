@@ -14,8 +14,8 @@ const GridTile = (props) => {
     currTool,
     setCurrTool,
     layout,
-    dragButton,
-    setDragButton,
+    mouseInfo,
+    setMouseInfo,
     primaryBrush,
     setPrimaryBrush,
     secondaryBrush,
@@ -25,17 +25,19 @@ const GridTile = (props) => {
     gridSize,
     tileMap,
     setTileMap,
-    selectStart,
-    setSelectStart,
-    selectEnd,
-    setSelectEnd,
     isInSelection,
-    selectDragStart,
-    setSelectDragStart,
-    selectDragEnd,
-    setSelectDragEnd,
     getOverlayMap
   } = props;
+  // pos
+  // layout
+  // curr tool
+  // set curr tool
+  // mouseinfo: dragbutton, select start/end, drag start/end with setter
+  // map overlap getter 
+  // is in selection
+  // brushes with setters
+  // tilemap and setter
+  // grid size
 
   const getOutlineClasses = () => {
     let extraClasses = "";
@@ -44,7 +46,7 @@ const GridTile = (props) => {
     if (currTool === Tools.FILL) extraClasses += " Fillable";
     if (currTool === Tools.SELECTOR && isInSelection(pos)) {
       extraClasses += " SelectedTileOutline";
-      if (dragButton === -1 || selectDragStart.toString() !== new Point(-1, -1).toString()) extraClasses += " Draggable";
+      if (mouseInfo.dragButton === -1 || mouseInfo.selectDragStart.toString() !== new Point(-1, -1).toString()) extraClasses += " Draggable";
     }
     return extraClasses;
   }
@@ -81,19 +83,22 @@ const GridTile = (props) => {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
     } else if (currTool === Tools.SELECTOR) {
-      if (isInSelection(pos) && dragButton === -1) {
-        console.log("DRAG")
-        setSelectDragStart(pos);
-        setSelectDragEnd(pos);
-      } else if (dragButton !== -1 && selectDragStart.toString() !== new Point(-1, -1).toString()) {
-        setSelectDragEnd(pos);
+      if (isInSelection(pos) && mouseInfo.dragButton === -1) {
+        setMouseInfo(prev => ({...prev, 
+          selectDragStart: pos,
+          selectDragEnd: pos
+        }));
+      } else if (mouseInfo.dragButton !== -1 && mouseInfo.selectDragStart.toString() !== new Point(-1, -1).toString()) {
+        setMouseInfo(prev => ({...prev, selectDragEnd: pos}));
       } else {
-        if (dragButton === -1) {
-          setSelectStart(pos);
-          setSelectDragStart(new Point(-1, -1));
-          setSelectDragEnd(new Point(-1, -1));
+        if (mouseInfo.dragButton === -1) {
+          setMouseInfo(prev => ({...prev,
+            selectStart: pos,
+            selectDragStart: new Point(-1, -1),
+            selectDragEnd: new Point(-1, -1)
+          }));
         }
-        setSelectEnd(pos);
+        setMouseInfo(prev => ({...prev, selectEnd: pos}));
       }
     } else if (currTool === Tools.PICKER) {
       let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
@@ -138,12 +143,12 @@ const GridTile = (props) => {
       }
     }
 
-    setDragButton(e.button);
+    setMouseInfo(prev => ({...prev, dragButton: e.button}));
   }
 
   return (
     <Box className={"GridTileOutline " + getOutlineClasses()} onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
-      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton, synthetic: true }) }}>
+      onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))} onMouseOver={(e) => { if (mouseInfo.dragButton !== -1) handleMouseDown({ ...e, button: mouseInfo.dragButton, synthetic: true }) }}>
       <Box className={"GridTile " + getTileClasses()} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
           {getLabel()} 
