@@ -24,7 +24,10 @@ const GridTile = (props) => {
     setFillBrush,
     gridSize,
     tileMap,
-    setTileMap
+    setTileMap,
+    setSelectStart,
+    setSelectEnd,
+    isInSelection
   } = props;
 
   const getExtraClasses = () => {
@@ -32,12 +35,11 @@ const GridTile = (props) => {
     if (currTool === Tools.PICKER) extraClasses += " ColorPickable";
     if (currTool === Tools.ERASER) extraClasses += " Erasable";
     if (currTool === Tools.FILL) extraClasses += " Fillable";
+    if (currTool === Tools.SELECTOR && isInSelection(pos)) extraClasses += " SelectedTile";
     return extraClasses;
   }
 
   const handleMouseDown = (e) => {
-    setDragButton(e.button);
-
     if (currTool === Tools.PEN) {
       if (e.button !== 0) return;
       if ((!e.altKey && primaryBrush === "none") || (e.altKey && secondaryBrush === "none")) {
@@ -53,6 +55,8 @@ const GridTile = (props) => {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
     } else if (currTool === Tools.SELECTOR) {
+      if (dragButton === -1) setSelectStart(pos);
+      setSelectEnd(pos);
       // Select tiles
     } else if (currTool === Tools.PICKER) {
       let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
@@ -96,6 +100,8 @@ const GridTile = (props) => {
         } 
       }
     }
+
+    setDragButton(e.button);
   }
 
   return (

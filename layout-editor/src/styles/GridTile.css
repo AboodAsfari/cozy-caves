@@ -1,11 +1,17 @@
 .GridTileOutline {
-    width: 5%;
+    width: 100px;
     aspect-ratio : 1 / 1;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #7da36d;
 }
+
+.SelectedTile { 
+    background-color: #6da4a8;
+    z-index: 1;
+}
+
 .GridTile {
     width: 90%;
     aspect-ratio : 1 / 1;

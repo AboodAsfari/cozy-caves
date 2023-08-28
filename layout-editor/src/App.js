@@ -24,9 +24,12 @@ const App = () => {
   const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
   const [fillBrush, setFillBrush] = React.useState("floor");
   const [dragButton, setDragButton] = React.useState(-1);
+  const [selectStart, setSelectStart] = React.useState(new Point(-1, -1));
+  const [selectEnd, setSelectEnd] = React.useState(new Point(-1, -1));
 
   React.useEffect(() => {
     document.addEventListener("mouseup", handleMouse, []);
+    document.addEventListener("keydown", handleKeyDown, []);
 
     return () => {
       document.removeEventListener("mouseup", handleMouse, []);
@@ -37,10 +40,29 @@ const App = () => {
     setDragButton(-1);
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Delete") {
+      // u are here
+    }
+  }
+
+  const changeTool = (tool) => {
+    setSelectStart(new Point(-1, -1));
+    setSelectEnd(new Point(-1, -1));
+    setCurrTool(tool);
+  }
+
+  const isInSelection = (pos) => {
+    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()), Math.min(selectStart.getY(), selectEnd.getY()));
+    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()), Math.max(selectStart.getY(), selectEnd.getY()));
+    return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
+      && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
+  }
+
   return (
     <Box>
       <AppBar position="sticky" component="nav">
-        <MenuBar currTool={currTool} setCurrTool={setCurrTool} primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} 
+        <MenuBar currTool={currTool} setCurrTool={changeTool} primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} 
           secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} fillBrush={fillBrush} setFillBrush={setFillBrush} />
       </AppBar>
 
@@ -50,7 +72,8 @@ const App = () => {
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} 
                 primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
-                fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} /> )}
+                fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} 
+                setSelectStart={setSelectStart} setSelectEnd={setSelectEnd} isInSelection={isInSelection} /> )}
           </Stack>
         )}
       </Box>
