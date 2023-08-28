@@ -12,7 +12,7 @@ class DungeonBuilder {
     #dungeonSeed; // Seed used for random number generator.
 
     #splitHorizontal; // Boolean dictating whether BSP splits horizontal or verticle
-    #allRooms; // List containing all final spaces created through BSP
+    #allRegions; // List containing all final spaces created through BSP
 
     #rng; // Seeded number generator.
     #roomBuilder; // Room Builder
@@ -36,17 +36,13 @@ class DungeonBuilder {
         this.#rng = seedrandom(this.#dungeonSeed);
         this.#roomBuilder = new RoomBuilder(this.#rng());
         this.#splitHorizontal = this.#rng() > 0.5;
-        this.#allRooms = [];
+        this.#allRegions = [];
     }
 
+    //Setters
     setPreset(preset){
         if (this.#presets[preset]){
-            const [height, width, minGap, maxDepth, totalCoverage] = this.#presets[preset];
-            this.#height = height;
-            this.#width = width;
-            this.#minGap = minGap;
-            this.#maxDepth = maxDepth;
-            this.#totalCoverage = totalCoverage;
+            [this.#height, this.#width, this.#minGap, this.#maxDepth, this.#totalCoverage] = this.#presets[preset];
             this.#dungeonSeed = Math.random();
         }
         return this;
@@ -75,10 +71,19 @@ class DungeonBuilder {
     }
     setSeed(seed){
         this.#dungeonSeed = seed; 
+        this.#rng = seedrandom(this.#dungeonSeed);
+        this.#roomBuilder = new RoomBuilder(this.#rng());
         return this;
     }
 
-    //Keeping range for random partition placement more consistent for better spacing
+    /**
+     * Generates a random split position within the desired range
+     * 
+     * @param min Minimum of desired range
+     * @param max Maximum of desired range
+     * @param minDistance A buffer "normalizing" value 
+     * @returns 
+     */
     #generateSplitPosition(min, max, minDistance) {
         const range = max - min - 2 * minDistance + 1;
         const startPosition = min + minDistance;
@@ -86,9 +91,19 @@ class DungeonBuilder {
         
     }
 
-    #bsp(mapGrid, x, y, w, h, recursions) {
+    /**
+     * Recursive Binary Space Partitioning method. More can be read about this 
+     * inside the module README
+     * 
+     * @param x Left most X value of the current region
+     * @param y Top most Y value of the current region
+     * @param w Width of the current region
+     * @param h Height of the current region
+     * @param recursions Current recursive depth
+     * @returns 
+     */
+    #bsp(x, y, w, h, recursions) {
         //Makes algorithm more likely to alternate between vertical and horizontal partition
-        //Done for more consistent even spread of open spaces
         this.#splitHorizontal = this.#splitHorizontal ? this.#splitHorizontal = this.#rng() > 0.8 : this.#splitHorizontal = this.#rng() > 0.2;
         
         //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
@@ -99,79 +114,96 @@ class DungeonBuilder {
                 this.#splitHorizontal = true;
             }
             else {
-                //Temporary room object just to store parameters to provide to Room Gen Module
-                let roomObj = {
+                //Temporary region object just to store parameters to provide to Room Gen Module
+                let region = {
                     x: x,
                     y: y,
                     width: w,
                     height: h
                 };
-                this.#allRooms.push(roomObj);
+                this.#allRegions.push(region);
                 return;
             }
         }
         
         if (this.#splitHorizontal) {
             const splitPosition = this.#generateSplitPosition(y, y + h, this.#minGap);
-            this.#bsp(mapGrid, x, y, w, splitPosition - y, recursions - 1);
-            this.#bsp(mapGrid, x, splitPosition, w, h - (splitPosition - y), recursions - 1);
+            this.#bsp(x, y, w, splitPosition - y, recursions - 1);
+            this.#bsp(x, splitPosition, w, h - (splitPosition - y), recursions - 1);
         } else {
             const splitPosition = this.#generateSplitPosition(x, x + w, this.#minGap);
-            this.#bsp(mapGrid, x, y, splitPosition - x, h, recursions - 1);
-            this.#bsp(mapGrid, splitPosition, y, w - (splitPosition - x), h, recursions - 1);
+            this.#bsp(x, y, splitPosition - x, h, recursions - 1);
+            this.#bsp(splitPosition, y, w - (splitPosition - x), h, recursions - 1);
         }
     }
 
+    /**
+     * Randomly selects regions from the allRegions list and creates a room to fill the region
+     * 
+     * @returns 
+     */
+    #randomSelection(){
+        let floorCoverage = 0.0;
+        let map = [];
+        while(floorCoverage < this.#totalCoverage){
+            let region = this.#allRegions[Math.floor(this.#rng() * this.#allRegions.length)];
+            let regionArea = region.width * region.height;
+            floorCoverage += (regionArea / (this.#width*this.#height)) * 100;
+            this.#allRegions = this.#allRegions.filter(reg => reg !== region);
+
+            let room = this.#roomConstruction(region.width, region.height, region.x, region.y);
+            map.push(room);
+        }
+        return map;
+    }
+
+    /**
+     * Calculates random position and dimensions from the region dimensions and constructs a Room object
+     * 
+     * @param rW Region width 
+     * @param rH Region Height
+     * @param rX Region X position
+     * @param rY Region Y position
+     * @returns 
+     */
+    #roomConstruction(rW, rH, rX, rY){
+        let roomWid = ((2*rW/3) < this.#minGap) ? Math.floor(this.#rng() * (rW - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (rW - (2*rW/3) + 1)) + Math.floor(2*rW/3);
+        let roomHgt = ((2*rH/3) < this.#minGap) ?  Math.floor(this.#rng() * (rH - this.#minGap + 1)) + this.#minGap: Math.floor(this.#rng() * (rH - (2*rH/3) + 1)) + Math.floor(2*rH/3);
+        let roomX = rX + Math.floor(this.#rng() * (rW - roomWid + 1));
+        let roomY = rY + Math.floor(this.#rng() * (rH - roomHgt + 1));
+        this.#roomBuilder = new RoomBuilder(this.#rng());
+        
+        let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(1, 1)).setAllowOvergrow(false).build();
+        room.setPosition(new Point(roomX, roomY));
+        return room;
+    }
+
+    /**
+     * Builds the dungeon according to the fields set
+     * 
+     * @returns Returns a Map list containing all Rooms
+     */
     build(){
         this.#checkSet();
-        let mapGrid = Array.from({length: this.#height}, () => Array.from({length: this.#width}, () => '_'));
-        this.#bsp(mapGrid, 0, 0, this.#width, this.#height, this.#maxDepth);
-
-        //Room Selection - randomly selects rooms until the overall floor coverage is greater than the total desired floor coverage
-        let floorCoverage = 0.0;
-        let keptRooms = [];
-        for(let rm=Math.floor(this.#rng()*this.#allRooms.length); floorCoverage < this.#totalCoverage; rm=Math.floor(this.#rng()*this.#allRooms.length)){
-            let roomArea = this.#allRooms[rm].width * this.#allRooms[rm].height;
-            floorCoverage += (roomArea / (this.#width*this.#height)) * 100;
-            keptRooms.push(this.#allRooms[rm]);
-            this.#allRooms.splice(rm, 1);
-        }
-
-        //Using room builder to generate random rooms
-        let finalRooms = [];
-        for(let rm = 0; rm < keptRooms.length; rm++){
-            let spaceW = keptRooms[rm].width;
-            let spaceH = keptRooms[rm].height;
-            
-            //Chooses random width and height for room from maximum space to 2 thirds of maximum space
-            //If 2 thirds of max space goes below minGap value then lower limit becomes minGap 
-            keptRooms[rm].width = ((2*spaceW/3) < this.#minGap) ? Math.floor(this.#rng() * (spaceW - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (spaceW - (2*spaceW/3)) + 1) + Math.floor((2*spaceW/3));
-            keptRooms[rm].height = ((2*spaceH/3) < this.#minGap) ? Math.floor(this.#rng() * (spaceH - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (spaceH - (2*spaceH/3)) + 1) + Math.floor((2*spaceH/3));
-
-            const room = this.#roomBuilder.setSize(new Point(keptRooms[rm].width, keptRooms[rm].height)).setLeniency(new Point(1, 1)).setAllowOvergrow(false).build();
-            
-            //Chooses random X and Y position of the room 
-            //Absolute position + relative position within allocated space
-            //Upper limit for each direction is max dimension minus room dimension
-            //Lower limit is 0 to allow for not shifting the room
-            let xPos = keptRooms[rm].x + Math.floor(this.#rng() * (spaceW - keptRooms[rm].width + 1));
-            let yPos = keptRooms[rm].y + Math.floor(this.#rng() * (spaceH - keptRooms[rm].height + 1));
-
-            room.setPosition(new Point(xPos, yPos));
-            finalRooms.push(room);
-        }
-
+        this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
+        let map = this.#randomSelection();
         this.#reset();
 
-        console.log("final room count - " + finalRooms.length);
-        return finalRooms;
+        console.log("final room count - " + map.length); // TESTING ROOM COUNT 
+        return map;
     }
 
+    /**
+     * Resets global fields
+     */
     #reset(){
         this.#splitHorizontal = this.#rng() > 0.5;
-        this.#allRooms = [];
+        this.#allRegions = [];
     }
 
+    /**
+     * Checks that each of the fields has been properly set before building a dungeon
+     */
     #checkSet(){
         if(typeof this.#height === 'undefined'){ throw new Error('Height has not been set');}
         if(typeof this.#width === 'undefined'){ throw new Error('Width has not been set');}
