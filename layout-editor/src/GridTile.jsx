@@ -16,28 +16,14 @@ const GridTile = (props) => {
     layout,
     mouseInfo,
     setMouseInfo,
-    primaryBrush,
-    setPrimaryBrush,
-    secondaryBrush,
-    setSecondaryBrush,
-    fillBrush,
-    setFillBrush,
+    brushInfo,
+    setBrushInfo,
     gridSize,
     tileMap,
     setTileMap,
     isInSelection,
     getOverlayMap
   } = props;
-  // pos
-  // layout
-  // curr tool
-  // set curr tool
-  // mouseinfo: dragbutton, select start/end, drag start/end with setter
-  // map overlap getter 
-  // is in selection
-  // brushes with setters
-  // tilemap and setter
-  // grid size
 
   const getOutlineClasses = () => {
     let extraClasses = "";
@@ -77,12 +63,13 @@ const GridTile = (props) => {
   const handleMouseDown = (e) => {
     if (currTool === Tools.PEN) {
       if (e.button !== 0) return;
-      if ((!e.altKey && primaryBrush === "none") || (e.altKey && secondaryBrush === "none")) {
+      if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
         layout.removeTile(pos);
         setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        setMouseInfo(prev => ({...prev, dragButton: e.button}));
         return;
       };
-      let newTileType = !e.altKey ? primaryBrush : secondaryBrush;
+      let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
       let newTile = new Tile(newTileType, pos); 
       layout.addTile(newTile, -1);
       setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
@@ -111,11 +98,11 @@ const GridTile = (props) => {
       let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
       if (e.button === 1) return;
       else if (e.button === 0) {
-        if (!e.altKey) setPrimaryBrush(tileType);
-        else setSecondaryBrush(tileType);
+        if (!e.altKey) setBrushInfo(prev => ({...prev, primaryBrush: tileType}));
+        else setBrushInfo(prev => ({...prev, secondaryBrush: tileType}));
         setCurrTool(Tools.PEN);
       } else if (e.button === 2) {
-        setFillBrush(tileType);
+        setBrushInfo(prev => ({...prev, fillBrush: tileType}));
         setCurrTool(Tools.FILL);
       }
       
@@ -126,8 +113,8 @@ const GridTile = (props) => {
       while (toFill.length > 0) {
         let curr = toFill.pop(0);
         added.push(curr.toString());
-        let newTile = new Tile(fillBrush, pos); 
-        if (fillBrush === "none") {
+        let newTile = new Tile(brushInfo.fillBrush, pos); 
+        if (brushInfo.fillBrush === "none") {
           layout.removeTile(curr);
           setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
         } else {

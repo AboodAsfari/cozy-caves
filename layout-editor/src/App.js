@@ -20,15 +20,20 @@ const App = () => {
   const layout = React.useRef(new Layout()).current;
   const [tileMap, setTileMap] = React.useState({});
   const [currTool, setCurrTool] = React.useState(Tools.PEN);
-  const [primaryBrush, setPrimaryBrush] = React.useState("floor");
-  const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
-  const [fillBrush, setFillBrush] = React.useState("floor");
+  // const [primaryBrush, setPrimaryBrush] = React.useState("floor");
+  // const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
+  // const [fillBrush, setFillBrush] = React.useState("floor");
+  const [brushInfo, setBrushInfo] = React.useState({
+    primaryBrush: "floor",
+    secondaryBrush: "wall",
+    fillBrush: "floor"
+  })
   const [mouseInfo, setMouseInfo] = React.useState({
     dragButton: -1,
     selectStart: new Point(-1, -1),
     selectEnd: new Point(-1, -1),
     selectDragStart: new Point(-1, -1),
-    selectDragEnd: new Point(-1, -1),
+    selectDragEnd: new Point(-1, -1)
   });
 
   React.useEffect(() => {
@@ -156,18 +161,16 @@ const App = () => {
   return (
     <Box>
       <AppBar position="sticky" component="nav">
-        <MenuBar currTool={currTool} setCurrTool={changeTool} primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} 
-          secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} fillBrush={fillBrush} setFillBrush={setFillBrush} />
+        <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} />
       </AppBar>
 
       <Box sx={{ mt: 2.5 }} id="grid">
         {[...Array(gridSize.getY())].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
-              <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} 
-                primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
-                fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} 
-                isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
+              <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
+                mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} 
+                tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
               /> 
             )}
           </Stack>
