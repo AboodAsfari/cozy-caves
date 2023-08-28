@@ -43,6 +43,20 @@ const App = () => {
     setDragButton(-1);
     let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
     if (selectStart.toString() !== new Point(-1, -1).toString() && selectEnd.toString() !== new Point(-1, -1).toString()) {
+      let overlayMap = getOverlayMap();
+      for (let key in overlayMap) {
+        let value = overlayMap[key];
+        let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
+        if (value === null) {
+          layout.removeTile(pos);
+          setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        } else {
+          value = value.clone(pos);
+          layout.addTile(value, -1);
+          setTileMap(prev => ({...prev, [pos.toString()]: value}));
+        }
+      }
+
       setSelectStart(prev => prev.add(dragDiff));
       setSelectEnd(prev => prev.add(dragDiff));
       setSelectDragStart(new Point(-1, -1));
@@ -79,6 +93,28 @@ const App = () => {
       && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
   }
 
+  const isInDraglessSelection = (pos) => {
+    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()), Math.min(selectStart.getY(), selectEnd.getY()));
+    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()), Math.max(selectStart.getY(), selectEnd.getY())); 
+    return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
+      && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
+  }
+
+  const getOverlayMap = () => {
+    let overlayMap = {};
+    for (let posStr in tileMap) {
+      if (!tileMap[posStr] || !isInDraglessSelection(tileMap[posStr].getPosition())) continue;
+      overlayMap[posStr] = null;
+    }
+    for (let posStr in tileMap) {
+      if (!tileMap[posStr] || !isInDraglessSelection(tileMap[posStr].getPosition())) continue;
+      let pos = tileMap[posStr].getPosition();
+      let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
+      overlayMap[pos.add(dragDiff).toString()] = tileMap[posStr];
+    }
+    return overlayMap;
+  }
+
   return (
     <Box>
       <AppBar position="sticky" component="nav">
@@ -94,7 +130,8 @@ const App = () => {
                 primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
                 fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} 
                 selectStart={selectStart} setSelectStart={setSelectStart} selectEnd={selectEnd} setSelectEnd={setSelectEnd} isInSelection={isInSelection} 
-                selectDragStart={selectDragStart} setSelectDragStart={setSelectDragStart} selectDragEnd={selectDragEnd} setSelectDragEnd={setSelectDragEnd} /> )}
+                selectDragStart={selectDragStart} setSelectDragStart={setSelectDragStart} selectDragEnd={selectDragEnd} setSelectDragEnd={setSelectDragEnd} 
+                getOverlayMap={getOverlayMap} /> )}
           </Stack>
         )}
       </Box>

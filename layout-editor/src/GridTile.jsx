@@ -33,7 +33,8 @@ const GridTile = (props) => {
     selectDragStart,
     setSelectDragStart,
     selectDragEnd,
-    setSelectDragEnd
+    setSelectDragEnd,
+    getOverlayMap
   } = props;
 
   const getOutlineClasses = () => {
@@ -50,9 +51,18 @@ const GridTile = (props) => {
 
   const getTileClasses = () => {
     let extraClasses = "";
-    if (!!tileMap[pos]) extraClasses += " FilledTile";
+    if ((getOverlayMap()[pos.toString()] !== null) && (!!tileMap[pos] || getOverlayMap()[pos.toString()] !== undefined)) extraClasses += " FilledTile";
     if (currTool === Tools.SELECTOR && isInSelection(pos)) extraClasses += " SelectedTile";
     return extraClasses;
+  }
+
+  const getLabel = () => {
+    let overlayMap = getOverlayMap();
+    if (overlayMap[pos.toString()] === null || (overlayMap[pos.toString()] === undefined && !tileMap[pos.toString()])) return ""; 
+    let tileType;
+    if (overlayMap[pos.toString()] !== undefined) tileType = overlayMap[pos.toString()].getTileType();
+    else tileType = tileMap[pos.toString()].getTileType();
+    return tileType === "wall" ? "W" : "F";
   }
 
   const handleMouseDown = (e) => {
@@ -136,7 +146,7 @@ const GridTile = (props) => {
       onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton, synthetic: true }) }}>
       <Box className={"GridTile " + getTileClasses()} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
-          {!tileMap[pos]  ? "" : tileMap[pos].getTileType() === "floor" ? "F" : "W"} 
+          {getLabel()} 
         </Typography> 
       </Box>
     </Box>
