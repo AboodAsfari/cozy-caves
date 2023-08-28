@@ -13,10 +13,10 @@ Recursively divides the bounding space into smaller and smaller regions until th
 
 **seed** - Determines the sequence of randomly generated numbers throughout the algorithm, by default will be a purely randomly generated number but setting to a particular value allows for reproducible results. Current testing setup shows a sequence of maps being generated all through the same seed, new executions with the same seed will produce the same sequence of maps - Once integration with other modules is done and testing setup is no longer needed then a single reproducible map should be generated.
 
-**totalCoverage** - Determines the desired amount of the overall map area that should be covered by rooms. 
+**totalCoverage** - Determines the desired percentage of the overall map area that should be covered by rooms. 
 
 ## Integration with other modules
-TBD
+After generating a map layout through BSP, random regions are selected to be kept until the desired total coverage is met. Regions that are kept are then used to calculate random dimensions to pass onto the Room Generation module to create Room objects which are then stored in a list. This is then passed onto the Hallway Generation module to create connections between rooms and returned back containing all Rooms and Hallways, this is finally returned to the Rendering Module.   
 
 ## Notes on algorithm behaviour
 
