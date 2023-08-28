@@ -32,10 +32,12 @@ const App = () => {
   React.useEffect(() => {
     document.addEventListener("mouseup", handleMouseUp, []);
     document.addEventListener("keydown", handleKeyPress, []);
+    document.addEventListener("mousedown", handleMouseDown, []);
 
     return () => {
       document.removeEventListener("mouseup", handleMouseUp, []);
       document.removeEventListener("keydown", handleKeyPress, []);
+      document.removeEventListener("mousedown", handleMouseDown, []);
     }
   });
 
@@ -77,6 +79,12 @@ const App = () => {
       setSelectStart(new Point(-1, -1));
       setSelectEnd(new Point(-1, -1));
     }
+  }
+
+  const handleMouseDown = (e) => {
+    if (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
+    setSelectStart(new Point(-1, -1));
+    setSelectEnd(new Point(-1, -1));
   }
 
   const changeTool = (tool) => {
@@ -122,7 +130,7 @@ const App = () => {
           secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} fillBrush={fillBrush} setFillBrush={setFillBrush} />
       </AppBar>
 
-      <Box sx={{ mt: 2.5 }}>
+      <Box sx={{ mt: 2.5 }} id="grid">
         {[...Array(gridSize.getY())].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
