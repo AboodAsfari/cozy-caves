@@ -25,9 +25,15 @@ const GridTile = (props) => {
     gridSize,
     tileMap,
     setTileMap,
+    selectStart,
     setSelectStart,
+    selectEnd,
     setSelectEnd,
-    isInSelection
+    isInSelection,
+    selectDragStart,
+    setSelectDragStart,
+    selectDragEnd,
+    setSelectDragEnd
   } = props;
 
   const getExtraClasses = () => {
@@ -55,9 +61,20 @@ const GridTile = (props) => {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
     } else if (currTool === Tools.SELECTOR) {
-      if (dragButton === -1) setSelectStart(pos);
-      setSelectEnd(pos);
-      // Select tiles
+      if (isInSelection(pos) && dragButton === -1) {
+        console.log("DRAG")
+        setSelectDragStart(pos);
+        setSelectDragEnd(pos);
+      } else if (dragButton !== -1 && selectDragStart.toString() !== new Point(-1, -1).toString()) {
+        setSelectDragEnd(pos);
+      } else {
+        if (dragButton === -1) {
+          setSelectStart(pos);
+          setSelectDragStart(new Point(-1, -1));
+          setSelectDragEnd(new Point(-1, -1));
+        }
+        setSelectEnd(pos);
+      }
     } else if (currTool === Tools.PICKER) {
       let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
       if (e.button === 1) return;
@@ -106,7 +123,7 @@ const GridTile = (props) => {
 
   return (
     <Box className={"GridTileOutline " + getExtraClasses()} onDragStart={e => e.preventDefault()} onMouseDown={handleMouseDown} onContextMenu={(e) => e.preventDefault()}
-      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton }) }}>
+      onMouseUp={() => setDragButton(-1)} onMouseOver={(e) => { if (dragButton !== -1) handleMouseDown({ ...e, button: dragButton, synthetic: true }) }}>
       <Box className={"GridTile" + (!!tileMap[pos] ? " FilledTile" : "")} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
           {!tileMap[pos]  ? "" : tileMap[pos].getTileType() === "floor" ? "F" : "W"} 

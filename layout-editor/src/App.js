@@ -26,23 +26,42 @@ const App = () => {
   const [dragButton, setDragButton] = React.useState(-1);
   const [selectStart, setSelectStart] = React.useState(new Point(-1, -1));
   const [selectEnd, setSelectEnd] = React.useState(new Point(-1, -1));
+  const [selectDragStart, setSelectDragStart] = React.useState(new Point(-1, -1));
+  const [selectDragEnd, setSelectDragEnd] = React.useState(new Point(-1, -1));
 
   React.useEffect(() => {
-    document.addEventListener("mouseup", handleMouse, []);
-    document.addEventListener("keydown", handleKeyDown, []);
+    document.addEventListener("mouseup", handleMouseUp, []);
+    document.addEventListener("keydown", handleKeyPress, []);
 
     return () => {
-      document.removeEventListener("mouseup", handleMouse, []);
+      document.removeEventListener("mouseup", handleMouseUp, []);
+      document.removeEventListener("keydown", handleKeyPress, []);
     }
   });
 
-  const handleMouse = () => {
+  const handleMouseUp = () => {
     setDragButton(-1);
+    let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
+    if (selectStart.toString() !== new Point(-1, -1).toString() && selectEnd.toString() !== new Point(-1, -1).toString()) {
+      setSelectStart(prev => prev.add(dragDiff));
+      setSelectEnd(prev => prev.add(dragDiff));
+      setSelectDragStart(new Point(-1, -1));
+      setSelectDragEnd(new Point(-1, -1));
+    } 
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Delete") {
-      // u are here
+  const handleKeyPress = (e) => {
+    if (currTool === Tools.SELECTOR && e.key === "Delete") {
+      for (let posStr in tileMap) {
+        if (!tileMap[posStr]) continue;
+        let pos = tileMap[posStr].getPosition();
+        if (isInSelection(pos)) {
+          layout.removeTile(pos);
+          setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        }
+      }
+      setSelectStart(new Point(-1, -1));
+      setSelectEnd(new Point(-1, -1));
     }
   }
 
@@ -53,8 +72,9 @@ const App = () => {
   }
 
   const isInSelection = (pos) => {
-    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()), Math.min(selectStart.getY(), selectEnd.getY()));
-    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()), Math.max(selectStart.getY(), selectEnd.getY()));
+    let dragDiff = new Point(selectDragEnd.getX() - selectDragStart.getX(), selectDragEnd.getY() - selectDragStart.getY());
+    let minPoint = new Point(Math.min(selectStart.getX(), selectEnd.getX()) + dragDiff.getX(), Math.min(selectStart.getY(), selectEnd.getY()) + dragDiff.getY());
+    let maxPoint = new Point(Math.max(selectStart.getX(), selectEnd.getX()) + dragDiff.getX(), Math.max(selectStart.getY(), selectEnd.getY()) + dragDiff.getY()); 
     return minPoint.getX() <= pos.getX() && pos.getX() <= maxPoint.getX() 
       && minPoint.getY() <= pos.getY() && pos.getY() <= maxPoint.getY();
   }
@@ -68,12 +88,13 @@ const App = () => {
 
       <Box sx={{ mt: 2.5 }}>
         {[...Array(gridSize.getY())].map((x, i) => 
-          <Stack direction="row" key={i} sx={{ ml: 2, mt: "-4px" }} spacing="-4px">
+          <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} currTool={currTool} setCurrTool={setCurrTool} layout={layout} dragButton={dragButton} setDragButton={setDragButton} 
                 primaryBrush={primaryBrush} setPrimaryBrush={setPrimaryBrush} secondaryBrush={secondaryBrush} setSecondaryBrush={setSecondaryBrush} 
                 fillBrush={fillBrush} setFillBrush={setFillBrush} tileMap={tileMap} setTileMap={setTileMap} gridSize={gridSize} 
-                setSelectStart={setSelectStart} setSelectEnd={setSelectEnd} isInSelection={isInSelection} /> )}
+                selectStart={selectStart} setSelectStart={setSelectStart} selectEnd={selectEnd} setSelectEnd={setSelectEnd} isInSelection={isInSelection} 
+                selectDragStart={selectDragStart} setSelectDragStart={setSelectDragStart} selectDragEnd={selectDragEnd} setSelectDragEnd={setSelectDragEnd} /> )}
           </Stack>
         )}
       </Box>
