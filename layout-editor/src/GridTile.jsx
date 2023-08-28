@@ -60,83 +60,106 @@ const GridTile = (props) => {
     if (mouseInfo.dragButton !== -1) handleMouseDown(syntheticEvent);
   }
 
-  const handleMouseDown = (e) => {
-    if (currTool === Tools.PEN) {
-      if (e.button !== 0) return;
-      if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
-        layout.removeTile(pos);
-        setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-        setMouseInfo(prev => ({...prev, dragButton: e.button}));
-        return;
-      };
-      let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
-      let newTile = new Tile(newTileType, pos); 
-      layout.addTile(newTile, -1);
-      setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
-    } else if (currTool === Tools.ERASER) {
+  const handlePen = (e) => {
+    if (e.button !== 0) return;
+    if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-    } else if (currTool === Tools.SELECTOR) {
-      if (isInSelection(pos) && mouseInfo.dragButton === -1) {
-        setMouseInfo(prev => ({...prev, 
-          selectDragStart: pos,
-          selectDragEnd: pos
+      setMouseInfo(prev => ({...prev, dragButton: e.button}));
+      return;
+    };
+    let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
+    let newTile = new Tile(newTileType, pos); 
+    layout.addTile(newTile, -1);
+    setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
+  }
+
+  const handleSelector = (e) => {
+    if (isInSelection(pos) && mouseInfo.dragButton === -1) {
+      setMouseInfo(prev => ({...prev, 
+        selectDragStart: pos,
+        selectDragEnd: pos
+      }));
+    } else if (mouseInfo.dragButton !== -1 && mouseInfo.selectDragStart.toString() !== new Point(-1, -1).toString()) {
+      setMouseInfo(prev => ({...prev, selectDragEnd: pos}));
+    } else {
+      if (mouseInfo.dragButton === -1) {
+        setMouseInfo(prev => ({...prev,
+          selectStart: pos,
+          selectDragStart: new Point(-1, -1),
+          selectDragEnd: new Point(-1, -1)
         }));
-      } else if (mouseInfo.dragButton !== -1 && mouseInfo.selectDragStart.toString() !== new Point(-1, -1).toString()) {
-        setMouseInfo(prev => ({...prev, selectDragEnd: pos}));
-      } else {
-        if (mouseInfo.dragButton === -1) {
-          setMouseInfo(prev => ({...prev,
-            selectStart: pos,
-            selectDragStart: new Point(-1, -1),
-            selectDragEnd: new Point(-1, -1)
-          }));
-        }
-        setMouseInfo(prev => ({...prev, selectEnd: pos}));
       }
-    } else if (currTool === Tools.PICKER) {
-      let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
-      if (e.button === 1) return;
-      else if (e.button === 0) {
-        if (!e.altKey) setBrushInfo(prev => ({...prev, primaryBrush: tileType}));
-        else setBrushInfo(prev => ({...prev, secondaryBrush: tileType}));
-        setCurrTool(Tools.PEN);
-      } else if (e.button === 2) {
-        setBrushInfo(prev => ({...prev, fillBrush: tileType}));
-        setCurrTool(Tools.FILL);
+      setMouseInfo(prev => ({...prev, selectEnd: pos}));
+    }
+  }
+
+  const handlePicker = (e) => {
+    let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
+    if (e.button === 1) return;
+    else if (e.button === 0) {
+      if (!e.altKey) setBrushInfo(prev => ({...prev, primaryBrush: tileType}));
+      else setBrushInfo(prev => ({...prev, secondaryBrush: tileType}));
+      setCurrTool(Tools.PEN);
+    } else if (e.button === 2) {
+      setBrushInfo(prev => ({...prev, fillBrush: tileType}));
+      setCurrTool(Tools.FILL);
+    }
+  }
+
+  const handleFill = (e) => {
+    let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
+    let toFill = [pos];
+    let added = [];
+    while (toFill.length > 0) {
+      let curr = toFill.pop(0);
+      added.push(curr.toString());
+      let newTile = new Tile(brushInfo.fillBrush, pos); 
+      if (brushInfo.fillBrush === "none") {
+        layout.removeTile(curr);
+        setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
+      } else {
+        layout.addTile(newTile, -1);
+        setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
       }
       
-    } else if (currTool === Tools.FILL) {
-      let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
-      let toFill = [pos];
-      let added = [];
-      while (toFill.length > 0) {
-        let curr = toFill.pop(0);
-        added.push(curr.toString());
-        let newTile = new Tile(brushInfo.fillBrush, pos); 
-        if (brushInfo.fillBrush === "none") {
-          layout.removeTile(curr);
-          setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
-        } else {
-          layout.addTile(newTile, -1);
-          setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
-        }
+      let directions = [ new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1) ];
+      for (let dir of directions) {
+        let newPos = curr.add(dir);
+        if (newPos.getX() < 0 || newPos.getX() >= gridSize.getX() || newPos.getY() < 0 || newPos.getY() >= gridSize.getY()) continue;     
         
-        let directions = [ new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1) ];
-        for (let dir of directions) {
-          let newPos = curr.add(dir);
-          if (newPos.getX() < 0 || newPos.getX() >= gridSize.getX() || newPos.getY() < 0 || newPos.getY() >= gridSize.getY()) continue;     
-          
-          let skipPoint = false;
-          for (let point of toFill) if (point.toString() === newPos.toString()) skipPoint = true;
-          if (skipPoint) continue;
+        let skipPoint = false;
+        for (let point of toFill) if (point.toString() === newPos.toString()) skipPoint = true;
+        if (skipPoint) continue;
 
-          if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tileMap[newPos.toString()]) || 
-            (!!tileMap[newPos.toString()] && tileMap[newPos.toString()].getTileType() === typeToFill))) toFill.push(newPos);
-        } 
-      }
+        if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tileMap[newPos.toString()]) || 
+          (!!tileMap[newPos.toString()] && tileMap[newPos.toString()].getTileType() === typeToFill))) toFill.push(newPos);
+      } 
     }
+  }
 
+  const handleMouseDown = (e) => {
+    switch (currTool) {
+      case Tools.PEN:
+        handlePen(e);
+        break;
+      case Tools.ERASER:
+        layout.removeTile(pos);
+        setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        break;
+      case Tools.SELECTOR:
+        handleSelector(e);
+        break;
+      case Tools.PICKER:
+        handlePicker(e);
+        break;
+      case Tools.FILL:
+        handleFill(e);
+        break;
+      default:
+        break;
+    }
+    
     setMouseInfo(prev => ({...prev, dragButton: e.button}));
   }
 
