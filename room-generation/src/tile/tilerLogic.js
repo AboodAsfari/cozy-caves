@@ -36,29 +36,50 @@ const getNeighboringWall = (pos, room, posChange) => {
     return null; 
 };
 
+const getNeighbor = (pos, room, posChange) => {
+    let neighbor = room.getTile(pos.add(posChange));
+    if (neighbor) return neighbor;
+    return null;
+}
+
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
     () => TileID.FLOOR,
     (tile, room) => {
         let pos = tile.getPosition();
-        let leftNeighbor =  getNeighboringWall(pos, room, new Point(-1, 0));
-        let rightNeighbor = getNeighboringWall(pos, room, new Point(1, 0));
-        let topNeighbor = getNeighboringWall(pos, room, new Point(0, -1));
-        let bottomNeighbor = getNeighboringWall(pos, room, new Point(0, 1));
+        let leftWallNeighbor =  getNeighboringWall(pos, room, new Point(-1, 0));
+        let rightWallNeighbor = getNeighboringWall(pos, room, new Point(1, 0));
+        let topWallNeighbor = getNeighboringWall(pos, room, new Point(0, -1));
+        let bottomWallNeighbor = getNeighboringWall(pos, room, new Point(0, 1));
+        let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0));
+        let rightNeighbor = getNeighbor(pos, room, new Point(1, 0));
+        let topNeighbor = getNeighbor(pos, room, new Point(0, -1));
+        let bottomNeighbor = getNeighbor(pos, room, new Point(0, 1)); 
 
-        if (rightNeighbor && bottomNeighbor) {
+        if (rightWallNeighbor && bottomWallNeighbor) {
             tile.setScale(new Point(1, 1));
             return TileID.CORNER_WALL;
-        } else if (leftNeighbor && bottomNeighbor) {
+        } else if (leftWallNeighbor && bottomWallNeighbor) {
             tile.setScale(new Point(-1, 1));
             return TileID.CORNER_WALL;
-        } else if (leftNeighbor && topNeighbor) {
+        } else if (leftWallNeighbor && topWallNeighbor) {
             tile.setScale(new Point(-1, -1));
             return TileID.CORNER_WALL;
-        } else if (rightNeighbor && topNeighbor) {
+        } else if (rightWallNeighbor && topWallNeighbor) {
             tile.setScale(new Point(1, -1));
             return TileID.CORNER_WALL;
-        } else return TileID.EDGE_WALL;
+        } else if (!rightNeighbor) {
+            tile.setScale(new Point(-1, 1));
+            return TileID.EDGE_WALL;
+        } else if (!topNeighbor) {
+            tile.setRotation(90);
+            return TileID.EDGE_WALL;
+        } else if (!bottomNeighbor) {
+            tile.setRotation(-90);
+            return TileID.EDGE_WALL;
+        }
+        
+        return TileID.EDGE_WALL;
     }
 );
 
