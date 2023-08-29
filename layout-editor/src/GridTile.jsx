@@ -7,6 +7,8 @@ import Tools from "./Tools";
 import { Point } from "@cozy-caves/utils";
 import PenAction from "./actions/penAction";
 import SelectAction from "./actions/selectAction";
+
+import CircleIcon from '@mui/icons-material/Circle';
   
 const Tile = require("@cozy-caves/room-generation").Tile;
 
@@ -59,6 +61,11 @@ const GridTile = (props) => {
     if (overlayValue !== undefined) tileType = overlayValue.getTileType();
     else tileType = tileMap[pos.toString()].getTileType();
     return tileType === "wall" ? "W" : "F";
+  }
+
+  const getPartitionInfo = () => {
+    if (!tileMap[pos.toString()]) return null;
+    return layout.getPartitionDisplayInfo()[tileMap[pos.toString()].getPartitionNum() + 2];
   }
 
   const handleMouseOver = (e) => {
@@ -218,9 +225,10 @@ const GridTile = (props) => {
     <Box className={"GridTileOutline " + getOutlineClasses()} onMouseDown={handleMouseDown} onMouseOver={handleMouseOver}
       onDragStart={e => e.preventDefault()} onContextMenu={handleContextMenu} onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))}>
       <Box className={"GridTile " + getTileClasses()} onContextMenu={(e) => e.preventDefault()}>
-        <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
-          {getLabel()} 
+        <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none", position: "absolute", zIndex: 1 }} > 
+          {getLabel()}
         </Typography> 
+        {!!tileMap[pos.toString()] && <CircleIcon sx={{ position: "absolute", fontSize: 70, color: getPartitionInfo() }} />}
       </Box>
     </Box>
   );
