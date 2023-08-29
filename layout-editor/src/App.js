@@ -19,6 +19,7 @@ import DragAction from "./actions/dragAction";
 
 import CircleIcon from '@mui/icons-material/Circle';
 import CheckIcon from '@mui/icons-material/Check';
+import SelectAction from "./actions/selectAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -57,11 +58,18 @@ const App = () => {
 
   const handleMouseDown = (e) => {
     if (typeof e.target.className !== "string" || partitionAssigner !== null) return;
-    if (!e.target.className || e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
-    setMouseInfo(prev => ({...prev,
-      selectStart: new Point(-1, -1),
-      selectEnd: new Point(-1, -1)
-    }));
+    if (e.target.className && (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline"))) return;
+
+    if (mouseInfo.selectEnd.toString() !== "-1,-1") {
+      undoStack.push(new SelectAction(mouseInfo.selectStart, mouseInfo.selectEnd));
+      undoStack[undoStack.length - 1].redoSelectStart = new Point(-1, -1);
+      undoStack[undoStack.length - 1].redoSelectEnd = new Point(-1, -1);
+
+      setMouseInfo(prev => ({...prev,
+        selectStart: new Point(-1, -1),
+        selectEnd: new Point(-1, -1)
+      }));
+    }
   }
 
   const handleMouseUp = () => {
@@ -131,12 +139,12 @@ const App = () => {
     } else if (e.ctrlKey && e.key === "z") {
       if (undoStack.length === 0) return;
       let action = undoStack.pop();
-      action.undo(layout, setTileMap, setMouseInfo);
+      action.undo(layout, setTileMap, setMouseInfo, changeTool);
       redoStack.push(action);
     } else if (e.ctrlKey && e.key === "y") {
       if (redoStack.length === 0) return;
       let action = redoStack.pop();
-      action.redo(layout, setTileMap, setMouseInfo);
+      action.redo(layout, setTileMap, setMouseInfo, changeTool);
       undoStack.push(action);
     }
   }
@@ -146,6 +154,7 @@ const App = () => {
       selectStart: new Point(-1, -1),
       selectEnd: new Point(-1, -1)
     }));
+
     setCurrTool(tool);
   }
 
@@ -191,7 +200,7 @@ const App = () => {
   }
 
   const handlePartitionChange = (partitionNum) => {
-    if (mouseInfo.selectEnd.toString() !== "-1,-1") {
+    if (isInSelection(partitionAssigner.pos) && mouseInfo.selectEnd.toString() !== "-1,-1") {
       for (let key in tileMap) {
         if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
         let tile = tileMap[key]; 

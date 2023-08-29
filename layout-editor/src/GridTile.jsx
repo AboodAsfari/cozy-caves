@@ -70,7 +70,7 @@ const GridTile = (props) => {
     let tile;
     if (overlayValue !== undefined) tile = overlayValue;
     else tile = tileMap[pos.toString()];
-    
+
     let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
     return <CircleIcon sx={{ position: "absolute", fontSize: 70, color: partitionInfo.color }} />
   }
@@ -86,7 +86,7 @@ const GridTile = (props) => {
     let lastAction = undoStack[undoStack.length - 1];
     let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
     if (mouseInfo.dragButton === -1 || swappedBrushes) {
-      undoStack.push(new PenAction(!e.altKey));
+      undoStack.push(new PenAction(!e.altKey, Tools.PEN));
       redoStack.splice(0, redoStack.length);
     } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
     
@@ -109,7 +109,7 @@ const GridTile = (props) => {
 
   const handleEraser = (e) => {
     if (mouseInfo.dragButton === -1) {
-      undoStack.push(new PenAction(false));
+      undoStack.push(new PenAction(false, Tools.ERASER));
       redoStack.splice(0, redoStack.length);
     } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
     
@@ -158,7 +158,9 @@ const GridTile = (props) => {
   }
 
   const handleFill = (e) => {
-    undoStack.push(new PenAction(false));
+    if (e.synthetic) return;
+
+    undoStack.push(new PenAction(false, Tools.FILL));
     redoStack.splice(0, redoStack.length);
 
     let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";

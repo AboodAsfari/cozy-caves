@@ -1,3 +1,5 @@
+import Tools from "../Tools";
+
 const { Point } = require("@cozy-caves/utils");
 const Action = require("./action");
 
@@ -13,7 +15,9 @@ class SelectAction extends Action {
         this.#selectEnd = selectEnd;
     }
 
-    undo(layout, setTileMap, setMouseInfo) {
+    undo(layout, setTileMap, setMouseInfo, setCurrTool) {
+        if (this.#selectEnd.toString() !== "-1,-1") setCurrTool(Tools.SELECTOR);
+
         setMouseInfo(prev => ({...prev,
             selectStart: this.#selectStart,
             selectEnd: this.#selectEnd,
@@ -22,7 +26,9 @@ class SelectAction extends Action {
         }));
     }
 
-    redo(layout, setTileMap, setMouseInfo) {
+    redo(layout, setTileMap, setMouseInfo, setCurrTool) {
+        setCurrTool(Tools.SELECTOR);
+
         setMouseInfo(prev => ({...prev,
             selectStart: this.redoSelectStart,
             selectEnd: this.redoSelectEnd,

@@ -1,6 +1,6 @@
 class Action {
-    undo(layout, setTileMap, setMouseInfo) { }
-    redo(layout, setTileMap, setMouseInfo) { }
+    undo(layout, setTileMap, setMouseInfo, setCurrTool) { }
+    redo(layout, setTileMap, setMouseInfo, setCurrTool) { }
     
     fillTileMap(list, layout, setTileMap) {
         list.forEach(tilePair => {
