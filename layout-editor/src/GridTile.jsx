@@ -217,7 +217,8 @@ const GridTile = (props) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    if (currTool !== Tools.PEN && (currTool !== Tools.SELECTOR || (mouseInfo.selectDragStart.toString() !== "-1,-1" || mouseInfo.selectDragEnd.toString() !== "-1,-1"))) return;
+    let isDragging = (mouseInfo.selectDragStart.toString() !== "-1,-1" || mouseInfo.selectDragEnd.toString() !== "-1,-1");
+    if (!tileMap[pos.toString()] || (currTool !== Tools.PEN && (currTool !== Tools.SELECTOR || isDragging))) return;
     setPartitionAssigner({ mouseX: e.clientX, mouseY: e.clientY, pos: pos });
   }
 
