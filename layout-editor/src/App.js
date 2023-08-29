@@ -208,8 +208,8 @@ const App = () => {
       for (let key in tileMap) {
         if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
         let tile = tileMap[key]; 
-        action.oldTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: tile.getPartitionNum() });
-        action.newTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: partitionNum });
+        action.oldTiles.push({ pos: tile.getPosition(), tile, partitionNum: tile.getPartitionNum() });
+        action.newTiles.push({ pos: tile.getPosition(), tile, partitionNum: partitionNum });
         tile.setPartitionNum(partitionNum);
         layout.updateTile(tile);
       }
