@@ -70,6 +70,7 @@ class RandomGenerator {
 
 }
 
+// this it inefficient
 function populateRoom(room) {
     return new RandomGenerator(room);
 }
