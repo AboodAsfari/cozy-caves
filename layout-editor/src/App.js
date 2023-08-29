@@ -20,6 +20,7 @@ import DragAction from "./actions/dragAction";
 import CircleIcon from '@mui/icons-material/Circle';
 import CheckIcon from '@mui/icons-material/Check';
 import SelectAction from "./actions/selectAction";
+import PenAction from "./actions/penAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -200,15 +201,22 @@ const App = () => {
   }
 
   const handlePartitionChange = (partitionNum) => {
+    let action = new PenAction(false, null);
+    undoStack.push(action);
+
     if (isInSelection(partitionAssigner.pos) && mouseInfo.selectEnd.toString() !== "-1,-1") {
       for (let key in tileMap) {
         if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
         let tile = tileMap[key]; 
+        action.oldTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: tile.getPartitionNum() });
+        action.newTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: partitionNum });
         tile.setPartitionNum(partitionNum);
         layout.updateTile(tile);
       }
     } else {
       let tile = tileMap[partitionAssigner.pos.toString()]; 
+      action.oldTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: tile.getPartitionNum() });
+      action.newTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: partitionNum });
       tile.setPartitionNum(partitionNum);
       layout.updateTile(tile);
     }

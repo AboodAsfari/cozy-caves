@@ -18,7 +18,7 @@ class PenAction extends Action {
     }
 
     redo(layout, setTileMap, setMouseInfo, setCurrTool) {
-        setCurrTool(this.desiredTool);
+        if (this.desiredTool) setCurrTool(this.desiredTool);
         this.fillTileMap(this.newTiles, layout, setTileMap);
     }
 }
