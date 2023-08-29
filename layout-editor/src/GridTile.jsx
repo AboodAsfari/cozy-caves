@@ -159,9 +159,11 @@ const GridTile = (props) => {
       if (brushInfo.fillBrush === "none") {
         layout.removeTile(curr);
         setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
+        undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
       } else {
         layout.addTile(newTile, -1);
         setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
+        undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: newTile });  
       }
       
       let directions = [ new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1) ];
