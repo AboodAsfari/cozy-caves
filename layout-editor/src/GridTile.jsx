@@ -63,9 +63,16 @@ const GridTile = (props) => {
     return tileType === "wall" ? "W" : "F";
   }
 
-  const getPartitionInfo = () => {
-    if (!tileMap[pos.toString()]) return null;
-    return layout.getPartitionDisplayInfo()[tileMap[pos.toString()].getPartitionNum() + 2];
+  const getPartitionIcon = () => {
+    let overlayValue = getOverlayMap()[pos.toString()];
+    if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return null; 
+
+    let tile;
+    if (overlayValue !== undefined) tile = overlayValue;
+    else tile = tileMap[pos.toString()];
+    
+    let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
+    return <CircleIcon sx={{ position: "absolute", fontSize: 70, color: partitionInfo.color }} />
   }
 
   const handleMouseOver = (e) => {
@@ -229,7 +236,7 @@ const GridTile = (props) => {
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none", position: "absolute", zIndex: 1 }} > 
           {getLabel()}
         </Typography> 
-        {!!tileMap[pos.toString()] && <CircleIcon sx={{ position: "absolute", fontSize: 70, color: getPartitionInfo() }} />}
+        {getPartitionIcon()}
       </Box>
     </Box>
   );
