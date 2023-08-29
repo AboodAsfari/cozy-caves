@@ -3,8 +3,9 @@ import {
     Typography,
   } from "@mui/material";
   import "./styles/GridTile.css";
-import Tools from "./Tools";
+import Tools from "./tools";
 import { Point } from "@cozy-caves/utils";
+import PenAction from "./actions/penAction";
   
 const Tile = require("@cozy-caves/room-generation").Tile;
 
@@ -22,7 +23,8 @@ const GridTile = (props) => {
     tileMap,
     setTileMap,
     isInSelection,
-    getOverlayMap
+    getOverlayMap,
+    undoStack
   } = props;
 
   const getOutlineClasses = () => {
@@ -62,6 +64,15 @@ const GridTile = (props) => {
 
   const handlePen = (e) => {
     if (e.button !== 0) return;
+    
+    let lastAction = undoStack[undoStack.length - 1];
+    let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
+    if (mouseInfo.dragButton === -1 || swappedBrushes) undoStack.push(new PenAction(!e.altKey));
+    else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
+    
+    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+    undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+
     if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));

@@ -9,7 +9,7 @@ import {
 import "../styles/MenuBar.css";
 import { TransitionGroup } from 'react-transition-group';
 
-import Tools from "../Tools";
+import Tools from "../tools";
 
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ToolbarButton from "./ToolbarButton";

@@ -9,20 +9,18 @@ import "./styles/MenuBar.css";
 
 import GridTile from "./GridTile";
 import { Point } from "@cozy-caves/utils";
-import Tools from "./Tools";
+import Tools from "./tools";
 
-import MenuBar from "./Toolbar/MenuBar";
+import MenuBar from "./toolbar/MenuBar";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
   const gridSize = new Point(10, 8);
   const layout = React.useRef(new Layout()).current;
+  const undoStack = React.useRef([]).current;;
   const [tileMap, setTileMap] = React.useState({});
   const [currTool, setCurrTool] = React.useState(Tools.PEN);
-  // const [primaryBrush, setPrimaryBrush] = React.useState("floor");
-  // const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
-  // const [fillBrush, setFillBrush] = React.useState("floor");
   const [brushInfo, setBrushInfo] = React.useState({
     primaryBrush: "floor",
     secondaryBrush: "wall",
@@ -105,6 +103,9 @@ const App = () => {
         selectStart: new Point(-1, -1),
         selectEnd: new Point(-1, -1)
       }));
+    } else if (e.ctrlKey && e.key === "z") {
+      if (undoStack.length === 0) return;
+      undoStack.pop().undo(layout, setTileMap);
     }
   }
 
@@ -168,7 +169,7 @@ const App = () => {
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
-                mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} 
+                mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
               /> 
             )}
