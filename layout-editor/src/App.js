@@ -3,6 +3,9 @@ import {
   AppBar,
   Stack,
   Box,
+  Menu,
+  MenuItem,
+  Typography,
 } from "@mui/material";
 import "./styles/App.css";
 import "./styles/MenuBar.css";
@@ -13,6 +16,8 @@ import Tools from "./Tools";
 
 import MenuBar from "./Toolbar/MenuBar";
 import DragAction from "./actions/dragAction";
+
+import CircleIcon from '@mui/icons-material/Circle';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -35,6 +40,7 @@ const App = () => {
     selectDragStart: new Point(-1, -1),
     selectDragEnd: new Point(-1, -1)
   });
+  const [partitionAssigner, setPartitionAssigner] = React.useState(null);
 
   React.useEffect(() => {
     document.addEventListener("mousedown", handleMouseDown, []);
@@ -183,6 +189,11 @@ const App = () => {
     return overlayMap;
   }
 
+  const handlePartitionContextMenu = (e) => {
+    e.preventDefault();
+    setPartitionAssigner(null);
+  }
+
   return (
     <Box>
       <AppBar position="sticky" component="nav">
@@ -196,11 +207,23 @@ const App = () => {
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
+                setPartitionAssigner={setPartitionAssigner}
               /> 
             )}
           </Stack>
         )}
       </Box>
+
+      <Menu open={partitionAssigner !== null} onClose={() => setPartitionAssigner(null)} anchorReference="anchorPosition"
+        anchorPosition={ partitionAssigner !== null ? { top: partitionAssigner.mouseY, left: partitionAssigner.mouseX }  : undefined }
+        onContextMenu={handlePartitionContextMenu} sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
+      >
+        <MenuItem onClick={() => setPartitionAssigner(null)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <CircleIcon />
+          <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {"Thing #1"} </Typography>
+        </MenuItem>
+
+      </Menu>
     </Box>
   );
 }

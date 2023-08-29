@@ -26,7 +26,8 @@ const GridTile = (props) => {
     isInSelection,
     getOverlayMap,
     undoStack,
-    redoStack
+    redoStack,
+    setPartitionAssigner
   } = props;
 
   const getOutlineClasses = () => {
@@ -205,9 +206,15 @@ const GridTile = (props) => {
     setMouseInfo(prev => ({...prev, dragButton: e.button}));
   }
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    if (currTool !== Tools.PEN && currTool !== Tools.SELECTOR) return
+    setPartitionAssigner({ mouseX: e.clientX, mouseY: e.clientY, pos: pos });
+  }
+
   return (
     <Box className={"GridTileOutline " + getOutlineClasses()} onMouseDown={handleMouseDown} onMouseOver={handleMouseOver}
-      onDragStart={e => e.preventDefault()} onContextMenu={e => e.preventDefault()} onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))}>
+      onDragStart={e => e.preventDefault()} onContextMenu={handleContextMenu} onMouseUp={() => setMouseInfo(prev => ({...prev, dragButton: -1}))}>
       <Box className={"GridTile " + getTileClasses()} onContextMenu={(e) => e.preventDefault()}>
         <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none" }}> 
           {getLabel()} 
