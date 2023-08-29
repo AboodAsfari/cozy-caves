@@ -13,6 +13,7 @@ import Tools from "./tools";
 
 import MenuBar from "./toolbar/MenuBar";
 import SelectAction from "./actions/selectAction";
+import DragAction from "./actions/dragAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -65,16 +66,17 @@ const App = () => {
     let selectStart = mouseInfo.selectStart;
     let selectEnd = mouseInfo.selectEnd;
 
-    if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
-      if (dragStart.toString() === "-1,-1" && dragEnd.toString() === "-1,-1") {
-        // undoStack.push(new SelectAction(selectStart, selectEnd));
-      }
-
+    if ((dragDiff.getX() !== 0 || dragDiff.getY() !== 0) && selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
+      undoStack.push(new DragAction(selectStart, selectEnd));
 
       let overlayMap = getOverlayMap();
       for (let key in overlayMap) {
         let value = overlayMap[key];
         let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
+        if (pos.getX() >= gridSize.getX() || pos.getY() >= gridSize.getY() || pos.getX() < 0 || pos.getY() < 0) continue;
+
+        undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+
         if (value === null) {
           layout.removeTile(pos);
           setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
