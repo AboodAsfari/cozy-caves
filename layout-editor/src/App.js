@@ -47,7 +47,7 @@ const App = () => {
   });
 
   const handleMouseDown = (e) => {
-    if (!(e.target.className instanceof String)) return;
+    if (typeof e.target.className !== "string") return;
     if (!e.target.className || e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),

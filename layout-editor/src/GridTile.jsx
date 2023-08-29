@@ -131,8 +131,6 @@ const GridTile = (props) => {
 
   const handleFill = (e) => {
     undoStack.push(new PenAction(false));
-    
-    // undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
 
     let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
     let toFill = [pos];
