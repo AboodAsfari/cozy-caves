@@ -2,6 +2,9 @@ const Point = require("@cozy-caves/utils").Point;
 const Tile = require("../tile/tile");
 
 class Partition {
+    #partitionName // Metadata to be used in the editor.
+    #partitionColor // Metadata to be used in the editor.
+
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
     #lockY = false; // Whether Y can scale.
@@ -212,6 +215,8 @@ class Partition {
     }
 
     // Setters
+    setPartitionName(partitionName) { this.#partitionName = partitionName.toString(); }
+    setPartitionColor(partitionColor) { this.#partitionColor = partitionColor.toString(); }
     setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
     setLockX(lockX) { this.#lockX = !!lockX; }
     setLockY(lockY) { this.#lockY = !!lockY; }
@@ -235,6 +240,8 @@ class Partition {
     }
 
     // Getters
+    getPartitionName() { return this.#partitionName; }
+    getPartitionColor() { return this.#partitionColor; }
     ratioLocked() { return this.#lockRatio; }
     xLocked() { return this.#lockX; }
     yLocked() { return this.#lockY; }
