@@ -49,7 +49,8 @@ const App = () => {
   });
 
   const handleMouseDown = (e) => {
-    if (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
+    if (!(e.target.className instanceof String)) return;
+    if (!e.target.className || e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),
       selectEnd: new Point(-1, -1)
@@ -108,13 +109,11 @@ const App = () => {
   }
 
   const changeTool = (tool) => {
-    console.log(10)
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),
       selectEnd: new Point(-1, -1)
     }));
     setCurrTool(tool);
-    console.log(20)
   }
 
   const isInSelection = (pos, useDrag = true) => {
