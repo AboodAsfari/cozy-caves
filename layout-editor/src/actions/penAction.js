@@ -2,6 +2,7 @@ const Action = require("./action");
 
 class PenAction extends Action {
     oldTiles = [];
+    newTiles = [];
     encounteredPos = [];
     isPrimary;
 
@@ -11,17 +12,11 @@ class PenAction extends Action {
     }
 
     undo(layout, setTileMap, setMouseInfo) {
-        this.oldTiles.forEach(tilePair => {
-            let tile = tilePair.tile;
-            let pos = tilePair.pos;
-            if (!tile) {
-                layout.removeTile(pos);
-                setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-            } else {
-                layout.addTile(tile, -1);
-                setTileMap(prev => ({...prev, [pos.toString()]: tile}));
-            }
-        });
+        this.fillTileMap(this.oldTiles, layout, setTileMap);
+    }
+
+    redo(layout, setTileMap, setMouseInfo) {
+        this.fillTileMap(this.newTiles, layout, setTileMap);
     }
 }
 

@@ -20,17 +20,7 @@ class DragAction extends Action {
             selectDragEnd: new Point(-1, -1)
         }));
 
-        this.oldTiles.forEach(tilePair => {
-            let tile = tilePair.tile;
-            let pos = tilePair.pos;
-            if (!tile) {
-                layout.removeTile(pos);
-                setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-            } else {
-                layout.addTile(tile, -1);
-                setTileMap(prev => ({...prev, [pos.toString()]: tile}));
-            }
-        });
+        this.fillTileMap(this.oldTiles, layout, setTileMap);
     }
 }
 

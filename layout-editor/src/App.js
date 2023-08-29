@@ -12,7 +12,6 @@ import { Point } from "@cozy-caves/utils";
 import Tools from "./tools";
 
 import MenuBar from "./toolbar/MenuBar";
-import SelectAction from "./actions/selectAction";
 import DragAction from "./actions/dragAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
@@ -21,6 +20,7 @@ const App = () => {
   const gridSize = new Point(10, 8);
   const layout = React.useRef(new Layout()).current;
   const undoStack = React.useRef([]).current;;
+  const redoStack = React.useRef([]).current;;
   const [tileMap, setTileMap] = React.useState({});
   const [currTool, setCurrTool] = React.useState(Tools.PEN);
   const [brushInfo, setBrushInfo] = React.useState({
@@ -68,6 +68,7 @@ const App = () => {
 
     if ((dragDiff.getX() !== 0 || dragDiff.getY() !== 0) && selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
       undoStack.push(new DragAction(selectStart, selectEnd));
+      redoStack.splice(0, redoStack.length);
 
       let overlayMap = getOverlayMap();
       for (let key in overlayMap) {
@@ -113,7 +114,14 @@ const App = () => {
       }));
     } else if (e.ctrlKey && e.key === "z") {
       if (undoStack.length === 0) return;
-      undoStack.pop().undo(layout, setTileMap, setMouseInfo);
+      let action = undoStack.pop();
+      action.undo(layout, setTileMap, setMouseInfo);
+      redoStack.push(action);
+    } else if (e.ctrlKey && e.key === "y") {
+      if (redoStack.length === 0) return;
+      let action = redoStack.pop();
+      action.redo(layout, setTileMap, setMouseInfo);
+      undoStack.push(action);
     }
   }
 
@@ -178,7 +186,7 @@ const App = () => {
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
-                tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
+                tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
               /> 
             )}
           </Stack>
