@@ -56,7 +56,7 @@ class Tile {
      * @param pos New position to clone tile at.
      * @returns Cloned tile.
      */
-    clone(pos = this.#position) { return new Tile(this.#tileType, pos.clone()); }
+    clone(pos = this.#position) { return new Tile(this.#tileType, pos.clone(), this.#partitionNum); }
 }
 
 module.exports = Tile;
