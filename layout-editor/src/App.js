@@ -18,6 +18,7 @@ import MenuBar from "./Toolbar/MenuBar";
 import DragAction from "./actions/dragAction";
 
 import CircleIcon from '@mui/icons-material/Circle';
+import CheckIcon from '@mui/icons-material/Check';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -202,6 +203,18 @@ const App = () => {
     setPartitionAssigner(null);
   }
 
+  const isPartitionActiveForTile = (partitionNum) => {
+    if (partitionAssigner === null) return false;
+    if (mouseInfo.selectEnd.toString() !== "-1,-1") {
+      for (let key in tileMap) {
+        if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
+        if (tileMap[key].getPartitionNum() !== partitionNum) return false;
+      }
+    }
+    let tile = tileMap[partitionAssigner.pos.toString()]; 
+    return tile.getPartitionNum() === partitionNum;
+  }
+
   return (
     <Box>
       <AppBar position="sticky" component="nav">
@@ -230,6 +243,7 @@ const App = () => {
           <MenuItem key={info.name} onClick={() => handlePartitionChange(i - 2)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
             <CircleIcon sx={{ color: info.color }} />
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
+            {isPartitionActiveForTile(i - 2) && <CheckIcon />}
           </MenuItem>
         )}
       </Menu>
