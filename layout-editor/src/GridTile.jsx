@@ -164,6 +164,7 @@ const GridTile = (props) => {
     redoStack.splice(0, redoStack.length);
 
     let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
+    let partitionToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getPartitionNum() : -1;
     let toFill = [pos];
     let added = [];
     while (toFill.length > 0) {
@@ -193,8 +194,9 @@ const GridTile = (props) => {
         for (let point of toFill) if (point.toString() === newPos.toString()) skipPoint = true;
         if (skipPoint) continue;
 
-        if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tileMap[newPos.toString()]) || 
-          (!!tileMap[newPos.toString()] && tileMap[newPos.toString()].getTileType() === typeToFill))) toFill.push(newPos);
+        let tile = tileMap[newPos.toString()];
+        if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tile) || (!!tile && tile.getTileType() === typeToFill 
+          && tile.getPartitionNum() == partitionToFill))) toFill.push(newPos);
       } 
     }
   }
