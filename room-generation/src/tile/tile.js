@@ -8,6 +8,7 @@ const Point = require("@cozy-caves/utils").Point;
 class Tile {
     #tileType; // Type of tile to display.
     #tileID; // ID of tile to display.
+    #partitionNum = -1; // Index of the partition this tile belongs in.
     #position; // Position of the tile in the room.
     #offset = new Point(0, 0); // Rendering offset.
     #scale = new Point(1, 1); // Image scale.
@@ -29,6 +30,7 @@ class Tile {
 
     // Setters.
     setTileID(tileID) { this.#tileID = tileID; }
+    setPartitionNum(partitionNum) { this.#partitionNum = partitionNum; }
     setOffset(offset) { this.#offset = offset; }
     setScale(scale) { this.#scale = scale; }
     setRotation(rotation) { this.#rotation = rotation; }
@@ -37,6 +39,7 @@ class Tile {
     // Getters.
     getTileType() { return this.#tileType; }
     getTileID() { return this.#tileID; }
+    getPartitionNum() { return this.#partitionNum; }
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getScale() { return this.#scale; }
