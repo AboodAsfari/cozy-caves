@@ -3,7 +3,7 @@ import {
     Typography,
   } from "@mui/material";
   import "./styles/GridTile.css";
-import Tools from "./tools";
+import Tools from "./Tools";
 import { Point } from "@cozy-caves/utils";
 import PenAction from "./actions/penAction";
 import SelectAction from "./actions/selectAction";

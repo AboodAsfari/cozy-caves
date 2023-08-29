@@ -9,9 +9,9 @@ import "./styles/MenuBar.css";
 
 import GridTile from "./GridTile";
 import { Point } from "@cozy-caves/utils";
-import Tools from "./tools";
+import Tools from "./Tools";
 
-import MenuBar from "./toolbar/MenuBar";
+import MenuBar from "./Toolbar/MenuBar";
 import DragAction from "./actions/dragAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
