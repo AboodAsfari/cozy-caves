@@ -6,6 +6,7 @@ import {
 import Tools from "./tools";
 import { Point } from "@cozy-caves/utils";
 import PenAction from "./actions/penAction";
+import SelectAction from "./actions/selectAction";
   
 const Tile = require("@cozy-caves/room-generation").Tile;
 
@@ -97,6 +98,7 @@ const GridTile = (props) => {
   }
 
   const handleSelector = (e) => {
+    if (e.button !== 0) return;
     if (isInSelection(pos) && mouseInfo.dragButton === -1) {
       setMouseInfo(prev => ({...prev, 
         selectDragStart: pos,
@@ -106,6 +108,7 @@ const GridTile = (props) => {
       setMouseInfo(prev => ({...prev, selectDragEnd: pos}));
     } else {
       if (mouseInfo.dragButton === -1) {
+        undoStack.push(new SelectAction(mouseInfo.selectStart, mouseInfo.selectEnd));
         setMouseInfo(prev => ({...prev,
           selectStart: pos,
           selectDragStart: new Point(-1, -1),

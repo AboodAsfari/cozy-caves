@@ -12,6 +12,7 @@ import { Point } from "@cozy-caves/utils";
 import Tools from "./tools";
 
 import MenuBar from "./toolbar/MenuBar";
+import SelectAction from "./actions/selectAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -65,6 +66,11 @@ const App = () => {
     let selectEnd = mouseInfo.selectEnd;
 
     if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
+      if (dragStart.toString() === "-1,-1" && dragEnd.toString() === "-1,-1") {
+        // undoStack.push(new SelectAction(selectStart, selectEnd));
+      }
+
+
       let overlayMap = getOverlayMap();
       for (let key in overlayMap) {
         let value = overlayMap[key];
@@ -105,7 +111,7 @@ const App = () => {
       }));
     } else if (e.ctrlKey && e.key === "z") {
       if (undoStack.length === 0) return;
-      undoStack.pop().undo(layout, setTileMap);
+      undoStack.pop().undo(layout, setTileMap, setMouseInfo);
     }
   }
 

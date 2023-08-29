@@ -10,7 +10,7 @@ class PenAction extends Action {
         this.isPrimary = isPrimary;
     }
 
-    undo(layout, setTileMap) {
+    undo(layout, setTileMap, setMouseInfo) {
         this.oldTiles.forEach(tilePair => {
             let tile = tilePair.tile;
             let pos = tilePair.pos;
