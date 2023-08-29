@@ -4,7 +4,10 @@ const Action = require("./action");
 class DragAction extends Action {
     #selectStart;
     #selectEnd;
+    redoSelectStart;
+    redoSelectEnd;
     oldTiles = [];
+    newTiles = [];
 
     constructor(selectStart, selectEnd) {
         super();
@@ -21,6 +24,17 @@ class DragAction extends Action {
         }));
 
         this.fillTileMap(this.oldTiles, layout, setTileMap);
+    }
+
+    redo(layout, setTileMap, setMouseInfo) {
+        setMouseInfo(prev => ({...prev,
+            selectStart: this.redoSelectStart,
+            selectEnd: this.redoSelectEnd,
+            selectDragStart: new Point(-1, -1),
+            selectDragEnd: new Point(-1, -1)
+        }));
+
+        this.fillTileMap(this.newTiles, layout, setTileMap);
     }
 }
 

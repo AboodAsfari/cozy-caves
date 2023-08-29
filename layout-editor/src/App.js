@@ -69,6 +69,8 @@ const App = () => {
     if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
       if (dragDiff.getX() !== 0 || dragDiff.getY() !== 0) {
         undoStack.push(new DragAction(selectStart, selectEnd));
+        undoStack[undoStack.length - 1].redoSelectStart = selectStart.add(dragDiff);
+        undoStack[undoStack.length - 1].redoSelectEnd = selectEnd.add(dragDiff);
         redoStack.splice(0, redoStack.length);
 
         let overlayMap = getOverlayMap();
@@ -82,10 +84,12 @@ const App = () => {
           if (value === null) {
             layout.removeTile(pos);
             setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
           } else {
             value = value.clone(pos);
             layout.addTile(value, -1);
             setTileMap(prev => ({...prev, [pos.toString()]: value}));
+            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: value });
           }
         }
 
