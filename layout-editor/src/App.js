@@ -113,7 +113,6 @@ const App = () => {
   }
 
   const handleKeyPress = (e) => {
-    layout.newPartition()
     if (currTool === Tools.SELECTOR && e.key === "Delete") {
       for (let posStr in tileMap) {
         if (!tileMap[posStr]) continue;
@@ -190,6 +189,14 @@ const App = () => {
     return overlayMap;
   }
 
+  const handlePartitionChange = (partitionNum) => {
+    let tile = tileMap[partitionAssigner.pos.toString()]; 
+    console.log(tile)
+    tile.setPartitionNum(partitionNum);
+    layout.updateTile(tile);
+    setPartitionAssigner(null);
+  }
+
   const handlePartitionContextMenu = (e) => {
     e.preventDefault();
     setPartitionAssigner(null);
@@ -220,7 +227,7 @@ const App = () => {
         onContextMenu={handlePartitionContextMenu} sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
       >
         { layout.getPartitionDisplayInfo().map((info, i) => 
-          <MenuItem onClick={() => setPartitionAssigner(null)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <MenuItem key={info.name} onClick={() => handlePartitionChange(i - 2)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
             <CircleIcon sx={{ color: info.color }} />
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
           </MenuItem>

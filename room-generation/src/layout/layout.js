@@ -269,6 +269,17 @@ class Layout {
     }
 
     /**
+     * Removes and then adds a tile again. Used when a tiles partition
+     * has been updated so the layout can store it in the correct place.
+     * 
+     * @param tile The tile to update. 
+     */
+    updateTile(tile) {
+        this.removeTile(tile.getPosition());
+        this.addTile(tile);
+    }
+
+    /**
      * Gets a tile from the layout.
      * 
      * @param pos Position of tile to get.
