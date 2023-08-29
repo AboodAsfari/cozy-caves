@@ -27,6 +27,7 @@ const GridTile = (props) => {
     getOverlayMap,
     undoStack,
     redoStack,
+    partitionAssigner,
     setPartitionAssigner
   } = props;
 
@@ -183,6 +184,7 @@ const GridTile = (props) => {
   }
 
   const handleMouseDown = (e) => {
+    if (partitionAssigner !== null) return;
     switch (currTool) {
       case Tools.PEN:
         handlePen(e);
@@ -208,7 +210,7 @@ const GridTile = (props) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    if (currTool !== Tools.PEN && currTool !== Tools.SELECTOR) return
+    if (currTool !== Tools.PEN && (currTool !== Tools.SELECTOR || (mouseInfo.selectDragStart.toString() !== "-1,-1" || mouseInfo.selectDragEnd.toString() !== "-1,-1"))) return;
     setPartitionAssigner({ mouseX: e.clientX, mouseY: e.clientY, pos: pos });
   }
 

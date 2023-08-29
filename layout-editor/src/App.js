@@ -55,7 +55,7 @@ const App = () => {
   });
 
   const handleMouseDown = (e) => {
-    if (typeof e.target.className !== "string") return;
+    if (typeof e.target.className !== "string" || partitionAssigner !== null) return;
     if (!e.target.className || e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),
@@ -208,7 +208,7 @@ const App = () => {
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
-                setPartitionAssigner={setPartitionAssigner}
+                partitionAssigner={partitionAssigner} setPartitionAssigner={setPartitionAssigner}
               /> 
             )}
           </Stack>
