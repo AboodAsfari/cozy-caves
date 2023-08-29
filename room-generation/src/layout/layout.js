@@ -334,6 +334,20 @@ class Layout {
         if (index < 0 || index >= this.#scalePartitions.length) return null;
         return this.#scalePartitions[index]; 
     }
+
+    /**
+     * Fetches all partitions, including unscaled and excluded, and returns
+     * a list of all of their names and colors to display.
+     * 
+     * @returns A list of all partitions names and colors.
+     */
+    getPartitionDisplayInfo() {
+        let partitionDisplayInfo = [{ name: 'Excluded', color: '#bfbfbf' }, { name: 'Unscaled', color: 'white' }];
+        for (let partition of this.#scalePartitions) {
+            partitionDisplayInfo.push({ name: partition.getPartitionName(), color: partition.getPartitionColor() });
+        }
+        return partitionDisplayInfo;
+    }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!

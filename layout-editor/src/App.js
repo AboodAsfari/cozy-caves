@@ -113,6 +113,7 @@ const App = () => {
   }
 
   const handleKeyPress = (e) => {
+    layout.newPartition()
     if (currTool === Tools.SELECTOR && e.key === "Delete") {
       for (let posStr in tileMap) {
         if (!tileMap[posStr]) continue;
@@ -218,11 +219,12 @@ const App = () => {
         anchorPosition={ partitionAssigner !== null ? { top: partitionAssigner.mouseY, left: partitionAssigner.mouseX }  : undefined }
         onContextMenu={handlePartitionContextMenu} sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
       >
-        <MenuItem onClick={() => setPartitionAssigner(null)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
-          <CircleIcon />
-          <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {"Thing #1"} </Typography>
-        </MenuItem>
-
+        { layout.getPartitionDisplayInfo().map((info, i) => 
+          <MenuItem onClick={() => setPartitionAssigner(null)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+            <CircleIcon sx={{ color: info.color }} />
+            <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
+          </MenuItem>
+        )}
       </Menu>
     </Box>
   );

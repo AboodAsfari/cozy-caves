@@ -2,8 +2,8 @@ const Point = require("@cozy-caves/utils").Point;
 const Tile = require("../tile/tile");
 
 class Partition {
-    #partitionName // Metadata to be used in the editor.
-    #partitionColor // Metadata to be used in the editor.
+    #partitionName = "Unnamed"; // Metadata to be used in the editor.
+    #partitionColor = "white"; // Metadata to be used in the editor.
 
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
