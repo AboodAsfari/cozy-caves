@@ -93,7 +93,7 @@ const App = () => {
             undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
           } else {
             value = value.clone(pos);
-            layout.addTile(value, -1);
+            layout.addTile(value);
             setTileMap(prev => ({...prev, [pos.toString()]: value}));
             undoStack[undoStack.length - 1].newTiles.push({ pos, tile: value });
           }

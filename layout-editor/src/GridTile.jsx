@@ -95,7 +95,7 @@ const GridTile = (props) => {
     };
     let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
     let newTile = new Tile(newTileType, pos); 
-    layout.addTile(newTile, -1);
+    layout.addTile(newTile);
     setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
     undoStack[undoStack.length - 1].newTiles.push({ pos, tile: newTile });
   }
@@ -170,7 +170,7 @@ const GridTile = (props) => {
         setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
         undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
       } else {
-        layout.addTile(newTile, -1);
+        layout.addTile(newTile);
         setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
         undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: newTile });  
       }

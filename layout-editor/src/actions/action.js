@@ -10,7 +10,7 @@ class Action {
                 layout.removeTile(pos);
                 setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
             } else {
-                layout.addTile(tile, -1);
+                layout.addTile(tile);
                 setTileMap(prev => ({...prev, [pos.toString()]: tile}));
             }
         });
