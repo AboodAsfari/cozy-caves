@@ -98,6 +98,7 @@ const GridTile = (props) => {
     } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
     
     undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+    undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
     undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
 
     layout.removeTile(pos);
