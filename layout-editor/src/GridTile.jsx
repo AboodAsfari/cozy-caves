@@ -85,6 +85,19 @@ const GridTile = (props) => {
     setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
   }
 
+  const handleEraser = (e) => {
+    let lastAction = undoStack[undoStack.length - 1];
+    let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
+    if (mouseInfo.dragButton === -1 || swappedBrushes) undoStack.push(new PenAction(!e.altKey));
+    else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
+    
+    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+    undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+
+    layout.removeTile(pos);
+    setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+  }
+
   const handleSelector = (e) => {
     if (isInSelection(pos) && mouseInfo.dragButton === -1) {
       setMouseInfo(prev => ({...prev, 
@@ -155,8 +168,7 @@ const GridTile = (props) => {
         handlePen(e);
         break;
       case Tools.ERASER:
-        layout.removeTile(pos);
-        setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        handleEraser(e);
         break;
       case Tools.SELECTOR:
         handleSelector(e);
