@@ -66,34 +66,39 @@ const App = () => {
     let selectStart = mouseInfo.selectStart;
     let selectEnd = mouseInfo.selectEnd;
 
-    if ((dragDiff.getX() !== 0 || dragDiff.getY() !== 0) && selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
-      undoStack.push(new DragAction(selectStart, selectEnd));
-      redoStack.splice(0, redoStack.length);
+    if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
+      if (dragDiff.getX() !== 0 || dragDiff.getY() !== 0) {
+        undoStack.push(new DragAction(selectStart, selectEnd));
+        redoStack.splice(0, redoStack.length);
 
-      let overlayMap = getOverlayMap();
-      for (let key in overlayMap) {
-        let value = overlayMap[key];
-        let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
-        if (pos.getX() >= gridSize.getX() || pos.getY() >= gridSize.getY() || pos.getX() < 0 || pos.getY() < 0) continue;
+        let overlayMap = getOverlayMap();
+        for (let key in overlayMap) {
+          let value = overlayMap[key];
+          let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
+          if (pos.getX() >= gridSize.getX() || pos.getY() >= gridSize.getY() || pos.getX() < 0 || pos.getY() < 0) continue;
 
-        undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+          undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
 
-        if (value === null) {
-          layout.removeTile(pos);
-          setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-        } else {
-          value = value.clone(pos);
-          layout.addTile(value, -1);
-          setTileMap(prev => ({...prev, [pos.toString()]: value}));
+          if (value === null) {
+            layout.removeTile(pos);
+            setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+          } else {
+            value = value.clone(pos);
+            layout.addTile(value, -1);
+            setTileMap(prev => ({...prev, [pos.toString()]: value}));
+          }
         }
-      }
 
-      setMouseInfo(prev => ({...prev, 
-        selectStart: prev.selectStart.add(dragDiff), 
-        selectEnd: prev.selectEnd.add(dragDiff),
-        selectDragStart: new Point(-1, -1),
-        selectDragEnd: new Point(-1, -1),
-      }));
+        setMouseInfo(prev => ({...prev, 
+          selectStart: prev.selectStart.add(dragDiff), 
+          selectEnd: prev.selectEnd.add(dragDiff),
+          selectDragStart: new Point(-1, -1),
+          selectDragEnd: new Point(-1, -1),
+        }));
+      } else {
+        undoStack[undoStack.length - 1].redoSelectStart = selectStart;
+        undoStack[undoStack.length - 1].redoSelectEnd = selectEnd;
+      }
     } 
   }
 
