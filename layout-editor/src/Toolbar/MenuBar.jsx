@@ -19,25 +19,41 @@ const MenuBar = (props) => {
   const {
     currTool,
     setCurrTool,
-    primaryBrush,
-    setPrimaryBrush,
-    secondaryBrush,
-    setSecondaryBrush,
-    fillBrush,
-    setFillBrush
+    brushInfo,
+    setBrushInfo
   } = props;
 
   const swapBrushes = () => {
-    setPrimaryBrush(secondaryBrush);
-    setSecondaryBrush(primaryBrush);
+    setBrushInfo(prev => ({ ...prev,
+      primaryBrush: prev.secondaryBrush,
+      secondaryBrush: prev.primaryBrush
+    }));
+  }
+
+  const setPrimaryBrush = (brush) => {
+    setBrushInfo(prev => ({ ...prev,
+      primaryBrush: brush
+    }));
+  }
+
+  const setSecondaryBrush = (brush) => {
+    setBrushInfo(prev => ({ ...prev,
+      secondaryBrush: brush
+    }));
+  }
+
+  const setFillBrush = (brush) => {
+    setBrushInfo(prev => ({ ...prev,
+      fillBrush: brush
+    }));
   }
 
   const getToolbarItems = () => {
     let ret = [];
     ret.push(<ToolbarButton key={0} iconName="stylus" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PEN} />);
     if (currTool === Tools.PEN) {
-      let primaryIcon = <BrushSelector key={0.1} size={20} brush={primaryBrush} setBrush={setPrimaryBrush} />;
-      let secondaryIcon = <BrushSelector key={0.2} size={15} mr={2} brush={secondaryBrush} setBrush={setSecondaryBrush} />;
+      let primaryIcon = <BrushSelector key={0.1} size={20} brush={brushInfo.primaryBrush} setBrush={setPrimaryBrush} />;
+      let secondaryIcon = <BrushSelector key={0.2} size={15} mr={2} brush={brushInfo.secondaryBrush} setBrush={setSecondaryBrush} />;
       let brushSwapper = <SwapHorizIcon key={0.3} className="ToolIcon" sx={{ fontSize: 30, mt: 0.5, mr: 1 }} onClick={swapBrushes} />
 
       ret.push(primaryIcon);
@@ -49,7 +65,7 @@ const MenuBar = (props) => {
     ret.push(<ToolbarButton key={3} iconName="colorize" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.PICKER} />);
     ret.push(<ToolbarButton key={4} iconName="colors" currTool={currTool} setCurrTool={setCurrTool} desiredTool={Tools.FILL} />);
     if (currTool === Tools.FILL) {
-      let selector = <BrushSelector key={4.1} size={20} brush={fillBrush} setBrush={setFillBrush} />;
+      let selector = <BrushSelector key={4.1} size={20} brush={brushInfo.fillBrush} setBrush={setFillBrush} />;
       ret.push(selector);
     } 
     return ret;
