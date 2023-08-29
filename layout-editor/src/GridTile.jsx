@@ -5,6 +5,8 @@ import {
   import "./styles/GridTile.css";
 import Tools from "./Tools";
 import { Point } from "@cozy-caves/utils";
+import PenAction from "./actions/penAction";
+import SelectAction from "./actions/selectAction";
   
 const Tile = require("@cozy-caves/room-generation").Tile;
 
@@ -22,7 +24,9 @@ const GridTile = (props) => {
     tileMap,
     setTileMap,
     isInSelection,
-    getOverlayMap
+    getOverlayMap,
+    undoStack,
+    redoStack
   } = props;
 
   const getOutlineClasses = () => {
@@ -62,9 +66,21 @@ const GridTile = (props) => {
 
   const handlePen = (e) => {
     if (e.button !== 0) return;
+    
+    let lastAction = undoStack[undoStack.length - 1];
+    let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
+    if (mouseInfo.dragButton === -1 || swappedBrushes) {
+      undoStack.push(new PenAction(!e.altKey));
+      redoStack.splice(0, redoStack.length);
+    } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
+    
+    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+    undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+
     if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
       layout.removeTile(pos);
       setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+      undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
       setMouseInfo(prev => ({...prev, dragButton: e.button}));
       return;
     };
@@ -72,9 +88,25 @@ const GridTile = (props) => {
     let newTile = new Tile(newTileType, pos); 
     layout.addTile(newTile, -1);
     setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
+    undoStack[undoStack.length - 1].newTiles.push({ pos, tile: newTile });
+  }
+
+  const handleEraser = (e) => {
+    if (mouseInfo.dragButton === -1) {
+      undoStack.push(new PenAction(false));
+      redoStack.splice(0, redoStack.length);
+    } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
+    
+    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+    undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
+    undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+
+    layout.removeTile(pos);
+    setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
   }
 
   const handleSelector = (e) => {
+    if (e.button !== 0) return;
     if (isInSelection(pos) && mouseInfo.dragButton === -1) {
       setMouseInfo(prev => ({...prev, 
         selectDragStart: pos,
@@ -84,6 +116,8 @@ const GridTile = (props) => {
       setMouseInfo(prev => ({...prev, selectDragEnd: pos}));
     } else {
       if (mouseInfo.dragButton === -1) {
+        undoStack.push(new SelectAction(mouseInfo.selectStart, mouseInfo.selectEnd));
+        redoStack.splice(0, redoStack.length);
         setMouseInfo(prev => ({...prev,
           selectStart: pos,
           selectDragStart: new Point(-1, -1),
@@ -108,19 +142,28 @@ const GridTile = (props) => {
   }
 
   const handleFill = (e) => {
+    undoStack.push(new PenAction(false));
+    redoStack.splice(0, redoStack.length);
+
     let typeToFill = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
     let toFill = [pos];
     let added = [];
     while (toFill.length > 0) {
       let curr = toFill.pop(0);
       added.push(curr.toString());
+
+      let oldTile = typeToFill === "none" ? undefined : tileMap[curr.toString()];
+      undoStack[undoStack.length - 1].oldTiles.push({ pos: curr, tile: oldTile });
+
       let newTile = new Tile(brushInfo.fillBrush, pos); 
       if (brushInfo.fillBrush === "none") {
         layout.removeTile(curr);
         setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
+        undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
       } else {
         layout.addTile(newTile, -1);
         setTileMap(prev => ({...prev, [curr.toString()]: newTile}));
+        undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: newTile });  
       }
       
       let directions = [ new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1) ];
@@ -144,8 +187,7 @@ const GridTile = (props) => {
         handlePen(e);
         break;
       case Tools.ERASER:
-        layout.removeTile(pos);
-        setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+        handleEraser(e);
         break;
       case Tools.SELECTOR:
         handleSelector(e);

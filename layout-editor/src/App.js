@@ -12,17 +12,17 @@ import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
 
 import MenuBar from "./Toolbar/MenuBar";
+import DragAction from "./actions/dragAction";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
   const gridSize = new Point(10, 8);
   const layout = React.useRef(new Layout()).current;
+  const undoStack = React.useRef([]).current;;
+  const redoStack = React.useRef([]).current;;
   const [tileMap, setTileMap] = React.useState({});
   const [currTool, setCurrTool] = React.useState(Tools.PEN);
-  // const [primaryBrush, setPrimaryBrush] = React.useState("floor");
-  // const [secondaryBrush, setSecondaryBrush] = React.useState("wall");
-  // const [fillBrush, setFillBrush] = React.useState("floor");
   const [brushInfo, setBrushInfo] = React.useState({
     primaryBrush: "floor",
     secondaryBrush: "wall",
@@ -49,7 +49,7 @@ const App = () => {
   });
 
   const handleMouseDown = (e) => {
-    if (!(e.target.className instanceof String)) return;
+    if (typeof e.target.className !== "string") return;
     if (!e.target.className || e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline")) return;
     setMouseInfo(prev => ({...prev,
       selectStart: new Point(-1, -1),
@@ -67,26 +67,42 @@ const App = () => {
     let selectEnd = mouseInfo.selectEnd;
 
     if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
-      let overlayMap = getOverlayMap();
-      for (let key in overlayMap) {
-        let value = overlayMap[key];
-        let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
-        if (value === null) {
-          layout.removeTile(pos);
-          setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
-        } else {
-          value = value.clone(pos);
-          layout.addTile(value, -1);
-          setTileMap(prev => ({...prev, [pos.toString()]: value}));
-        }
-      }
+      if (dragDiff.getX() !== 0 || dragDiff.getY() !== 0) {
+        undoStack.push(new DragAction(selectStart, selectEnd));
+        undoStack[undoStack.length - 1].redoSelectStart = selectStart.add(dragDiff);
+        undoStack[undoStack.length - 1].redoSelectEnd = selectEnd.add(dragDiff);
+        redoStack.splice(0, redoStack.length);
 
-      setMouseInfo(prev => ({...prev, 
-        selectStart: prev.selectStart.add(dragDiff), 
-        selectEnd: prev.selectEnd.add(dragDiff),
-        selectDragStart: new Point(-1, -1),
-        selectDragEnd: new Point(-1, -1),
-      }));
+        let overlayMap = getOverlayMap();
+        for (let key in overlayMap) {
+          let value = overlayMap[key];
+          let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
+          if (pos.getX() >= gridSize.getX() || pos.getY() >= gridSize.getY() || pos.getX() < 0 || pos.getY() < 0) continue;
+
+          undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+
+          if (value === null) {
+            layout.removeTile(pos);
+            setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
+            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
+          } else {
+            value = value.clone(pos);
+            layout.addTile(value, -1);
+            setTileMap(prev => ({...prev, [pos.toString()]: value}));
+            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: value });
+          }
+        }
+
+        setMouseInfo(prev => ({...prev, 
+          selectStart: prev.selectStart.add(dragDiff), 
+          selectEnd: prev.selectEnd.add(dragDiff),
+          selectDragStart: new Point(-1, -1),
+          selectDragEnd: new Point(-1, -1),
+        }));
+      } else {
+        undoStack[undoStack.length - 1].redoSelectStart = selectStart;
+        undoStack[undoStack.length - 1].redoSelectEnd = selectEnd;
+      }
     } 
   }
 
@@ -105,6 +121,16 @@ const App = () => {
         selectStart: new Point(-1, -1),
         selectEnd: new Point(-1, -1)
       }));
+    } else if (e.ctrlKey && e.key === "z") {
+      if (undoStack.length === 0) return;
+      let action = undoStack.pop();
+      action.undo(layout, setTileMap, setMouseInfo);
+      redoStack.push(action);
+    } else if (e.ctrlKey && e.key === "y") {
+      if (redoStack.length === 0) return;
+      let action = redoStack.pop();
+      action.redo(layout, setTileMap, setMouseInfo);
+      undoStack.push(action);
     }
   }
 
@@ -168,8 +194,8 @@ const App = () => {
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
-                mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} 
-                tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} 
+                mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
+                tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
               /> 
             )}
           </Stack>
