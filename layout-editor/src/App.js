@@ -191,10 +191,19 @@ const App = () => {
   }
 
   const handlePartitionChange = (partitionNum) => {
-    let tile = tileMap[partitionAssigner.pos.toString()]; 
-    console.log(tile)
-    tile.setPartitionNum(partitionNum);
-    layout.updateTile(tile);
+    if (mouseInfo.selectEnd.toString() !== "-1,-1") {
+      for (let key in tileMap) {
+        if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
+        let tile = tileMap[key]; 
+        tile.setPartitionNum(partitionNum);
+        layout.updateTile(tile);
+      }
+    } else {
+      let tile = tileMap[partitionAssigner.pos.toString()]; 
+      tile.setPartitionNum(partitionNum);
+      layout.updateTile(tile);
+    }
+  
     setPartitionAssigner(null);
   }
 
