@@ -10,6 +10,7 @@ class Action {
                 layout.removeTile(pos);
                 setTileMap(prev => ({...prev, [pos.toString()]: undefined}));
             } else {
+                if (tilePair.partitionNum) tile.setPartitionNum(tilePair.partitionNum);
                 layout.addTile(tile);
                 setTileMap(prev => ({...prev, [pos.toString()]: tile}));
             }
