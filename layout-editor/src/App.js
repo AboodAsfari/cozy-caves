@@ -19,6 +19,8 @@ import DragAction from "./actions/dragAction";
 
 import CircleIcon from '@mui/icons-material/Circle';
 import CheckIcon from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
+
 import SelectAction from "./actions/selectAction";
 import PenAction from "./actions/penAction";
 
@@ -230,6 +232,15 @@ const App = () => {
     setPartitionAssigner(null);
   }
 
+  const handleNewPartition = () => {
+    let partition = layout.newPartition();
+    let partitionNum = layout.getPartitionDisplayInfo().length;
+    partition.setPartitionName("Partition #" + partitionNum);
+    setBrushInfo(prev => ({...prev, defaultPartition: partitionNum - 3}));
+    
+    setPartitionAssigner(null);
+  }
+
   const isPartitionActiveForTile = (partitionNum) => {
     if (partitionAssigner === null) return false;
     if (mouseInfo.selectEnd.toString() !== "-1,-1") {
@@ -245,7 +256,8 @@ const App = () => {
   return (
     <Box>
       <AppBar position="sticky" component="nav">
-        <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} layout={layout} />
+        <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} 
+          layout={layout} handleNewPartition={handleNewPartition} />
       </AppBar>
 
       <Box sx={{ mt: 2.5 }} id="grid">
@@ -273,6 +285,10 @@ const App = () => {
             {isPartitionActiveForTile(i - 2) && <CheckIcon />}
           </MenuItem>
         )}
+        <MenuItem onClick={handleNewPartition} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <AddIcon />
+          <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
+        </MenuItem>
       </Menu>
     </Box>
   );

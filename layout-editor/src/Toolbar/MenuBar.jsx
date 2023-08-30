@@ -18,6 +18,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CircleIcon from '@mui/icons-material/Circle';
 import CheckIcon from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
 
 import ToolbarButton from "./ToolbarButton";
 import BrushSelector from "./BrushSelector";
@@ -28,7 +29,8 @@ const MenuBar = (props) => {
     setCurrTool,
     brushInfo,
     setBrushInfo,
-    layout
+    layout,
+    handleNewPartition
   } = props;
 
   const [defaultPartitionAnchorEl, setDefaultPartitionAnchorEl] = React.useState(null);
@@ -99,6 +101,10 @@ const MenuBar = (props) => {
             {brushInfo.defaultPartition === i - 2 && <CheckIcon />}
           </MenuItem>
         )}
+        <MenuItem onClick={() => { handleNewPartition(); setDefaultPartitionAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <AddIcon />
+          <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
+        </MenuItem>
         </Menu>
       </>);
     }
