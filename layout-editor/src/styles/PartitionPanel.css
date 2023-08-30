@@ -49,7 +49,41 @@
     color: white;
 }
 
-.PartitionIcon:hover {
+.PartitionIcon .icon:hover {
     cursor: pointer;
     color: #7da36d;
+}
+
+.ColorPicker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ColorPicker .react-colorful {
+    width: calc(300px - 32px);
+    height: calc(202px - 32px);
+    padding: 16px;
+}
+
+.ColorPicker .react-colorful__hue-pointer {
+  width: 16px;
+  border-radius: 3px;
+}
+
+.ColorPicker input {
+font-size: 20px;
+  width: 90px;
+  padding: 6px;
+  margin-bottom: 2px;
+  outline: none;
+  text-transform: uppercase;
+  text-align: center;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.ColorPicker input:focus {
+    border-bottom: 2px solid white;
 }
