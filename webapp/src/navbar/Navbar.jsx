@@ -8,7 +8,7 @@ import {
 
 const Navbar = (props) => {
     return (
-        <Box sx={{ mt: 8.5  }}>
+        <Box sx={{ mt: 8 }}>
             <AppBar position="fixed" component="nav">
                 <Toolbar>
                     <Stack direction={"row"} sx={{ position: "fixed" }}>

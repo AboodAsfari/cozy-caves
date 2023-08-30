@@ -1,11 +1,12 @@
 import React from "react";
 
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Box } from "@mui/material";
 
 import defaultTheme from "./themes/DarkTheme";
 import Homepage from "./home/Homepage";
 import MapPage from "./mapview/MapPage";
 import Navbar from "./navbar/Navbar";
+import Options from "./options/Options";
 
 function App() {
 
@@ -24,14 +25,19 @@ function App() {
     if (activePage === "map") {
       return <MapPage />;
     }
+    if (activePage === "options") {
+      return <Options setActivePage={setActivePage} />;
+    }
     return null;
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      {getPageHeader()}
-      {getPage()}
-    </ThemeProvider>
+    <Box>
+      <ThemeProvider theme={defaultTheme}>
+        {getPageHeader()}
+        {getPage()}
+      </ThemeProvider>
+    </Box>
   );
 }
 
