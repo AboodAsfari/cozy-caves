@@ -176,11 +176,11 @@ class Partition {
     /**
      * Removes a tile from the static tile map.
      * 
-     * @param tile Tile to remove. 
+     * @param pos Pos of tie to remove. 
      */
-    removeTile(tile) {
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
-        this.#tiles.delete(tile.getPosition().toString());
+    removeTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        this.#tiles.delete(pos.toString());
     }
 
     /**

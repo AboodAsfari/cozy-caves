@@ -23,6 +23,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import SelectAction from "./actions/selectAction";
 import PenAction from "./actions/penAction";
+import PartitionPanel from "./PartitionPanel";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -47,8 +48,14 @@ const App = () => {
     selectDragEnd: new Point(-1, -1)
   });
   const [partitionAssigner, setPartitionAssigner] = React.useState(null);
+  const [currPartition, setCurrPartition] = React.useState(null);
+  const [partitionLocked, setPartitionLocked] = React.useState(false);
+  const [updater, setUpdater] = React.useState(false);
 
   React.useEffect(() => {
+    let p = layout.newPartition();
+    p.setPartitionColor("#566b56");
+    setCurrPartition(p);
     document.addEventListener("mousedown", handleMouseDown, []);
     document.addEventListener("mouseup", handleMouseUp, []);
     document.addEventListener("keydown", handleKeyPress, []);
@@ -58,7 +65,7 @@ const App = () => {
       document.removeEventListener("mouseup", handleMouseUp, []);
       document.removeEventListener("keydown", handleKeyPress, []);
     }
-  });
+  }, []);
 
   const handleMouseDown = (e) => {
     if (typeof e.target.className !== "string" || partitionAssigner !== null) return;
@@ -223,6 +230,8 @@ const App = () => {
       tile.setPartitionNum(partitionNum);
       layout.updateTile(tile);
     }
+
+    updateActivePartition(partitionNum);
   
     setPartitionAssigner(null);
   }
@@ -237,6 +246,7 @@ const App = () => {
     let partitionNum = layout.getPartitionDisplayInfo().length;
     partition.setPartitionName("Partition #" + partitionNum);
     setBrushInfo(prev => ({...prev, defaultPartition: partitionNum - 3}));
+    setCurrPartition(partition);
     
     setPartitionAssigner(null);
   }
@@ -253,21 +263,27 @@ const App = () => {
     return tile.getPartitionNum() === partitionNum;
   }
 
+  const updateActivePartition = (partitionNum) => {
+    if (partitionNum < 0 || partitionLocked) return;
+    let partition = layout.getPartition(partitionNum);
+    setCurrPartition(partition);
+  }
+
   return (
     <Box>
       <AppBar position="sticky" component="nav">
         <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} 
-          layout={layout} handleNewPartition={handleNewPartition} />
+          layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} />
       </AppBar>
 
-      <Box sx={{ mt: 2.5 }} id="grid">
+      <Box sx={{ pt: 2.5 }} id="grid">
         {[...Array(gridSize.getY())].map((x, i) => 
           <Stack direction="row" key={i} sx={{ ml: 2, mt: "-5px" }} spacing="-5px">
             {[...Array(gridSize.getX())].map((x, j) => 
               <GridTile key={j} pos={new Point(j, i)} gridSize={gridSize} currTool={currTool} setCurrTool={setCurrTool} layout={layout} 
                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
-                partitionAssigner={partitionAssigner} setPartitionAssigner={setPartitionAssigner}
+                partitionAssigner={partitionAssigner} setPartitionAssigner={setPartitionAssigner} setCurrPartition={updateActivePartition}
               /> 
             )}
           </Stack>
@@ -290,6 +306,8 @@ const App = () => {
           <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
         </MenuItem>
       </Menu>
+
+      <PartitionPanel partition={currPartition} update={() => setUpdater(!updater)} locked={partitionLocked} setLocked={setPartitionLocked} />
     </Box>
   );
 }

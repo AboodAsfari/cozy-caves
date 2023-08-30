@@ -30,7 +30,8 @@ const MenuBar = (props) => {
     brushInfo,
     setBrushInfo,
     layout,
-    handleNewPartition
+    handleNewPartition,
+    updateActivePartition
   } = props;
 
   const [defaultPartitionAnchorEl, setDefaultPartitionAnchorEl] = React.useState(null);
@@ -87,7 +88,7 @@ const MenuBar = (props) => {
     if (currTool === Tools.PEN || currTool === Tools.FILL) {
       ret.push(<Typography key={5} className="NavText" sx={{ textWrap: "nowrap" }}> Default Partition: </Typography>);
       ret.push(<>
-        <Button key={6} className="NavButton" sx={{ textTransform: "none" }} disableRipple 
+        <Button key={6} className="NavButton" sx={{ textTransform: "none", textWrap: "nowrap" }} disableRipple 
           endIcon={<KeyboardArrowDownIcon />} onClick={(e) => setDefaultPartitionAnchorEl(e.currentTarget)}> 
           <CircleIcon sx={{ color: layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].color, mr: 1 }} />
           { layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].name } 
@@ -95,7 +96,8 @@ const MenuBar = (props) => {
         <Menu anchorEl={defaultPartitionAnchorEl} open={!!defaultPartitionAnchorEl} onClose={() => setDefaultPartitionAnchorEl(null)} 
           sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
           { layout.getPartitionDisplayInfo().map((info, i) => 
-          <MenuItem key={info.name} onClick={() => { setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <MenuItem key={info.name} onClick={() => { updateActivePartition(i - 2); setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }} 
+            className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
             <CircleIcon sx={{ color: info.color }} />
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
             {brushInfo.defaultPartition === i - 2 && <CheckIcon />}

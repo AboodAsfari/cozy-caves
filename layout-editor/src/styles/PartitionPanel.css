@@ -1,0 +1,41 @@
+.PartitionPanel { 
+    width: 25%;
+    height: calc(100% - 64px - 1.5rem);
+    position: absolute;
+    right: 0;
+    top: 64px;
+    background-color: #1e1f1e;
+    box-shadow: 0 0 15px 0;
+}
+
+.PartitionHeaderText {
+    color: white !important;
+    font-size: 25px !important;
+    font-weight: 500 !important;
+}
+
+.PartitionFieldHeader{
+    width: 80%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.PartitionFieldHeader fieldset{
+    border: none !important;
+}
+
+.PartitionFieldHeader.Mui-focused{
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.LockToggle {
+    font-size: 35px !important;
+    color: white;
+}
+
+.LockToggle:hover {
+    cursor: pointer;
+    color: #7da36d;
+}

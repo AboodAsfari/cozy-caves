@@ -30,7 +30,8 @@ const GridTile = (props) => {
     undoStack,
     redoStack,
     partitionAssigner,
-    setPartitionAssigner
+    setPartitionAssigner,
+    setCurrPartition
   } = props;
 
   const getOutlineClasses = () => {
@@ -151,7 +152,9 @@ const GridTile = (props) => {
       else setBrushInfo(prev => ({...prev, secondaryBrush: tileType}));
       setCurrTool(Tools.PEN);
     } else if (e.button === 1 && tileType !== "none") {
-      setBrushInfo(prev => ({...prev, defaultPartition: tileMap[pos.toString()].getPartitionNum()}));
+      let partitionNum = tileMap[pos.toString()].getPartitionNum();
+      setBrushInfo(prev => ({...prev, defaultPartition: partitionNum}));
+      setCurrPartition(partitionNum);
       if (e.altKey) setCurrTool(Tools.FILL);
       else setCurrTool(Tools.PEN)
       
