@@ -13,6 +13,7 @@ import "./styles/MenuBar.css";
 import GridTile from "./GridTile";
 import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
+import iconMap from "./PartitionIcons";
 
 import MenuBar from "./Toolbar/MenuBar";
 import DragAction from "./actions/dragAction";
@@ -249,6 +250,7 @@ const App = () => {
     setCurrPartition(partition);
     
     setPartitionAssigner(null);
+    return partitionNum - 3;
   }
 
   const isPartitionActiveForTile = (partitionNum) => {
@@ -296,12 +298,12 @@ const App = () => {
       >
         { layout.getPartitionDisplayInfo().map((info, i) => 
           <MenuItem key={info.name} onClick={() => handlePartitionChange(i - 2)} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
-            <CircleIcon sx={{ color: info.color }} />
+            <Box sx={{ color: info.color, mt: 1 }}> {iconMap[info.icon]} </Box>
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
             {isPartitionActiveForTile(i - 2) && <CheckIcon />}
           </MenuItem>
         )}
-        <MenuItem onClick={handleNewPartition} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
+        <MenuItem onClick={() => handlePartitionChange(handleNewPartition())} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
           <AddIcon />
           <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
         </MenuItem>

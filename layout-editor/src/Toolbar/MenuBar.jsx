@@ -8,11 +8,13 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Box,
 } from "@mui/material";
 import "../styles/MenuBar.css";
 import { TransitionGroup } from 'react-transition-group';
 
 import Tools from "../Tools";
+import iconMap from "../PartitionIcons";
 
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -90,7 +92,7 @@ const MenuBar = (props) => {
       ret.push(<>
         <Button key={6} className="NavButton" sx={{ textTransform: "none", textWrap: "nowrap" }} disableRipple 
           endIcon={<KeyboardArrowDownIcon />} onClick={(e) => setDefaultPartitionAnchorEl(e.currentTarget)}> 
-          <CircleIcon sx={{ color: layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].color, mr: 1 }} />
+          <Box sx={{"& .icon": {color: layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].color, mr: 1, mt: 0.7 }}}> {iconMap[layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].icon]} </Box>
           { layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].name } 
         </Button>
         <Menu anchorEl={defaultPartitionAnchorEl} open={!!defaultPartitionAnchorEl} onClose={() => setDefaultPartitionAnchorEl(null)} 
@@ -98,7 +100,7 @@ const MenuBar = (props) => {
           { layout.getPartitionDisplayInfo().map((info, i) => 
           <MenuItem key={info.name} onClick={() => { updateActivePartition(i - 2); setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }} 
             className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
-            <CircleIcon sx={{ color: info.color }} />
+            <Box sx={{ color: info.color, display: "flex", alignItems: "center", mt: 0.2 }}> {iconMap[info.icon]} </Box>
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
             {brushInfo.defaultPartition === i - 2 && <CheckIcon />}
           </MenuItem>
