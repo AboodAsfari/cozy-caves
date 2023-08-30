@@ -7,7 +7,7 @@ some of the boxes can probably
 
 const MapPage = (props) => {
   return (
-    <RendererCanvas />
+    <RendererCanvas dungeon={props.dungeon}/>
   );
 };
 

@@ -9,7 +9,8 @@ import Navbar from "./navbar/Navbar";
 import Options from "./options/Options";
 
 function App() {
-
+  
+  const [ dungeon, setDungeon ] = React.useState([]);
   const [activePage, setActivePage] = React.useState("home");
 
   const getPageHeader = () => {
@@ -23,10 +24,10 @@ function App() {
       return <Homepage setActivePage={setActivePage}/>;
     }
     if (activePage === "map") {
-      return <MapPage />;
+      return <MapPage dungeon={dungeon}/>;
     }
     if (activePage === "options") {
-      return <Options setActivePage={setActivePage} />;
+      return <Options setActivePage={setActivePage} setDungeon={setDungeon}/>;
     }
     return null;
   }
