@@ -2,7 +2,7 @@ const Delaunator = require('delaunator');
 const Room = require('../room/room');
 const Point = require("@cozy-caves/utils").Point;
 
-const roomToRoomConnections = { };
+const roomToRoomConnections = [];
 
 function getmidPoint(room) {
     let point = room.getPosition();
@@ -26,11 +26,10 @@ function generateHallways(rooms) {
     console.log(midpoints);
     const delaunay = new Delaunator(midpoints);
     let triangles = delaunay.triangles;
-    console.log(triangles);
+    //console.log(triangles);
 
     mapConnections(triangles);
     console.log(roomToRoomConnections);
-
 }
 
 function mapConnections(triangles) {
@@ -45,10 +44,10 @@ function mapConnections(triangles) {
 }
 
 function addToConnections(room, otherRoom) {
-    if (!roomToRoomConnections[room]) {
-        roomToRoomConnections[room] = new Set();
-    }
-    roomToRoomConnections[room].add(otherRoom);
+    roomToRoomConnections.push({
+        from: room,
+        to: otherRoom
+    });
 }
 
 module.exports = generateHallways;
