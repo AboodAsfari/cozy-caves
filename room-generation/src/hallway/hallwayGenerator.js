@@ -1,6 +1,8 @@
 const Delaunator = require('delaunator');
 const Room = require('../room/room');
 const Point = require("@cozy-caves/utils").Point;
+const DisjointSet = require("./disjointSet");
+const { createNoSubstitutionTemplateLiteral } = require('typescript');
 
 const roomToRoomConnections = [];
 
@@ -30,6 +32,7 @@ function generateHallways(rooms) {
 
     mapConnections(triangles);
     console.log(roomToRoomConnections);
+    console.log(minimumSpanningTree(rooms));
 }
 
 function mapConnections(triangles) {
@@ -48,6 +51,32 @@ function addToConnections(room, otherRoom) {
         from: room,
         to: otherRoom
     });
+}
+
+function minimumSpanningTree(rooms) {
+    const mst = [];
+    const disjointSet = new DisjointSet();
+
+    for (const room in rooms) {
+        disjointSet.makeSet(room);
+    }
+
+    console.log(disjointSet);
+
+    for (const conn of roomToRoomConnections) {
+
+        const from = conn.from;
+        const to = conn.to;
+
+        if (disjointSet.findSet(String(from)) !== disjointSet.findSet(String(to))) {
+            mst.push(conn);
+            disjointSet.union(String(from), String(to));
+            if(mst.length >= rooms.length - 1) {
+                return mst;
+            }
+        }
+    }
+    throw new Error("MST Failed");
 }
 
 module.exports = generateHallways;
