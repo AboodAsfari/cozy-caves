@@ -73,8 +73,6 @@ const GridTile = (props) => {
     else tile = tileMap[pos.toString()];
 
     let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
-    console.log(iconMap)
-    console.log(partitionInfo.icon)
     return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
   }
 
@@ -143,6 +141,7 @@ const GridTile = (props) => {
           selectDragEnd: new Point(-1, -1)
         }));
       }
+
       setMouseInfo(prev => ({...prev, selectEnd: pos}));
     }
   }
