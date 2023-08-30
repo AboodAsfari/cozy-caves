@@ -334,7 +334,10 @@ class Layout {
     /**
      * Creates a new partition.
      */
-    newPartition() { this.#scalePartitions.push(new Partition()); }
+    newPartition() { 
+        this.#scalePartitions.push(new Partition()); 
+        return this.#scalePartitions[this.#scalePartitions.length - 1];
+    }
 
     /**
      * Finds and returns a partition.
