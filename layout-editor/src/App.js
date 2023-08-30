@@ -55,14 +55,16 @@ const App = () => {
   const mouseInfoR = React.useRef();
   mouseInfoR.current = mouseInfo;
   const [partitionAssigner, setPartitionAssigner] = React.useState(null);
+  const partitionAssignerR = React.useRef();
+  partitionAssignerR.current = partitionAssigner;
   const [currPartition, setCurrPartition] = React.useState(null);
   const [partitionLocked, setPartitionLocked] = React.useState(false);
   const [updater, setUpdater] = React.useState(false);
 
   React.useEffect(() => {
-    let p = layout.newPartition();
-    p.setPartitionColor("#566b56");
-    setCurrPartition(p);
+    // let p = layout.newPartition();
+    // p.setPartitionColor("#566b56");
+    // setCurrPartition(p);
     document.addEventListener("mousedown", handleMouseDown, []);
     document.addEventListener("mouseup", handleMouseUp, []);
     document.addEventListener("keydown", handleKeyPress, []);
@@ -75,7 +77,7 @@ const App = () => {
   }, []);
 
   const handleMouseDown = (e) => {
-    if (typeof e.target.className !== "string" || partitionAssigner !== null) return;
+    if (typeof e.target.className !== "string" || partitionAssignerR.current !== null) return;
     if (e.target.className && (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline"))) return;
 
     if (mouseInfoR.current.selectEnd.toString() !== "-1,-1") {
@@ -221,19 +223,19 @@ const App = () => {
     let action = new PenAction(false, null);
     undoStack.push(action);
 
-    if (isInSelection(partitionAssigner.pos) && mouseInfo.selectEnd.toString() !== "-1,-1") {
-      for (let key in tileMap) {
-        if (!tileMap[key] || !isInSelection(tileMap[key].getPosition())) continue;
-        let tile = tileMap[key]; 
+    if (isInSelection(partitionAssignerR.current.pos) && mouseInfoR.current.selectEnd.toString() !== "-1,-1") {
+      for (let key in tileMapR.current) {
+        if (!tileMapR.current[key] || !isInSelection(tileMapR.current[key].getPosition())) continue;
+        let tile = tileMapR.current[key]; 
         action.oldTiles.push({ pos: tile.getPosition(), tile, partitionNum: tile.getPartitionNum() });
         action.newTiles.push({ pos: tile.getPosition(), tile, partitionNum: partitionNum });
         tile.setPartitionNum(partitionNum);
         layout.updateTile(tile);
       }
     } else {
-      let tile = tileMap[partitionAssigner.pos.toString()]; 
-      action.oldTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: tile.getPartitionNum() });
-      action.newTiles.push({ pos: partitionAssigner.pos, tile, partitionNum: partitionNum });
+      let tile = tileMapR.current[partitionAssignerR.current.pos.toString()]; 
+      action.oldTiles.push({ pos: partitionAssignerR.current.pos, tile, partitionNum: tile.getPartitionNum() });
+      action.newTiles.push({ pos: partitionAssignerR.current.pos, tile, partitionNum: partitionNum });
       tile.setPartitionNum(partitionNum);
       layout.updateTile(tile);
     }
