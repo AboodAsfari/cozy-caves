@@ -146,12 +146,16 @@ const GridTile = (props) => {
 
   const handlePicker = (e) => {
     let tileType = !!tileMap[pos.toString()] ? tileMap[pos.toString()].getTileType() : "none";
-    if (e.button === 1) return;
-    else if (e.button === 0) {
+    if (e.button === 0) {
       if (!e.altKey) setBrushInfo(prev => ({...prev, primaryBrush: tileType}));
       else setBrushInfo(prev => ({...prev, secondaryBrush: tileType}));
       setCurrTool(Tools.PEN);
-    } else if (e.button === 2) {
+    } else if (e.button === 1 && tileType !== "none") {
+      setBrushInfo(prev => ({...prev, defaultPartition: tileMap[pos.toString()].getPartitionNum()}));
+      if (e.altKey) setCurrTool(Tools.FILL);
+      else setCurrTool(Tools.PEN)
+      
+    }else if (e.button === 2) {
       setBrushInfo(prev => ({...prev, fillBrush: tileType}));
       setCurrTool(Tools.FILL);
     }
