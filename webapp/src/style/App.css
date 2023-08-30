@@ -3,5 +3,6 @@ html {
 }
 body {
     margin: 0px;
-    min-height: 100%;
+    text-align: center;
+    background-color: #635f5d;
 }

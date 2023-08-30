@@ -19,7 +19,7 @@ const Homepage = (props) => {
                 </Box>
             </Box>
             <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, marginTop: 10, marginBottom: 0 }} color="primary.main">
-                <Button variant="contained" sx={{minWidth:400, minHeight: 120, margin: 2}} onClick={() => props.setActivePage("map")}>
+                <Button variant="contained" sx={{minWidth:400, minHeight: 120, margin: 2}} onClick={() => props.setActivePage("options")}>
                     <Typography variant="h2" >GENERATE</Typography>
                 </Button>
                 <Button variant="contained" sx={{minWidth:400, minHeight: 120, margin: 2}}>

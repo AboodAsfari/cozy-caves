@@ -4,7 +4,6 @@ import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
 
-const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
@@ -40,8 +39,6 @@ const RendererCanvas = (props) => {
     return size;
   };
 
-
-  const [ dungeon, setDungeon ] = useState(new DungeonBuilder().setPreset("Small").build());
   const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
@@ -61,7 +58,7 @@ const RendererCanvas = (props) => {
   }
 
   const drawDungeon = () => {
-    return dungeon.map((room) => room.getTiles().map((tile) => drawTile(tile, room.getPosition())))
+    return props.dungeon.map((room) => room.getTiles().map((tile) => drawTile(tile, room.getPosition())))
   }
 
   // get the current window size
