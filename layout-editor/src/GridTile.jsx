@@ -174,7 +174,7 @@ const GridTile = (props) => {
       let oldTile = typeToFill === "none" ? undefined : tileMap[curr.toString()];
       undoStack[undoStack.length - 1].oldTiles.push({ pos: curr, tile: oldTile });
 
-      let newTile = new Tile(brushInfo.fillBrush, curr); 
+      let newTile = new Tile(brushInfo.fillBrush, curr, brushInfo.defaultPartition); 
       if (brushInfo.fillBrush === "none") {
         layout.removeTile(curr);
         setTileMap(prev => ({...prev, [curr.toString()]: undefined}));
