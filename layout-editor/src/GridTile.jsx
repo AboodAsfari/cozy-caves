@@ -8,8 +8,8 @@ import { Point } from "@cozy-caves/utils";
 import PenAction from "./actions/penAction";
 import SelectAction from "./actions/selectAction";
 
-import CircleIcon from '@mui/icons-material/Circle';
-  
+import iconMap from "./PartitionIcons";
+
 const Tile = require("@cozy-caves/room-generation").Tile;
 
 const GridTile = (props) => {
@@ -73,7 +73,9 @@ const GridTile = (props) => {
     else tile = tileMap[pos.toString()];
 
     let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
-    return <CircleIcon sx={{ position: "absolute", fontSize: 70, color: partitionInfo.color }} />
+    console.log(iconMap)
+    console.log(partitionInfo.icon)
+    return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
   }
 
   const handleMouseOver = (e) => {

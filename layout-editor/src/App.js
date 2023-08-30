@@ -23,7 +23,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import SelectAction from "./actions/selectAction";
 import PenAction from "./actions/penAction";
-import PartitionPanel from "./PartitionPanel";
+import PartitionPanel from "./PartitionPanel/PartitionPanel";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 

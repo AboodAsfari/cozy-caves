@@ -1,17 +1,24 @@
 import React from "react";
 import { 
     Box,
+    Button,
     Card,
+    Divider,
+    Popover,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
-import "./styles/PartitionPanel.css";
+import "../styles/PartitionPanel.css";
 
 import CircleIcon from '@mui/icons-material/Circle';
+import NorthIcon from '@mui/icons-material/North';
 import UnlockIcon from '@mui/icons-material/LockOpenOutlined';
 import LockIcon from '@mui/icons-material/LockOutlined';
 
+import PartitionIconPopover from "./PartitionIconPopover";
+
+import iconMap from "../PartitionIcons";
 
 const PartitionPanel = (props) => {
   const {
@@ -20,6 +27,8 @@ const PartitionPanel = (props) => {
     locked,
     setLocked
   } = props;
+
+  const [iconAnchor, setIconAnchor] = React.useState(null);
 
   return (
     <Box className="PartitionPanel" sx={{ p: 3, pb: 0 }}>
@@ -30,18 +39,18 @@ const PartitionPanel = (props) => {
         </Typography> : 
         <Box>
             <Stack direction="row" sx={{ alignItems: "center" }}>
-                <Box sx={{ position: "relative", mr: 1, color: partition.getPartitionColor(), "&:hover": { cursor: "pointer", color: "white" } }}>
-                    <CircleIcon sx={{ fontSize: 44, position: "absolute", left: 3, top: 3, color: partition.getPartitionColor() }}/>
-                    <CircleIcon sx={{ fontSize: 50, color: "white", color: "inherit" }}/>
+                <Box sx={{ "& .icon": {fontSize: 50, mr: 1, color: partition.getPartitionColor(), 
+                    "&:hover": { cursor: "pointer", color: "white" } }}} onClick={(e) => setIconAnchor(e.currentTarget)}>
+                    {iconMap[partition.getPartitionIcon()]}
                 </Box>
-
                 <TextField className="PartitionFieldHeader" size="small" InputProps={{ className: "PartitionFieldHeader PartitionHeaderText" }} 
                     value={partition.getPartitionName()} onChange={(e) => { partition.setPartitionName(e.target.value); update(); }} />
 
                 { locked ? <LockIcon className="LockToggle" onClick={() => setLocked(false)} /> : <UnlockIcon className="LockToggle" onClick={() => setLocked(true)} /> }
             </Stack>
+
+            <PartitionIconPopover partition={partition} iconAnchor={iconAnchor} setIconAnchor={setIconAnchor} update={update} />
         </Box>
-        
     }
     </Box>
   );

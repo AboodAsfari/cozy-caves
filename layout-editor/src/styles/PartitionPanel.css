@@ -39,3 +39,17 @@
     cursor: pointer;
     color: #7da36d;
 }
+
+.PartitionIconPanel .MuiPaper-root{
+    background-color: #7d7a7a;
+}
+
+.PartitionIcon .icon{
+    font-size: 35px !important;
+    color: white;
+}
+
+.PartitionIcon:hover {
+    cursor: pointer;
+    color: #7da36d;
+}

@@ -357,9 +357,9 @@ class Layout {
      * @returns A list of all partitions names and colors.
      */
     getPartitionDisplayInfo() {
-        let partitionDisplayInfo = [{ name: 'Excluded', color: '#bfbfbf' }, { name: 'Unscaled', color: 'white' }];
+        let partitionDisplayInfo = [{ name: 'Excluded', color: '#bfbfbf', icon: "Circle" }, { name: 'Unscaled', color: 'white', icon: "Circle" }];
         for (let partition of this.#scalePartitions) {
-            partitionDisplayInfo.push({ name: partition.getPartitionName(), color: partition.getPartitionColor() });
+            partitionDisplayInfo.push({ name: partition.getPartitionName(), color: partition.getPartitionColor(), icon: partition.getPartitionIcon() });
         }
         return partitionDisplayInfo;
     }

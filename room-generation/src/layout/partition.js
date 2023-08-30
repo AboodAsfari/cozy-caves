@@ -4,6 +4,7 @@ const Tile = require("../tile/tile");
 class Partition {
     #partitionName = "Unnamed"; // Metadata to be used in the editor.
     #partitionColor = "white"; // Metadata to be used in the editor.
+    #partitionIcon = "Circle"; // Metadata to be used in the editor.
 
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
@@ -217,6 +218,7 @@ class Partition {
     // Setters
     setPartitionName(partitionName) { this.#partitionName = partitionName.toString(); }
     setPartitionColor(partitionColor) { this.#partitionColor = partitionColor.toString(); }
+    setPartitionIcon(partitionIcon) { this.#partitionIcon = partitionIcon.toString(); }
     setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
     setLockX(lockX) { this.#lockX = !!lockX; }
     setLockY(lockY) { this.#lockY = !!lockY; }
@@ -242,6 +244,7 @@ class Partition {
     // Getters
     getPartitionName() { return this.#partitionName; }
     getPartitionColor() { return this.#partitionColor; }
+    getPartitionIcon() { return this.#partitionIcon; }
     ratioLocked() { return this.#lockRatio; }
     xLocked() { return this.#lockX; }
     yLocked() { return this.#lockY; }
