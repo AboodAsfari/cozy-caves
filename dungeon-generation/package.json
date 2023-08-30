@@ -1,6 +1,6 @@
 {
   "name": "@cozy-caves/dungeon-generation",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Recursively divides the bounding space into smaller and smaller regions until the termination criteria is met. A hierarchical binary tree structure is formed which allows for easy manipulation of the space in order to create coherent and interesting map layouts. Post processing done on the basic map structure that the BSP algorithm provides include Room Generation through communication with other modules, as well as randomized room culling to introduce increased map complexity.",
   "main": "dungeonBuilder.js",
   "scripts": {
@@ -9,8 +9,8 @@
   "author": "Cozy Caves Group",
   "license": "ISC",
   "dependencies": {
-    "@cozy-caves/room-generation": "^1.0.3",
-    "@cozy-caves/utils": "^1.0.2",
+    "@cozy-caves/room-generation": "^1.0.7",
+    "@cozy-caves/utils": "^1.0.4",
     "seedrandom": "^3.0.5"
   }
 }
