@@ -16,6 +16,15 @@
     background-color: transparent !important;
 }
 
+.NavText {
+    color: white !important;
+    background-color: transparent;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    text-transform: none;
+    margin-left: 0.5rem !important;
+}
+
 .ToolIcon {
     font-size: 30;
 }
@@ -34,13 +43,13 @@
     cursor: pointer;
 }
 
-.BrushMenuItem {
+.MenuItem {
     background-color: #7d7a7a !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     color: white !important;
 }
 
-.BrushMenuItem:hover {
+.MenuItem:hover {
     background-color: #545454 !important;
 }

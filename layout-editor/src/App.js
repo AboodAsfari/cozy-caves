@@ -34,7 +34,8 @@ const App = () => {
   const [brushInfo, setBrushInfo] = React.useState({
     primaryBrush: "floor",
     secondaryBrush: "wall",
-    fillBrush: "floor"
+    fillBrush: "floor",
+    defaultPartition: -1
   })
   const [mouseInfo, setMouseInfo] = React.useState({
     dragButton: -1,
@@ -244,7 +245,7 @@ const App = () => {
   return (
     <Box>
       <AppBar position="sticky" component="nav">
-        <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} />
+        <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo} layout={layout} />
       </AppBar>
 
       <Box sx={{ mt: 2.5 }} id="grid">
@@ -266,7 +267,7 @@ const App = () => {
         onContextMenu={handlePartitionContextMenu} sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
       >
         { layout.getPartitionDisplayInfo().map((info, i) => 
-          <MenuItem key={info.name} onClick={() => handlePartitionChange(i - 2)} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+          <MenuItem key={info.name} onClick={() => handlePartitionChange(i - 2)} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
             <CircleIcon sx={{ color: info.color }} />
             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
             {isPartitionActiveForTile(i - 2) && <CheckIcon />}

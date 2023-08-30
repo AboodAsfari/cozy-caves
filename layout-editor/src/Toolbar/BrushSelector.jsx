@@ -52,7 +52,7 @@ const BrushMenuItem = (props) => {
   } = props;
 
   return (
-    <MenuItem onClick={() => { setBrush(brushName); handleClose(); }} className="BrushMenuItem" sx={{ minWidth: 140 }} disableRipple> 
+    <MenuItem onClick={() => { setBrush(brushName); handleClose(); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple> 
       <img className="PixelArt" src={getBrushIcon(brushName)} alt="brush selector" style={{ width: "20px", height: "100%" }} /> 
       <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {brushName[0].toUpperCase() + brushName.slice(1).toLowerCase()} </Typography>
       {brush === brushName && <CheckIcon />}
