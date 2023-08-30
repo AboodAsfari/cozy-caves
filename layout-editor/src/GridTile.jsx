@@ -101,7 +101,7 @@ const GridTile = (props) => {
       return;
     };
     let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
-    let newTile = new Tile(newTileType, pos); 
+    let newTile = new Tile(newTileType, pos, brushInfo.defaultPartition); 
     layout.addTile(newTile);
     setTileMap(prev => ({...prev, [pos.toString()]: newTile}));
     undoStack[undoStack.length - 1].newTiles.push({ pos, tile: newTile });
