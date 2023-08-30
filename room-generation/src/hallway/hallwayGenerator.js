@@ -2,7 +2,6 @@ const Delaunator = require('delaunator');
 const Room = require('../room/room');
 const Point = require("@cozy-caves/utils").Point;
 const DisjointSet = require("./disjointSet");
-const { createNoSubstitutionTemplateLiteral } = require('typescript');
 
 const roomToRoomConnections = [];
 
