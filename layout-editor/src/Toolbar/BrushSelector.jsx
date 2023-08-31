@@ -22,9 +22,9 @@ const BrushSelector = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const getBrushIcon = (brush) => {
-        if (brush === "none") return "noTileIcon.png";
-        if (brush === "floor") return "floorIcon.png";
-        if (brush === "wall") return "wallIcon.png";
+        if (brush === "none") return "resources/tileIcons/noTileIcon.png";
+        if (brush === "floor") return "resources/tileIcons/floorIcon.png";
+        if (brush === "wall") return "resources/tileIcons/wallIcon.png";
     }
 
     return (
