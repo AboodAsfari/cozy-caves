@@ -22,19 +22,4 @@ const iconMap = {
     Close: <CloseIcon className="icon" />
 };
 
-const getIconMap = () => {
-    iconMap.set("Circle", <CircleIcon className="PartitionIcon" />);
-iconMap.set("North", <NorthIcon className="PartitionIcon" />);
-iconMap.set("NorthEast", <NorthEastIcon className="PartitionIcon" />);
-iconMap.set("NorthWest", <NorthWestIcon className="PartitionIcon" />);
-iconMap.set("South", <SouthIcon className="PartitionIcon" />);
-iconMap.set("SouthEast", <SouthEastIcon className="PartitionIcon" />);
-iconMap.set("SouthWest", <SouthWestIcon className="PartitionIcon" />);
-iconMap.set("East", <EastIcon className="PartitionIcon" />);
-iconMap.set("West", <WestIcon className="PartitionIcon" />);
-iconMap.set("Close", <CloseIcon className="PartitionIcon" />);
-
-    return iconMap
-};
-
 export default iconMap;

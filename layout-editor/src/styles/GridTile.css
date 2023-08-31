@@ -1,13 +1,13 @@
 .GridTileOutline {
     width: 100px;
-    aspect-ratio : 1 / 1;
+    aspect-ratio: 1 / 1;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #7da36d;
 }
 
-.SelectedTileOutline { 
+.SelectedTileOutline {
     background-color: #3d5052;
     z-index: 1;
 }
@@ -18,13 +18,13 @@
 
 .GridTile {
     width: 90%;
-    aspect-ratio : 1 / 1;
+    aspect-ratio: 1 / 1;
     background-color: #171717;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-} 
+}
 
 .GridTile:hover:not(.SelectedTile) {
     background-color: #606e5e;

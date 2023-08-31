@@ -18,7 +18,8 @@ class SelectAction extends Action {
     undo(layout, setTileMap, setMouseInfo, setCurrTool) {
         if (this.#selectEnd.toString() !== "-1,-1") setCurrTool(Tools.SELECTOR);
 
-        setMouseInfo(prev => ({...prev,
+        setMouseInfo(prev => ({
+            ...prev,
             selectStart: this.#selectStart,
             selectEnd: this.#selectEnd,
             selectDragStart: new Point(-1, -1),
@@ -29,7 +30,8 @@ class SelectAction extends Action {
     redo(layout, setTileMap, setMouseInfo, setCurrTool) {
         setCurrTool(Tools.SELECTOR);
 
-        setMouseInfo(prev => ({...prev,
+        setMouseInfo(prev => ({
+            ...prev,
             selectStart: this.redoSelectStart,
             selectEnd: this.redoSelectEnd,
             selectDragStart: new Point(-1, -1),

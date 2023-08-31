@@ -1,4 +1,4 @@
-.PartitionPanel { 
+.PartitionPanel {
     width: 25%;
     height: calc(100% - 64px - 1.5rem);
     position: absolute;
@@ -14,18 +14,18 @@
     font-weight: 500 !important;
 }
 
-.PartitionFieldHeader{
+.PartitionFieldHeader {
     width: 80%;
     height: 40px;
     border: none !important;
     border-bottom: 2px solid transparent !important;
 }
 
-.PartitionFieldHeader fieldset{
+.PartitionFieldHeader fieldset {
     border: none !important;
 }
 
-.PartitionFieldHeader.Mui-focused{
+.PartitionFieldHeader.Mui-focused {
     border-bottom: 2px solid white !important;
     border-radius: 0;
 }
@@ -40,11 +40,11 @@
     color: #7da36d;
 }
 
-.PartitionIconPanel .MuiPaper-root{
+.PartitionIconPanel .MuiPaper-root {
     background-color: #7d7a7a;
 }
 
-.PartitionIcon .icon{
+.PartitionIcon .icon {
     font-size: 35px !important;
     color: white;
 }
@@ -67,21 +67,21 @@
 }
 
 .ColorPicker .react-colorful__hue-pointer {
-  width: 16px;
-  border-radius: 3px;
+    width: 16px;
+    border-radius: 3px;
 }
 
 .ColorPicker input {
-font-size: 20px;
-  width: 90px;
-  padding: 6px;
-  margin-bottom: 2px;
-  outline: none;
-  text-transform: uppercase;
-  text-align: center;
-  color: white;
-  background-color: transparent;
-  border: none;
+    font-size: 20px;
+    width: 90px;
+    padding: 6px;
+    margin-bottom: 2px;
+    outline: none;
+    text-transform: uppercase;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+    border: none;
 }
 
 .ColorPicker input:focus {
