@@ -15,8 +15,8 @@ import "../styles/PartitionPanel.css";
 
 const PartitionIconPopover = (props) => {
     const {
-        partition,
         iconAnchor,
+        partition,
         setIconAnchor,
         update
     } = props;

@@ -1,9 +1,9 @@
 const ToolbarButton = (props) => {
     const {
-        iconName,
         currTool,
-        setCurrTool,
-        desiredTool
+        desiredTool,
+        iconName,
+        setCurrTool
     } = props;
 
     return (

@@ -26,12 +26,12 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 const MenuBar = (props) => {
     const {
-        currTool,
-        setCurrTool,
         brushInfo,
-        setBrushInfo,
-        layout,
+        currTool,
         handleNewPartition,
+        layout,
+        setBrushInfo,
+        setCurrTool,
         updateActivePartition
     } = props;
 

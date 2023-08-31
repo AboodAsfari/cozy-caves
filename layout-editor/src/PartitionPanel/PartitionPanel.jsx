@@ -16,10 +16,10 @@ import LockIcon from '@mui/icons-material/LockOutlined';
 
 const PartitionPanel = (props) => {
     const {
-        partition,
-        update,
         locked,
-        setLocked
+        partition,
+        setLocked,
+        update
     } = props;
 
     const [iconAnchor, setIconAnchor] = React.useState(null);

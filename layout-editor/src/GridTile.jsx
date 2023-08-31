@@ -16,24 +16,24 @@ const Tile = require("@cozy-caves/room-generation").Tile;
 
 const GridTile = (props) => {
     const {
-        pos,
+        brushInfo,
         currTool,
-        setCurrTool,
+        gridSize,
+        getOverlayMap,
+        isInSelection,
         layout,
         mouseInfo,
-        setMouseInfo,
-        brushInfo,
-        setBrushInfo,
-        gridSize,
-        tileMap,
-        setTileMap,
-        isInSelection,
-        getOverlayMap,
-        undoStack,
-        redoStack,
         partitionAssigner,
+        pos,
+        redoStack,
+        setBrushInfo,
+        setCurrPartition,
+        setCurrTool,
+        setMouseInfo,
         setPartitionAssigner,
-        setCurrPartition
+        setTileMap,
+        tileMap,
+        undoStack
     } = props;
 
     const getOutlineClasses = () => {

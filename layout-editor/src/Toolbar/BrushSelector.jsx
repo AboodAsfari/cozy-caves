@@ -13,10 +13,10 @@ import CheckIcon from '@mui/icons-material/Check';
 
 const BrushSelector = (props) => {
     const {
-        size,
-        mr,
         brush,
-        setBrush
+        mr,
+        setBrush,
+        size
     } = props;
 
     const [anchorEl, setAnchorEl] = React.useState(null);
