@@ -1,10 +1,11 @@
 import React from "react";
 import {
     Box,
-    Typography,
     Menu,
-    MenuItem
+    MenuItem,
+    Typography
 } from "@mui/material";
+
 import "../styles/App.css";
 import "../styles/MenuBar.css";
 

@@ -1,29 +1,29 @@
 import React from "react";
 import {
     AppBar,
-    Stack,
     Box,
     Menu,
     MenuItem,
-    Typography,
+    Stack,
+    Typography
 } from "@mui/material";
+import GridTile from "./GridTile";
+import MenuBar from "./Toolbar/MenuBar";
+import PartitionPanel from "./PartitionPanel/PartitionPanel";
+
+import iconMap from "./PartitionIcons";
+import { Point } from "@cozy-caves/utils";
+import Tools from "./Tools";
+
+import DragAction from "./actions/dragAction";
+import PenAction from "./actions/penAction";
+import SelectAction from "./actions/selectAction";
+
 import "./styles/App.css";
 import "./styles/MenuBar.css";
 
-import GridTile from "./GridTile";
-import { Point } from "@cozy-caves/utils";
-import Tools from "./Tools";
-import iconMap from "./PartitionIcons";
-
-import MenuBar from "./Toolbar/MenuBar";
-import DragAction from "./actions/dragAction";
-
-import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
-
-import SelectAction from "./actions/selectAction";
-import PenAction from "./actions/penAction";
-import PartitionPanel from "./PartitionPanel/PartitionPanel";
+import CheckIcon from '@mui/icons-material/Check';
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 

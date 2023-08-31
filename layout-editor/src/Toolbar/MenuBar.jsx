@@ -1,28 +1,28 @@
 import React from "react";
 import {
-    Toolbar,
-    Stack,
+    Box,
     Button,
-    Divider,
     Collapse,
-    Typography,
+    Divider,
     Menu,
     MenuItem,
-    Box,
+    Stack,
+    Toolbar,
+    Typography
 } from "@mui/material";
-import "../styles/MenuBar.css";
+import BrushSelector from "./BrushSelector";
+import ToolbarButton from "./ToolbarButton";
 import { TransitionGroup } from 'react-transition-group';
 
-import Tools from "../Tools";
 import iconMap from "../PartitionIcons";
+import Tools from "../Tools";
 
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CheckIcon from '@mui/icons-material/Check';
+import "../styles/MenuBar.css";
+
 import AddIcon from '@mui/icons-material/Add';
-
-import ToolbarButton from "./ToolbarButton";
-import BrushSelector from "./BrushSelector";
+import CheckIcon from '@mui/icons-material/Check';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 const MenuBar = (props) => {
     const {

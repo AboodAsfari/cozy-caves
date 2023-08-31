@@ -1,14 +1,16 @@
 import {
     Box,
-    Typography,
+    Typography
 } from "@mui/material";
-import "./styles/GridTile.css";
-import Tools from "./Tools";
+
+import iconMap from "./PartitionIcons";
 import { Point } from "@cozy-caves/utils";
+import Tools from "./Tools";
+
 import PenAction from "./actions/penAction";
 import SelectAction from "./actions/selectAction";
 
-import iconMap from "./PartitionIcons";
+import "./styles/GridTile.css";
 
 const Tile = require("@cozy-caves/room-generation").Tile;
 
@@ -206,7 +208,7 @@ const GridTile = (props) => {
 
                 let tile = tileMap[newPos.toString()];
                 if (!added.includes(newPos.toString()) && ((typeToFill === "none" && !tile) || (!!tile && tile.getTileType() === typeToFill
-                    && tile.getPartitionNum() == partitionToFill))) toFill.push(newPos);
+                    && tile.getPartitionNum() === partitionToFill))) toFill.push(newPos);
             }
         }
     }

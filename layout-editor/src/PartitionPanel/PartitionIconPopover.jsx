@@ -7,11 +7,11 @@ import {
     Popover,
     Stack
 } from "@mui/material";
-import "../styles/PartitionPanel.css";
+import { HexColorPicker, HexColorInput } from "react-colorful";
 
 import iconMap from "../PartitionIcons";
 
-import { HexColorPicker, HexColorInput } from "react-colorful";
+import "../styles/PartitionPanel.css";
 
 const PartitionIconPopover = (props) => {
     const {

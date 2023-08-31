@@ -1,18 +1,18 @@
 import React from "react";
 import {
     Box,
-    Stack,
     TextField,
     Typography,
+    Stack
 } from "@mui/material";
+import PartitionIconPopover from "./PartitionIconPopover";
+
+import iconMap from "../PartitionIcons";
+
 import "../styles/PartitionPanel.css";
 
 import UnlockIcon from '@mui/icons-material/LockOpenOutlined';
 import LockIcon from '@mui/icons-material/LockOutlined';
-
-import PartitionIconPopover from "./PartitionIconPopover";
-
-import iconMap from "../PartitionIcons";
 
 const PartitionPanel = (props) => {
     const {
