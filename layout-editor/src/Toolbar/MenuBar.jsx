@@ -124,7 +124,7 @@ const MenuBar = (props) => {
             <Stack direction={"row"} sx={{ alignItems: "center" }}>
                 <Button disableRipple className="NavButton"> File </Button>
                 <Button disableRipple className="NavButton"> View </Button>
-                <Divider variant="middle" flexItem sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white" }} />
+                <Divider variant="middle" sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
                 <TransitionGroup style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                     {getToolbarItems().map((item, i) =>
                         <Collapse orientation="horizontal" key={item.key}>

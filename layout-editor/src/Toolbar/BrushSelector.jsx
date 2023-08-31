@@ -27,20 +27,18 @@ const BrushSelector = (props) => {
         if (brush === "wall") return "resources/tileIcons/wallIcon.png";
     }
 
-    return (
-        <>
-            <Box className="PenBrushIcon" sx={{ width: size, height: size, mr: mr }} onClick={(e) => setAnchorEl(e.currentTarget)}>
-                <img className="PixelArt" src={getBrushIcon(brush)} alt="brush selector" style={{ width: "100%", height: "100%" }} />
-            </Box>
+    return ( <>
+        <Box className="PenBrushIcon" sx={{ width: size, height: size, mr: mr }} onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <img className="PixelArt" src={getBrushIcon(brush)} alt="brush selector" style={{ width: "100%", height: "100%" }} />
+        </Box>
 
-            <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}
-                sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
-                <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="none" />
-                <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="floor" />
-                <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="wall" />
-            </Menu>
-        </>
-    );
+        <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+            <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="none" />
+            <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="floor" />
+            <BrushMenuItem brush={brush} setBrush={setBrush} handleClose={() => setAnchorEl(null)} getBrushIcon={getBrushIcon} brushName="wall" />
+        </Menu>
+    </> );
 }
 
 const BrushMenuItem = (props) => {

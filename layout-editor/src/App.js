@@ -54,9 +54,9 @@ const App = () => {
     const [updater, setUpdater] = React.useState(false);
 
     React.useEffect(() => {
-        // let p = layout.newPartition();
-        // p.setPartitionColor("#566b56");
-        // setCurrPartition(p);
+        let p = layout.newPartition();
+        p.setPartitionColor("#566b56");
+        setCurrPartition(p);
         document.addEventListener("mousedown", handleMouseDown, []);
         document.addEventListener("mouseup", handleMouseUp, []);
         document.addEventListener("keydown", handleKeyPress, []);
