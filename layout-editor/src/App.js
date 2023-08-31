@@ -14,6 +14,7 @@ import PartitionPanel from "./PartitionPanel/PartitionPanel";
 import iconMap from "./PartitionIcons";
 import { Point } from "@cozy-caves/utils";
 import Tools from "./Tools";
+import useState from 'react-usestateref';
 
 import DragAction from "./actions/dragAction";
 import PenAction from "./actions/penAction";
@@ -32,30 +33,22 @@ const App = () => {
     const layout = React.useRef(new Layout()).current;
     const undoStack = React.useRef([]).current;
     const redoStack = React.useRef([]).current;
-    const [tileMap, setTileMap] = React.useState({});
-    const tileMapR = React.useRef();
-    tileMapR.current = tileMap;
-    const [currTool, setCurrTool] = React.useState(Tools.PEN);
-    const currToolR = React.useRef();
-    currToolR.current = currTool;
+    const [tileMap, setTileMap, tileMapRef] = useState({});
+    const [currTool, setCurrTool, currToolRef] = useState(Tools.PEN);
     const [brushInfo, setBrushInfo] = React.useState({
         primaryBrush: "floor",
         secondaryBrush: "wall",
         fillBrush: "floor",
         defaultPartition: -1
     })
-    const [mouseInfo, setMouseInfo] = React.useState({
+    const [mouseInfo, setMouseInfo, mouseInfoRef] = useState({
         dragButton: -1,
         selectStart: new Point(-1, -1),
         selectEnd: new Point(-1, -1),
         selectDragStart: new Point(-1, -1),
         selectDragEnd: new Point(-1, -1)
     });
-    const mouseInfoR = React.useRef();
-    mouseInfoR.current = mouseInfo;
-    const [partitionAssigner, setPartitionAssigner] = React.useState(null);
-    const partitionAssignerR = React.useRef();
-    partitionAssignerR.current = partitionAssigner;
+    const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
     const [partitionLocked, setPartitionLocked] = React.useState(false);
     const [updater, setUpdater] = React.useState(false);
@@ -77,11 +70,11 @@ const App = () => {
     }, []);
 
     const handleMouseDown = (e) => {
-        if (typeof e.target.className !== "string" || partitionAssignerR.current !== null) return;
+        if (typeof e.target.className !== "string" || partitionAssignerRef.current !== null) return;
         if (e.target.className && (e.target.className.includes("GridTile") || e.target.className.includes("GridTileOutline"))) return;
 
-        if (mouseInfoR.current.selectEnd.toString() !== "-1,-1") {
-            undoStack.push(new SelectAction(mouseInfoR.current.selectStart, mouseInfoR.current.selectEnd));
+        if (mouseInfoRef.current.selectEnd.toString() !== "-1,-1") {
+            undoStack.push(new SelectAction(mouseInfoRef.current.selectStart, mouseInfoRef.current.selectEnd));
             undoStack[undoStack.length - 1].redoSelectStart = new Point(-1, -1);
             undoStack[undoStack.length - 1].redoSelectEnd = new Point(-1, -1);
 
@@ -96,11 +89,11 @@ const App = () => {
     const handleMouseUp = () => {
         setMouseInfo(prev => ({ ...prev, dragButton: -1 }));
 
-        let dragEnd = mouseInfoR.current.selectDragEnd;
-        let dragStart = mouseInfoR.current.selectDragStart;
+        let dragEnd = mouseInfoRef.current.selectDragEnd;
+        let dragStart = mouseInfoRef.current.selectDragStart;
         let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
-        let selectStart = mouseInfoR.current.selectStart;
-        let selectEnd = mouseInfoR.current.selectEnd;
+        let selectStart = mouseInfoRef.current.selectStart;
+        let selectEnd = mouseInfoRef.current.selectEnd;
 
         if (selectStart.toString() !== "-1,-1" && selectEnd.toString() !== "-1,-1") {
             if (dragDiff.getX() !== 0 || dragDiff.getY() !== 0) {
@@ -115,7 +108,7 @@ const App = () => {
                     let pos = new Point(parseInt(key.split(',')[0]), parseInt(key.split(',')[1]));
                     if (pos.getX() >= gridSize.getX() || pos.getY() >= gridSize.getY() || pos.getX() < 0 || pos.getY() < 0) continue;
 
-                    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMapR.current[pos.toString()] });
+                    undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMapRef.current[pos.toString()] });
 
                     if (value === null) {
                         layout.removeTile(pos);
@@ -144,10 +137,10 @@ const App = () => {
     }
 
     const handleKeyPress = (e) => {
-        if (currToolR.current === Tools.SELECTOR && e.key === "Delete") {
-            for (let posStr in tileMapR.current) {
-                if (!tileMapR.current[posStr]) continue;
-                let pos = tileMapR.current[posStr].getPosition();
+        if (currToolRef.current === Tools.SELECTOR && e.key === "Delete") {
+            for (let posStr in tileMapRef.current) {
+                if (!tileMapRef.current[posStr]) continue;
+                let pos = tileMapRef.current[posStr].getPosition();
                 if (isInSelection(pos)) {
                     layout.removeTile(pos);
                     setTileMap(prev => ({ ...prev, [pos.toString()]: undefined }));
@@ -183,8 +176,8 @@ const App = () => {
     }
 
     const isInSelection = (pos, useDrag = true) => {
-        let selectStart = mouseInfoR.current.selectStart;
-        let selectEnd = mouseInfoR.current.selectEnd;
+        let selectStart = mouseInfoRef.current.selectStart;
+        let selectEnd = mouseInfoRef.current.selectEnd;
         let minX = Math.min(selectStart.getX(), selectEnd.getX());
         let maxX = Math.max(selectStart.getX(), selectEnd.getX());
         let minY = Math.min(selectStart.getY(), selectEnd.getY());
@@ -192,8 +185,8 @@ const App = () => {
         let minPoint;
         let maxPoint;
         if (useDrag) {
-            let dragEnd = mouseInfoR.current.selectDragEnd;
-            let dragStart = mouseInfoR.current.selectDragStart;
+            let dragEnd = mouseInfoRef.current.selectDragEnd;
+            let dragStart = mouseInfoRef.current.selectDragStart;
             let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
             minPoint = new Point(minX + dragDiff.getX(), minY + dragDiff.getY());
             maxPoint = new Point(maxX + dragDiff.getX(), maxY + dragDiff.getY());
@@ -208,17 +201,17 @@ const App = () => {
 
     const getOverlayMap = () => {
         let overlayMap = {};
-        for (let posStr in tileMapR.current) {
-            if (!tileMapR.current[posStr] || !isInSelection(tileMapR.current[posStr].getPosition(), false)) continue;
+        for (let posStr in tileMapRef.current) {
+            if (!tileMapRef.current[posStr] || !isInSelection(tileMapRef.current[posStr].getPosition(), false)) continue;
             overlayMap[posStr] = null;
         }
-        for (let posStr in tileMapR.current) {
-            if (!tileMapR.current[posStr] || !isInSelection(tileMapR.current[posStr].getPosition(), false)) continue;
-            let pos = tileMapR.current[posStr].getPosition();
-            let dragEnd = mouseInfoR.current.selectDragEnd;
-            let dragStart = mouseInfoR.current.selectDragStart;
+        for (let posStr in tileMapRef.current) {
+            if (!tileMapRef.current[posStr] || !isInSelection(tileMapRef.current[posStr].getPosition(), false)) continue;
+            let pos = tileMapRef.current[posStr].getPosition();
+            let dragEnd = mouseInfoRef.current.selectDragEnd;
+            let dragStart = mouseInfoRef.current.selectDragStart;
             let dragDiff = new Point(dragEnd.getX() - dragStart.getX(), dragEnd.getY() - dragStart.getY());
-            overlayMap[pos.add(dragDiff).toString()] = tileMapR.current[posStr];
+            overlayMap[pos.add(dragDiff).toString()] = tileMapRef.current[posStr];
         }
         return overlayMap;
     }
@@ -227,19 +220,19 @@ const App = () => {
         let action = new PenAction(false, null);
         undoStack.push(action);
 
-        if (isInSelection(partitionAssignerR.current.pos) && mouseInfoR.current.selectEnd.toString() !== "-1,-1") {
-            for (let key in tileMapR.current) {
-                if (!tileMapR.current[key] || !isInSelection(tileMapR.current[key].getPosition())) continue;
-                let tile = tileMapR.current[key];
+        if (isInSelection(partitionAssignerRef.current.pos) && mouseInfoRef.current.selectEnd.toString() !== "-1,-1") {
+            for (let key in tileMapRef.current) {
+                if (!tileMapRef.current[key] || !isInSelection(tileMapRef.current[key].getPosition())) continue;
+                let tile = tileMapRef.current[key];
                 action.oldTiles.push({ pos: tile.getPosition(), tile, partitionNum: tile.getPartitionNum() });
                 action.newTiles.push({ pos: tile.getPosition(), tile, partitionNum: partitionNum });
                 tile.setPartitionNum(partitionNum);
                 layout.updateTile(tile);
             }
         } else {
-            let tile = tileMapR.current[partitionAssignerR.current.pos.toString()];
-            action.oldTiles.push({ pos: partitionAssignerR.current.pos, tile, partitionNum: tile.getPartitionNum() });
-            action.newTiles.push({ pos: partitionAssignerR.current.pos, tile, partitionNum: partitionNum });
+            let tile = tileMapRef.current[partitionAssignerRef.current.pos.toString()];
+            action.oldTiles.push({ pos: partitionAssignerRef.current.pos, tile, partitionNum: tile.getPartitionNum() });
+            action.newTiles.push({ pos: partitionAssignerRef.current.pos, tile, partitionNum: partitionNum });
             tile.setPartitionNum(partitionNum);
             layout.updateTile(tile);
         }
