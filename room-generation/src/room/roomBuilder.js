@@ -42,8 +42,10 @@ class RoomBuilder {
 
         // Normally, would choose from a pool of layouts based on params.
         let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
-        let propMap = populateRoom(room, 5);
-        room.setPropMap(propMap);
+        if (populateWithItems) {
+            let propMap = populateRoom(room, 5);
+            room.setPropMap(propMap);
+        }
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
