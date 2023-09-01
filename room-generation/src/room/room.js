@@ -26,8 +26,8 @@ class Room {
             let pos = tile.getPosition();
             let xComparison = lookingForHigher ? edges[pos.getY()] < pos.getX() : edges[pos.getY()] > pos.getX();
             let yComparison = lookingForHigher ? edges[pos.getX()] < pos.getY() : edges[pos.getX()] > pos.getY();
-            if (verticalEdges && (!edges[pos.getX()] || yComparison)) edges[pos.getX()] = pos.getY();
-            else if (!verticalEdges && (!edges[pos.getY()] || xComparison)) edges[pos.getY()] = pos.getX();
+            if (verticalEdges && (edges[pos.getX()] === undefined || yComparison)) edges[pos.getX()] = pos.getY();
+            else if (!verticalEdges && (edges[pos.getY()] === undefined || xComparison)) edges[pos.getY()] = pos.getX();
         }
 
         let finalList = [];
