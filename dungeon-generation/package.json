@@ -9,7 +9,7 @@
   "author": "Cozy Caves Group",
   "license": "ISC",
   "dependencies": {
-    "@cozy-caves/room-generation": "^1.0.7",
+    "@cozy-caves/room-generation": "^1.0.9",
     "@cozy-caves/utils": "^1.0.4",
     "seedrandom": "^3.0.5"
   }
