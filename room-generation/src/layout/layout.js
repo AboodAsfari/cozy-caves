@@ -245,9 +245,10 @@ class Layout {
      * @param tile Tile to add.
      * @param partitionNum Partition number to add tile to.
      */
-    addTile(tile, partitionNum) { 
+    addTile(tile) { 
         if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
-        else if (partitionNum < -2) throw new Error('Invalid partition number provided.');
+        let partitionNum = tile.getPartitionNum();
+        if (partitionNum < -2) throw new Error('Invalid partition number provided.');
         else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
         else if (partitionNum === -1) this.#unscaledTiles.set(tile.getPosition().toString(), tile);
         else this.#scalePartitions[partitionNum].addTile(tile);  
@@ -265,6 +266,17 @@ class Layout {
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
             this.#scalePartitions[i].removeTile(pos);
         }
+    }
+
+    /**
+     * Removes and then adds a tile again. Used when a tiles partition
+     * has been updated so the layout can store it in the correct place.
+     * 
+     * @param tile The tile to update. 
+     */
+    updateTile(tile) {
+        this.removeTile(tile.getPosition());
+        this.addTile(tile);
     }
 
     /**
@@ -322,7 +334,10 @@ class Layout {
     /**
      * Creates a new partition.
      */
-    newPartition() { this.#scalePartitions.push(new Partition()); }
+    newPartition() { 
+        this.#scalePartitions.push(new Partition()); 
+        return this.#scalePartitions[this.#scalePartitions.length - 1];
+    }
 
     /**
      * Finds and returns a partition.
@@ -333,6 +348,29 @@ class Layout {
     getPartition(index) {
         if (index < 0 || index >= this.#scalePartitions.length) return null;
         return this.#scalePartitions[index]; 
+    }
+
+    /**
+     * Removes a partition from the layout.
+     * 
+     * @param index Index of the partition to remove. 
+     */
+    removePartition(index) {
+        this.#scalePartitions.splice(index, 1);
+    }
+
+    /**
+     * Fetches all partitions, including unscaled and excluded, and returns
+     * a list of all of their names and colors to display.
+     * 
+     * @returns A list of all partitions names and colors.
+     */
+    getPartitionDisplayInfo() {
+        let partitionDisplayInfo = [{ name: 'Excluded', color: '#bfbfbf', icon: "Circle" }, { name: 'Unscaled', color: 'white', icon: "Circle" }];
+        for (let partition of this.#scalePartitions) {
+            partitionDisplayInfo.push({ name: partition.getPartitionName(), color: partition.getPartitionColor(), icon: partition.getPartitionIcon() });
+        }
+        return partitionDisplayInfo;
     }
 }
 
@@ -360,15 +398,15 @@ exampleLayout.getPartition(2).setSplitScalingOnY(false);
 exampleLayout.getPartition(2).setLockRatio(false);
 exampleLayout.getPartition(2).setIncrementAmtX(1);
 
-exampleLayout.addTile(new Tile("floor", new Point(0, 0)), 2);
-exampleLayout.addTile(new Tile("wall", new Point(-1, 0)), -1);
-exampleLayout.addTile(new Tile("wall", new Point(1, 0)), 0);
-exampleLayout.addTile(new Tile("wall", new Point(0, 1)), 1);
-exampleLayout.addTile(new Tile("wall", new Point(0, -1)), -1);
-exampleLayout.addTile(new Tile("wall", new Point(1, -1)), 0);
-exampleLayout.addTile(new Tile("wall", new Point(-1, -1)), -1);
-exampleLayout.addTile(new Tile("wall", new Point(-1, 1)), 1);
-exampleLayout.addTile(new Tile("wall", new Point(1, 1)), 1);
+exampleLayout.addTile(new Tile("floor", new Point(0, 0), 2));
+exampleLayout.addTile(new Tile("wall", new Point(-1, 0), -1));
+exampleLayout.addTile(new Tile("wall", new Point(1, 0), 0));
+exampleLayout.addTile(new Tile("wall", new Point(0, 1), 1));
+exampleLayout.addTile(new Tile("wall", new Point(0, -1), -1));
+exampleLayout.addTile(new Tile("wall", new Point(1, -1), 0));
+exampleLayout.addTile(new Tile("wall", new Point(-1, -1), -1));
+exampleLayout.addTile(new Tile("wall", new Point(-1, 1), 1));
+exampleLayout.addTile(new Tile("wall", new Point(1, 1), 1));
 // Temp layout ends here.
 
 module.exports = { Layout, exampleLayout }

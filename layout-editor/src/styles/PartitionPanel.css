@@ -1,0 +1,166 @@
+.PartitionPanel {
+    width: 25%;
+    height: calc(100% - 64px - 1.5rem);
+    position: absolute;
+    right: 0;
+    top: 64px;
+    background-color: #1e1f1e;
+    box-shadow: 0 0 15px 0;
+}
+
+.PartitionHeaderText {
+    color: white !important;
+    font-size: 25px !important;
+    font-weight: 500 !important;
+}
+
+.PartitionFieldHeader {
+    width: 80%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.PartitionFieldHeader fieldset {
+    border: none !important;
+}
+
+.PartitionFieldHeader.Mui-focused {
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.LockToggle {
+    font-size: 35px !important;
+    color: white;
+}
+
+.LockToggle:hover {
+    cursor: pointer;
+    color: #7da36d;
+}
+
+.PartitionIconPanel .MuiPaper-root {
+    background-color: #7d7a7a;
+}
+
+.PartitionIcon .icon {
+    font-size: 35px !important;
+    color: white;
+}
+
+.PartitionIcon .icon:hover {
+    cursor: pointer;
+    color: #7da36d;
+}
+
+.ColorPicker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ColorPicker .react-colorful {
+    width: calc(300px - 32px);
+    height: calc(202px - 32px);
+    padding: 16px;
+}
+
+.ColorPicker .react-colorful__hue-pointer {
+    width: 16px;
+    border-radius: 3px;
+}
+
+.ColorPicker input {
+    font-size: 20px;
+    width: 90px;
+    padding: 6px;
+    margin-bottom: 2px;
+    outline: none;
+    text-transform: uppercase;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+    border: none;
+}
+
+.ColorPicker input:focus {
+    border-bottom: 2px solid white;
+}
+
+.Checkbox {
+    display: flex;
+    align-items: center;
+    color: white;
+    margin-left: 4px;
+}
+
+.Checkbox .MuiTypography-root {
+    font-size: 20px;
+}
+
+.Checkbox .MuiCheckbox-root {
+    color: white;
+} 
+
+.Checkbox .MuiCheckbox-root.Mui-checked {
+    color: #7da36d;
+}
+
+.Checkbox .MuiCheckbox-root.Mui-disabled, .Checkbox .MuiCheckbox-root.Mui-disabled + .MuiTypography-root {
+    color: grey;
+}
+
+.ScalingAccordion {
+    margin-left: -1.5rem;
+    width: calc(100% + 3rem);
+    border-radius: 0 !important;
+    background-color: #1e1f1e !important;
+    box-shadow: none !important;
+}
+
+.ScalingAccordion:before {
+    display: none !important;
+}
+
+.ScalingAccordion .MuiAccordionSummary-root, .ScalingAccordion .MuiAccordionDetails-root {
+    color: white;
+    margin-left: 25px;
+}
+
+.ScalingAccordion .MuiAccordionSummary-root .MuiTypography-root {
+    font-size: 25px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiTypography-root {
+    font-size: 20px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root {
+    width: 40%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    color: white;
+    font-size: 20px;
+    margin-top: -4px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root fieldset {
+    border: none !important;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root.Mui-focused {
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.directionToggle .MuiToggleButton-root {
+    color: white;
+    border: 2px solid white;
+} 
+
+.directionToggle .MuiToggleButton-root.Mui-selected {
+    color: #7da36d;
+}
+

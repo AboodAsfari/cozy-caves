@@ -2,11 +2,15 @@ const Point = require("@cozy-caves/utils").Point;
 const Tile = require("../tile/tile");
 
 class Partition {
+    #partitionName = "Unnamed"; // Metadata to be used in the editor.
+    #partitionColor = "white"; // Metadata to be used in the editor.
+    #partitionIcon = "Circle"; // Metadata to be used in the editor.
+
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
     #lockY = false; // Whether Y can scale.
-    #splitScalingOnX = true; // Whether X scaling will be in increments or using split scaling.
-    #splitScalingOnY = true; // Whether Y scaling will be in increments or using split scaling.
+    #splitScalingOnX = false; // Whether X scaling will be in increments or using split scaling.
+    #splitScalingOnY = false; // Whether Y scaling will be in increments or using split scaling.
     #incrementAmtX = 1; // Amount to increment by.
     #incrementAmtY = 1; // Amount to increment by.
     #xDir = 1; // Direction to scale in the X axis.
@@ -34,6 +38,11 @@ class Partition {
      */
     constructor() {
         this.resetScaling();
+
+        let hue = 360 * Math.random();
+        let saturation = 100 + 70 * Math.random();
+        let lightness = 70 + 10 * Math.random();
+        this.#partitionColor =  "hsl(" + hue + ',' + saturation + '%,' + lightness + '%)';
     }
 
     /**
@@ -173,11 +182,11 @@ class Partition {
     /**
      * Removes a tile from the static tile map.
      * 
-     * @param tile Tile to remove. 
+     * @param pos Pos of tie to remove. 
      */
-    removeTile(tile) {
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
-        this.#tiles.delete(tile.getPosition().toString());
+    removeTile(pos) {
+        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
+        this.#tiles.delete(pos.toString());
     }
 
     /**
@@ -212,6 +221,9 @@ class Partition {
     }
 
     // Setters
+    setPartitionName(partitionName) { this.#partitionName = partitionName.toString(); }
+    setPartitionColor(partitionColor) { this.#partitionColor = partitionColor.toString(); }
+    setPartitionIcon(partitionIcon) { this.#partitionIcon = partitionIcon.toString(); }
     setLockRatio(lockRatio) { this.#lockRatio = !!lockRatio; }
     setLockX(lockX) { this.#lockX = !!lockX; }
     setLockY(lockY) { this.#lockY = !!lockY; }
@@ -235,6 +247,9 @@ class Partition {
     }
 
     // Getters
+    getPartitionName() { return this.#partitionName; }
+    getPartitionColor() { return this.#partitionColor; }
+    getPartitionIcon() { return this.#partitionIcon; }
     ratioLocked() { return this.#lockRatio; }
     xLocked() { return this.#lockX; }
     yLocked() { return this.#lockY; }

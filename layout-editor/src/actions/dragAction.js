@@ -1,3 +1,5 @@
+import Tools from "../Tools";
+
 const { Point } = require("@cozy-caves/utils");
 const Action = require("./action");
 
@@ -15,8 +17,11 @@ class DragAction extends Action {
         this.#selectEnd = selectEnd;
     }
 
-    undo(layout, setTileMap, setMouseInfo) {
-        setMouseInfo(prev => ({...prev,
+    undo(layout, setTileMap, setMouseInfo, setCurrTool) {
+        if (this.#selectEnd.toString() !== "-1,-1") setCurrTool(Tools.SELECTOR);
+
+        setMouseInfo(prev => ({
+            ...prev,
             selectStart: this.#selectStart,
             selectEnd: this.#selectEnd,
             selectDragStart: new Point(-1, -1),
@@ -26,8 +31,11 @@ class DragAction extends Action {
         this.fillTileMap(this.oldTiles, layout, setTileMap);
     }
 
-    redo(layout, setTileMap, setMouseInfo) {
-        setMouseInfo(prev => ({...prev,
+    redo(layout, setTileMap, setMouseInfo, setCurrTool) {
+        setCurrTool(Tools.SELECTOR);
+
+        setMouseInfo(prev => ({
+            ...prev,
             selectStart: this.redoSelectStart,
             selectEnd: this.redoSelectEnd,
             selectDragStart: new Point(-1, -1),
