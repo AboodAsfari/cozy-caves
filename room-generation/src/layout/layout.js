@@ -351,6 +351,15 @@ class Layout {
     }
 
     /**
+     * Removes a partition from the layout.
+     * 
+     * @param index Index of the partition to remove. 
+     */
+    removePartition(index) {
+        this.#scalePartitions.splice(index, 1);
+    }
+
+    /**
      * Fetches all partitions, including unscaled and excluded, and returns
      * a list of all of their names and colors to display.
      * 

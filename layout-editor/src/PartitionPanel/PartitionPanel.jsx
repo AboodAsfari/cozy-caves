@@ -9,7 +9,8 @@ import {
     Typography,
     Stack,
     ToggleButtonGroup,
-    ToggleButton
+    ToggleButton,
+    Button
 } from "@mui/material";
 import PartitionIconPopover from "./PartitionIconPopover";
 
@@ -30,6 +31,7 @@ const PartitionPanel = (props) => {
     const {
         locked,
         partition,
+        removePartition,
         setLocked,
         update
     } = props;
@@ -37,8 +39,8 @@ const PartitionPanel = (props) => {
     const [tempIncrementX, setTempIncrementX] = React.useState(0);
     const [tempIncrementY, setTempIncrementY] = React.useState(0);
 
-    const [xAccordionOpen, setXAccordionOpen] = React.useState(false);
-    const [yAccordionOpen, setYAccordionOpen] = React.useState(false);
+    const [xAccordionOpen, setXAccordionOpen] = React.useState(true);
+    const [yAccordionOpen, setYAccordionOpen] = React.useState(true);
 
     const [iconAnchor, setIconAnchor] = React.useState(null);
     const [updater, setUpdater] = React.useState(false);
@@ -175,6 +177,9 @@ const PartitionPanel = (props) => {
                             handleSplitScaling={handleSplitScalingY} handleTempIncrement={handleTempIncrementY} 
                             tempIncrement={tempIncrementY} accordionOpen={yAccordionOpen} setAccordionOpen={setYAccordionOpen} />
 
+
+                        <Button disableRipple variant="contained" sx={{ position: "absolute", bottom: "15px", right: "20px", width: "150px", textTransform: "none",
+                            backgroundColor: "gray", "&:hover": { backgroundColor: "red" } }} onClick={removePartition}> Delete Partition </Button>
                     </Stack>
 
                     <PartitionIconPopover partition={partition} iconAnchor={iconAnchor} setIconAnchor={setIconAnchor} update={update} />

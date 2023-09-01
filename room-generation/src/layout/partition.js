@@ -200,15 +200,6 @@ class Partition {
     }
 
     /**
-     * Returns a list of all static tiles.
-     * 
-     * @return List of tiles.
-     */
-    getTiles() {
-        return Array.from(this.#tiles.values());
-    }
-
-    /**
      * Removes a tile from the dynamic tile map.
      * Recalculates edge maps and max/min encountered points.
      *

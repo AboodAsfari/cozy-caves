@@ -56,7 +56,7 @@ const App = () => {
     React.useEffect(() => {
         let p = layout.newPartition();
         // p.setPartitionColor("#566b56");
-        setCurrPartition(p);
+        setCurrPartition({ partition: p, num: 0});
         document.addEventListener("mousedown", handleMouseDown, []);
         document.addEventListener("mouseup", handleMouseUp, []);
         document.addEventListener("keydown", handleKeyPress, []);
@@ -252,7 +252,7 @@ const App = () => {
         let partitionNum = layout.getPartitionDisplayInfo().length;
         partition.setPartitionName("Partition #" + partitionNum);
         setBrushInfo(prev => ({ ...prev, defaultPartition: partitionNum - 3 }));
-        setCurrPartition(partition);
+        setCurrPartition({partition, num: partitionNum - 3});
 
         setPartitionAssigner(null);
         return partitionNum - 3;
@@ -273,7 +273,39 @@ const App = () => {
     const updateActivePartition = (partitionNum) => {
         if (partitionNum < 0 || partitionLocked) return;
         let partition = layout.getPartition(partitionNum);
-        setCurrPartition(partition);
+        setCurrPartition({partition, num: partitionNum});
+    }
+
+    const removePartition = () => {
+        if (currPartition === null) return;
+        
+        undoStack.splice(0, undoStack.length);
+        redoStack.splice(0, redoStack.length);
+
+        let partition = currPartition.partition;
+        let partitionCount =  layout.getPartitionDisplayInfo().length;
+        let nextPartitionNum = partitionCount > 3 ? 0 : -1;
+        
+        for (let i = currPartition.num + 1; i < partitionCount - 2; i++) {
+            let currentEdit = layout.getPartition(i);
+            if (!currentEdit) continue;
+            Array.from(currentEdit.getTiles().values()).forEach(tile => {
+                tile.setPartitionNum(i - 1);
+            });
+        }
+
+        layout.removePartition(currPartition.num);
+
+        Array.from(partition.getTiles().values()).forEach(tile => {
+            tile.setPartitionNum(nextPartitionNum);
+            layout.updateTile(tile);
+        });
+
+        if (brushInfo.defaultPartition === currPartition.num) setBrushInfo(prev => ({ ...prev, defaultPartition: nextPartitionNum }));
+        if (nextPartitionNum === 0) setCurrPartition({partition: layout.getPartition(0), num: 0});
+        else setCurrPartition(null);
+
+        setUpdater(!updater);
     }
 
     return (
@@ -314,7 +346,7 @@ const App = () => {
                 </MenuItem>
             </Menu>
 
-            <PartitionPanel partition={currPartition} update={() => setUpdater(!updater)} locked={partitionLocked} setLocked={setPartitionLocked} />
+            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} />
         </Box>
     );
 }
