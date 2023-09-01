@@ -17,11 +17,11 @@ test("hallway generation", () => {
     ];
 
     log("----------------------------------------------------------------");
-    for (const testInput of testInputs) {
-        log("Generating room with expected size: " + testInput.size.toString() + ", and leniency: " + testInput.leniency.toString());
+    for (const key in testInputs) {
+        log("Generating room with expected size: " + testInputs[key].size.toString() + ", and leniency: " + testInputs[key].leniency.toString());
 
-        let room = new RoomBuilder().setSize(testInput.size).setLeniency(testInput.leniency).build();
-        room.setPosition(new Point(0,0));
+        let room = new RoomBuilder().setSize(testInputs[key].size).setLeniency(testInputs[key].leniency).build();
+        room.setPosition(new Point(key*20,key*20));
         rooms.push(room);
         
     }
