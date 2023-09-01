@@ -101,7 +101,7 @@ const MenuBar = (props) => {
                 <Menu anchorEl={defaultPartitionAnchorEl} open={!!defaultPartitionAnchorEl} onClose={() => setDefaultPartitionAnchorEl(null)}
                     sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
                     {layout.getPartitionDisplayInfo().map((info, i) =>
-                        <MenuItem key={info.name} onClick={() => { updateActivePartition(i - 2); setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }}
+                        <MenuItem key={info.name + i} onClick={() => { updateActivePartition(i - 2); setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }}
                             className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
                             <Box sx={{ color: info.color, display: "flex", alignItems: "center", mt: 0.2 }}> {iconMap[info.icon]} </Box>
                             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
