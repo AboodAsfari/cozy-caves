@@ -146,6 +146,7 @@ class DungeonBuilder {
         let floorCoverage = 0.0;
         let map = [];
         while(floorCoverage < this.#totalCoverage){
+            if(this.#allRegions == 0)break;
             let region = this.#allRegions[Math.floor(this.#rng() * this.#allRegions.length)];
             let regionArea = region.width * region.height;
             floorCoverage += (regionArea / (this.#width*this.#height)) * 100;
@@ -185,8 +186,6 @@ class DungeonBuilder {
         let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(widLeniency, hgtLeniency)).setAllowOvergrow(false).build();
         room.setPosition(new Point(roomX, roomY));
         
-        // console.log(`room dimensions = ${room.getDimensions()}`);
-
         return room;
     }
 
@@ -201,7 +200,6 @@ class DungeonBuilder {
         let map = this.#randomSelection();
         this.#reset();
 
-        // console.log(`final room count - ${map.length}`); // TESTING ROOM COUNT 
         return map;
     }
 
