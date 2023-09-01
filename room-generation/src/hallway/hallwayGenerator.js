@@ -195,6 +195,9 @@ function createHallwayFromShape(shape, from, to) {
     let toEdges = [];
     let middleFromTile;
     let middleToTile;
+
+    //can definitely optimise this code
+    //can flip from/to as they are the same (eg RT is same as TR)
     if (shape == HallwayShapes.RIGHT_TOP) {
         fromEdges = from.getRightEdges();
         toEdges = to.getTopEdges();
@@ -256,7 +259,15 @@ function createHallwayFromShape(shape, from, to) {
         middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
         middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } 
+
+    createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()));
 }
+
+function createFromEntryExit(fromPos, toPos) {
+    
+}
+
+
 
 
 module.exports = generateHallways;
