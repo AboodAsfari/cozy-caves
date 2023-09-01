@@ -1,4 +1,4 @@
-const Point = require("../../../utils/src/point");
+const Point = require("@cozy-caves/utils").Point;
 const Item = require("./item");
 
 /**
@@ -58,5 +58,13 @@ class Prop {
     }
 
     setRotation(rotation) { this.#rotation = rotation; }
+
+    toString() {
+        let result = "";
+        result += "name: " + this.name + "\n";
+        result += "desc: " + this.desc + "\n";
+        result += "rarity: " + this.rarity + "\n"; //todo: items list
+        return result;
+    }
 }
 module.exports = Prop;
