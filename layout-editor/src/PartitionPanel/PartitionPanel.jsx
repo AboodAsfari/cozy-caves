@@ -219,7 +219,7 @@ const ScalingAxisAccordion = (props) => {
 
     return (
         <Accordion disableGutters disabled={getLocked()} expanded={accordionOpen && !getLocked()} onChange={handleChange} className="ScalingAccordion" 
-            sx={{ mt: 2, borderTop: "2px solid " + (getLocked() ? "grey" : "white"), borderBottom: isX ? "none" : "2px solid " + (getLocked() ? "grey" : "white") }}>
+            sx={{ mt: 2, borderTop: "2px solid " + (isX ? (getLocked() ? "grey" : "white") : (getLocked() && partition.xLocked() ? "grey" : "white")), borderBottom: isX ? "none" : "2px solid " + (getLocked() ? "grey" : "white") }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}>
             <Typography> { isX ? "X" : "Y" } Scaling </Typography>
             </AccordionSummary>
