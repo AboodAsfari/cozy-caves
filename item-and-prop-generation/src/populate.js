@@ -1,51 +1,58 @@
 const PropGenerator = require('./propGenerator.js');
-const Room = require('../../room-generation/src/room');
+const Point = require('@cozy-caves/utils').Point;
+const propGenerator = new PropGenerator();
 
-class RandomGenerator {
+
+class Populate {
     #populatedRoom = new Map();
     #room;
 
-    constructor (room) {
-        if (!(room instanceof Room)) throw new Error("Invalid type. Expecting a room object.");
+    constructor (room, maxProp) {
         this.#room = room;
-    }
-
-    getProp(pos) {
-        return this.#populatedRoom.get(pos.toString());
+        this.#populateMap(maxProp);
     }
     
-    getRandomRarity() {
+    #getRandomRarity() {
         const rand = Math.random() * 100 + 1;
     
         if (rand <= 60) { // common
-            return PropGenerator.rarityList[0];
+            return propGenerator.rarityList[0];
         } else if (rand <= 90) { // uncommon
-            return PropGenerator.rarityList[1];
+            return propGenerator.rarityList[1];
         } else if (rand <= 100) { // rare
-            return PropGenerator.rarityList[2];
+            return propGenerator.rarityList[2];
         } else { // just in case something goes wrong, go with common
-            return PropGenerator.rarityList[0];
+            return propGenerator.rarityList[0];
         }
     }
     
-    getPopulatedRoom(maxProp) {
-        for (let i=0; i<this.#room.getDimensions().getX(); i++) {
+    #populateMap(maxProp) {
+        outer: for (let i=0; i<this.#room.getDimensions().getX(); i++) {
             for (let j=0; j<this.#room.getDimensions().getY(); j++) {
-                let pos = new Point(i, j).toString();
+                let pos = new Point(i, j);
                 let tile = this.#room.getTile(pos);
 
                 // makes sure to generate props only on the floor not wall
                 if (tile.getTileType() === "floor") {
                     let rand = Math.random();
-
                     // will put props 40% of the time in the room
-                    if (rand < 0.4 && this.#populatedRoom.size() <= maxProp) { 
-                        this.#populatedRoom.set(pos, PropGenerator.getPropByRarity(getRandomRarity()));
+                    if (rand < 0.4) { 
+                        const prop = propGenerator.getPropByRarity(this.#getRandomRarity());
+                        prop.setPosition(pos);
+                        this.#populatedRoom.set(pos.toString(), prop);
                     }
                 }
+                if (this.#populatedRoom.size >= 5) break outer;
             }
         }
-        return this.#room;
+    }
+
+    getProp(pos) {
+        return this.#populatedRoom.get(pos.toString());
+    }
+
+    getPropList(){
+        return this.#populatedRoom.values();
     }
 
     toString() {
@@ -55,9 +62,10 @@ class RandomGenerator {
         for (let i = 0; i < dimensions.getY(); i++) {
             roomArray.push("");
             for (let j = 0; j < dimensions.getX(); j++) {
-                let tile = this.#room.getTile(new Point(j, i).toString());
-                let prop = this.getProp(new Point(j, i).toString());
-                if (prop !== null) roomArray[i] += "P";
+                let tile = this.#room.getTile(new Point(j, i));
+                let prop = this.getProp(new Point(j, i));
+
+                if (prop !== null && prop !== undefined) roomArray[i] += "P";
                 else if (!tile) roomArray[i] += "X";
                 else if (tile.getTileType() === "floor") roomArray[i] += "O";
                 else roomArray[i] += "I";
@@ -71,8 +79,8 @@ class RandomGenerator {
 }
 
 // this it inefficient
-function populateRoom(room) {
-    return new RandomGenerator(room);
+function populateRoom(room, maxProp) {
+    return new Populate(room, maxProp);
 }
 
 module.exports = populateRoom;
