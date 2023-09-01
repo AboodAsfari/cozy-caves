@@ -38,6 +38,11 @@ class Partition {
      */
     constructor() {
         this.resetScaling();
+
+        let hue = 360 * Math.random();
+        let saturation = 100 + 70 * Math.random();
+        let lightness = 70 + 10 * Math.random();
+        this.#partitionColor =  "hsl(" + hue + ',' + saturation + '%,' + lightness + '%)';
     }
 
     /**
