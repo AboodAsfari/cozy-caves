@@ -52,7 +52,7 @@ class Populate {
     }
 
     getPropList(){
-        return this.#populatedRoom.values();
+        return Array.from(this.#populatedRoom.values());
     }
 
     toString() {
@@ -78,7 +78,6 @@ class Populate {
 
 }
 
-// this it inefficient
 function populateRoom(room, maxProp) {
     return new Populate(room, maxProp);
 }
