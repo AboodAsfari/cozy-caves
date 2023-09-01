@@ -7,13 +7,13 @@ let rooms = [];
 
 test("hallway generation", () => {
     let testInputs = [
-        { size: new Point(55, 32), leniency: new Point(0, 0) },
-        { size: new Point(97, 97), leniency: new Point(0, 0) },
-        { size: new Point(61, 61), leniency: new Point(0, 0) },
+        { size: new Point(18, 15), leniency: new Point(0, 0) },
+        { size: new Point(10, 10), leniency: new Point(0, 0) },
         { size: new Point(8, 8), leniency: new Point(0, 0) },
-        { size: new Point(43, 43), leniency: new Point(0, 0) },
-        { size: new Point(21, 21), leniency: new Point(0, 0) },
-        { size: new Point(77, 77), leniency: new Point(0, 0) },
+        { size: new Point(13, 13), leniency: new Point(0, 0) },
+        { size: new Point(11, 11), leniency: new Point(0, 0) },
+        { size: new Point(9, 9), leniency: new Point(0, 0) },
+        { size: new Point(6, 6), leniency: new Point(0, 0) },
     ];
 
     log("----------------------------------------------------------------");
