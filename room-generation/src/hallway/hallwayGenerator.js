@@ -76,7 +76,7 @@ function generateHallways(rooms) {
 function mapConnections(triangles) {
     for (let i = 0; i < triangles.length; i += 3) {
         addToConnections(triangles[i], triangles[i+1]);
-        addToConnections(triangles[i], triangles[i+2]);
+        addToConnections(triangles[i], triangles[i+2]); 
         addToConnections(triangles[i+1], triangles[i]);
         addToConnections(triangles[i+1], triangles[i+2]);
         addToConnections(triangles[i+2], triangles[i]);
@@ -135,7 +135,9 @@ function createHallway(conn, rooms) {
     let relativeY = checkYPlane(fromY, fromHeight, toY, toHeight);
 
     let shape = determineShape(relativeX, relativeY);
-    console.log(shape);
+    
+    console.log("From:" + conn.from + " To:" + conn.to);
+    createHallwayFromShape(shape, fromRoom, toRoom);
 }
 
 function checkXPlane(fromX, fromWidth, toX, toWidth) {
@@ -159,7 +161,7 @@ function checkYPlane (fromY, fromHeight, toY, toHeight) {
 function determineShape(relativeX, relativeY) {
     if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.UP) {
         return HallwayShapes.RIGHT_TOP;
-        //other options can be randomly done later
+        //other options can be randomly done later    console.log(conn.to);
     } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.UP) {
         return HallwayShapes.LEFT_TOP;
         //other options can be randomly done later
@@ -174,7 +176,7 @@ function determineShape(relativeX, relativeY) {
         //other options can be randomly done later
     } else if (relativeX == RelativePosX.OverlappedX && relativeY == RelativePosY.DOWN) {
         //requires more calculation
-        return HallwayShapes.null;
+        return HallwayShapes.null;    console.log(conn.to);
     } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.OverlappedY) {
         //requires more calculation
         return HallwayShapes.null;
@@ -187,6 +189,75 @@ function determineShape(relativeX, relativeY) {
     } 
 
 }
+
+function createHallwayFromShape(shape, from, to) {
+    let fromEdges = [];
+    let toEdges = [];
+    let middleFromTile;
+    let middleToTile;
+    if (shape == HallwayShapes.RIGHT_TOP) {
+        fromEdges = from.getRightEdges();
+        toEdges = to.getTopEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.RIGHT_LEFT) {
+        fromEdges = from.getRightEdges();
+        toEdges = to.getLeftEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.RIGHT_DOWN) {
+        fromEdges = from.getRightEdges();
+        toEdges = to.getBottomEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.LEFT_RIGHT) {
+        fromEdges = from.getLeftEdges();
+        toEdges = to.getRightEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.LEFT_TOP) {
+        fromEdges = from.getRightEdges();
+        toEdges = to.getTopEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.LEFT_DOWN) {
+        fromEdges = from.getLeftEdges();
+        toEdges = to.getBottomEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.TOP_DOWN) {
+        fromEdges = from.getTopEdges();
+        toEdges = to.getBottomEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.TOP_RIGHT) {
+        fromEdges = from.getTopEdges();
+        toEdges = to.getRightEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.TOP_LEFT) {
+        fromEdges = from.getTopEdges();
+        toEdges = to.getLeftEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.DOWN_TOP) {
+        fromEdges = from.getBottomEdges();
+        toEdges = to.getTopEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.DOWN_LEFT) {
+        fromEdges = from.getBottomEdges();
+        toEdges = to.getLeftEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.DOWN_RIGHT) {
+        fromEdges = from.getBottomEdges();
+        toEdges = to.getRightEdges();
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } 
+}
+
 
 module.exports = generateHallways;
 
