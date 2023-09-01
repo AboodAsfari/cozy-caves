@@ -19,9 +19,9 @@ class DungeonBuilder {
 
     // Preset values for input parameters
     #presets = {
-        Small: [50, 50, 5, 5, 50],
-        Medium: [100, 100, 5, 10, 60],
-        Large: [175, 175, 5, 13, 70],
+        Small: [50, 50, 7, 5, 50],
+        Medium: [100, 100, 7, 10, 60],
+        Large: [175, 175, 7, 13, 70],
     };
 
     /**
@@ -167,14 +167,26 @@ class DungeonBuilder {
      * @returns 
      */
     #roomConstruction(rW, rH, rX, rY){
-        let roomWid = ((2*rW/3) < this.#minGap) ? Math.floor(this.#rng() * (rW - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (rW - (2*rW/3) + 1)) + Math.floor(2*rW/3);
-        let roomHgt = ((2*rH/3) < this.#minGap) ?  Math.floor(this.#rng() * (rH - this.#minGap + 1)) + this.#minGap: Math.floor(this.#rng() * (rH - (2*rH/3) + 1)) + Math.floor(2*rH/3);
+
+        let minRoomW = Math.floor(2*rW/3);
+        let minRoomH = Math.floor(2*rH/3);
+        
+        //Calculate random room height and width 
+        let roomWid = (minRoomW < this.#minGap) ? Math.floor(this.#rng() * (rW - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (rW - minRoomW + 1)) + minRoomW;
+        let roomHgt = (minRoomH < this.#minGap) ?  Math.floor(this.#rng() * (rH - this.#minGap + 1)) + this.#minGap: Math.floor(this.#rng() * (rH - minRoomH + 1)) + minRoomH;
+        //Calculate how much leniency to allow
+        let widLeniency = (minRoomW < this.#minGap) ? 0 : Math.floor((roomWid - minRoomW)/2);
+        let hgtLeniency = (minRoomH < this.#minGap) ? 0 : Math.floor((roomHgt - minRoomH)/2);
+        //Calculate random room position within region space
         let roomX = rX + Math.floor(this.#rng() * (rW - roomWid + 1));
         let roomY = rY + Math.floor(this.#rng() * (rH - roomHgt + 1));
+        //Generate room
         this.#roomBuilder = new RoomBuilder(this.#rng());
-        
-        let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(1, 1)).setAllowOvergrow(false).build();
+        let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(widLeniency, hgtLeniency)).setAllowOvergrow(false).build();
         room.setPosition(new Point(roomX, roomY));
+        
+        // console.log(`room dimensions = ${room.getDimensions()}`);
+
         return room;
     }
 
@@ -189,7 +201,7 @@ class DungeonBuilder {
         let map = this.#randomSelection();
         this.#reset();
 
-        console.log("final room count - " + map.length); // TESTING ROOM COUNT 
+        // console.log(`final room count - ${map.length}`); // TESTING ROOM COUNT 
         return map;
     }
 
