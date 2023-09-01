@@ -3,7 +3,40 @@ const Room = require('../room/room');
 const Point = require("@cozy-caves/utils").Point;
 const DisjointSet = require("./disjointSet");
 
+//fromRoom relative to toRoom
+const RelativePosX = Object.freeze({
+    LEFT: 'left',
+    RIGHT: 'right',
+    OVERLAP: 'overlappedX'
+})
+
+//fromRoom relative to toRoom
+const RelativePosY = Object.freeze({
+    UP : 'up',
+    DOWN : 'down',
+    OVERLAP: 'overlappedY'
+})
+
+const HallwayShapes = Object.freeze({
+    LEFT_TOP : 'LT',
+    LEFT_RIGHT : 'LR',
+    LEFT_DOWN : 'LD',
+    RIGHT_TOP : 'RT',
+    RIGHT_DOWN : 'RD',
+    RIGHT_LEFT : 'RL',
+    TOP_DOWN : 'TD',
+    TOP_RIGHT : 'TR',
+    TOP_LEFT : 'TL',
+    DOWN_TOP : 'DT',
+    DOWN_RIGHT : 'DR',
+    DOWN_LEFT : 'DL',
+})
+
 const roomToRoomConnections = [];
+
+const midPoints = [];
+
+const hallways = [];
 
 function getmidPoint(room) {
     let point = room.getPosition();
@@ -12,7 +45,9 @@ function getmidPoint(room) {
     let dims = room.getDimensions();
     let w = dims.getX();
     let h = dims.getY();
-    return new Point(x + Math.round((w/2)), y + Math.round(h/2));
+    let midpoint = new Point(x + Math.round((w/2)), y + Math.round(h/2));
+    midPoints.push(midpoint);
+    return midpoint;
 }
 
 function generateHallways(rooms) {
@@ -27,11 +62,15 @@ function generateHallways(rooms) {
     console.log(midpoints);
     const delaunay = new Delaunator(midpoints);
     let triangles = delaunay.triangles;
-    //console.log(triangles);
+    //console.log(triangles);fromRoom
 
     mapConnections(triangles);
     console.log(roomToRoomConnections);
-    console.log(minimumSpanningTree(rooms));
+    let mst = minimumSpanningTree(rooms);
+    console.log(mst);
+    for (key in mst) {
+        createHallway(mst[key], rooms);
+    }
 }
 
 function mapConnections(triangles) {
@@ -76,6 +115,77 @@ function minimumSpanningTree(rooms) {
         }
     }
     throw new Error("MST Failed");
+}
+
+function createHallway(conn, rooms) {
+    let fromRoom = rooms[conn.from];
+    let fromX = fromRoom.getPosition().getX();
+    let fromY = fromRoom.getPosition().getY();
+    let fromWidth = fromRoom.getDimensions().getX();fromRoom
+    let fromHeight = fromRoom.getDimensions().getY();
+
+    let toRoom = rooms[conn.to];
+    let toX = toRoom.getPosition().getX();
+    let toY = toRoom.getPosition().getY();
+    let toWidth = toRoom.getDimensions().getX(); 
+    let toHeight = toRoom.getDimensions().getY();
+    
+
+    let relativeX = checkXPlane(fromX, fromWidth, toX, toWidth);
+    let relativeY = checkYPlane(fromY, fromHeight, toY, toHeight);
+
+    let shape = determineShape(relativeX, relativeY);
+    console.log(shape);
+}
+
+function checkXPlane(fromX, fromWidth, toX, toWidth) {
+    if (fromX + fromWidth < toX) {
+        return RelativePosX.LEFT;
+    } else if (fromX > toX + toWidth) {
+        return RelativePosX.RIGHT;
+    }
+    return RelativePosX.OVERLAP;
+}
+
+function checkYPlane (fromY, fromHeight, toY, toHeight) {
+    if (fromY + fromHeight < toY) {
+        return RelativePosY.UP;
+    } else if(fromY > toY + toHeight) {
+        return RelativePosY.DOWN;
+    }
+    return RelativePosY.OVERLAP;
+}
+
+function determineShape(relativeX, relativeY) {
+    if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.UP) {
+        return HallwayShapes.RIGHT_TOP;
+        //other options can be randomly done later
+    } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.UP) {
+        return HallwayShapes.LEFT_TOP;
+        //other options can be randomly done later
+    } else if (relativeX == RelativePosX.OverlappedX && relativeY == RelativePosY.UP) {
+        //requires more calculation
+        return null;
+    } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.DOWN) {
+        return HallwayShapes.RIGHT_DOWN;
+        //other options can be randomly done later
+    } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.DOWN) {
+        return HallwayShapes.LEFT_DOWN;
+        //other options can be randomly done later
+    } else if (relativeX == RelativePosX.OverlappedX && relativeY == RelativePosY.DOWN) {
+        //requires more calculation
+        return HallwayShapes.null;
+    } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.OverlappedY) {
+        //requires more calculation
+        return HallwayShapes.null;
+    } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.OverlappedY) {
+        //requires more calculation
+        return HallwayShapes.null;
+    } else if (relativeX == RelativePosX.OverlappedX && relativeY == RelativePosY.OverlappedY) {
+        //requires more calculation
+        return HallwayShapes.null;
+    } 
+
 }
 
 module.exports = generateHallways;
