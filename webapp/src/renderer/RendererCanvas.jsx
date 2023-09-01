@@ -46,6 +46,17 @@ const RendererCanvas = (props) => {
 
   const drawTile = (tile, roomPos) => {
 
+    const tileInfo = `Tile at position (${tile.getPosition().getX()}, ${tile.getPosition().getY()}):\nType: ${tile.getTileType()}`
+    const onClick = () => {
+       console.log("This tile is being clicked on: " + tileInfo);
+
+      if (props.displayTileInfo) {
+          props.displayTileInfo(tileInfo);
+          // console.log(props.displayTileInfo);
+          // console.log("Tile Info: " + tileInfo);
+      }
+    };
+
     let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
     let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
@@ -55,6 +66,9 @@ const RendererCanvas = (props) => {
               position={{x:xPos, y:yPos}}
               angle={tile.getRotation()}
               zIndex={tile.getDepth()}
+              eventMode='dynamic'
+              cursor='pointer'
+              pointerdown={onClick}
             />
   }
 
