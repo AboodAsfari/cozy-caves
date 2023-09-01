@@ -15,6 +15,29 @@ class Room {
         this.#position = pos; 
     }
 
+    getRightEdges() { return this.#edgeFetcher(true, false); }
+    getLeftEdges() { return this.#edgeFetcher(false, false); }
+    getTopEdges() { return this.#edgeFetcher(false, true); }
+    getBottomEdges() { return this.#edgeFetcher(true, true); }
+
+    #edgeFetcher(lookingForHigher, verticalEdges) {
+        let edges = {};
+        for (let tile of this.getTiles()) {
+            let pos = tile.getPosition();
+            let xComparison = lookingForHigher ? edges[pos.getY()] < pos.getX() : edges[pos.getY()] > pos.getX();
+            let yComparison = lookingForHigher ? edges[pos.getX()] < pos.getY() : edges[pos.getX()] > pos.getY();
+            if (verticalEdges && (edges[pos.getX()] === undefined || yComparison)) edges[pos.getX()] = pos.getY();
+            else if (!verticalEdges && (edges[pos.getY()] === undefined || xComparison)) edges[pos.getY()] = pos.getX();
+        }
+
+        let finalList = [];
+        for (let keyPos in edges) {
+            let pos = verticalEdges ? new Point(parseInt(keyPos), parseInt(edges[keyPos])) : new Point(parseInt(edges[keyPos]), parseInt(keyPos));
+            finalList.push(this.getTile(pos));
+        }
+        return finalList;
+    }
+
     addTile(tile) { this.#tiles.set(tile.getPosition().toString(), tile); }
     getTile(pos) { return this.#tiles.get(pos.toString()); }
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }

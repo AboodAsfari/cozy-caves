@@ -2,7 +2,7 @@ const log = require("console").log;
 const Point = require("@cozy-caves/utils").Point;
 const RoomBuilder = require("../src/room/roomBuilder");
 
-test('Rect room generation', () => {
+test("Rect room generation", () => {
     let testInputs = [
         { size: new Point(3, 3), leniency: new Point(0, 0) },
         { size: new Point(4, 4), leniency: new Point(0, 0) },
@@ -24,6 +24,30 @@ test('Rect room generation', () => {
         let expectedSize = new Point(testInput.size.getX() - testInput.leniency.getX(), testInput.size.getY() - testInput.leniency.getY());
         expect(room.toString()).toBe(rectRoomString(expectedSize));
     }
+});
+
+test("Edge fetching", () => {
+    let room = new RoomBuilder().setSize(new Point(3, 3)).build();
+
+    let bottomEdges = room.getBottomEdges();
+    expect(bottomEdges[0].getPosition().toString()).toBe("0,2");
+    expect(bottomEdges[1].getPosition().toString()).toBe("1,2");
+    expect(bottomEdges[2].getPosition().toString()).toBe("2,2");
+
+    let leftEdges = room.getLeftEdges();
+    expect(leftEdges[0].getPosition().toString()).toBe("0,0");
+    expect(leftEdges[1].getPosition().toString()).toBe("0,1");
+    expect(leftEdges[2].getPosition().toString()).toBe("0,2");
+
+    let topEdges = room.getTopEdges();
+    expect(topEdges[0].getPosition().toString()).toBe("0,0");
+    expect(topEdges[1].getPosition().toString()).toBe("1,0");
+    expect(topEdges[2].getPosition().toString()).toBe("2,0");
+
+    let rightEdges = room.getRightEdges();
+    expect(rightEdges[0].getPosition().toString()).toBe("2,0");
+    expect(rightEdges[1].getPosition().toString()).toBe("2,1");
+    expect(rightEdges[2].getPosition().toString()).toBe("2,2");
 });
 
 const rectRoomString = (dimensions) => {
