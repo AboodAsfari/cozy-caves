@@ -1,14 +1,14 @@
 const log = require("console").log;
-const Point = require("../../utils/src/point");
-const RoomBuilder = require("../../room-generation/src/roomBuilder");
-const populateRoom = require("../src/randomGenerator");
+const Point = require("@cozy-caves/utils").Point;
+const RoomBuilder = require("@cozy-caves/room-generation").RoomBuilder;
+const populateRoom = require("../src/populate");
 
 test('Testing toString', () => {
     const room = new RoomBuilder().setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
-    const populatedRoom = populateRoom(room);
-    populatedRoom.getPopulatedRoom(5);
+    log(room.toString());
+    
+    const populatedRoom = populateRoom(room, 5);
     log("-------------------------------");
     log(populatedRoom.toString());
 
 });
-
