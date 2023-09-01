@@ -1,5 +1,5 @@
 import  React from 'react';
-import { Stage, Sprite } from '@pixi/react';
+import { Stage, Sprite, Text } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
@@ -89,8 +89,20 @@ const RendererCanvas = (props) => {
             />
   }
 
+  const drawProp = (prop, roomPos) => {
+    let xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
+    let yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
+    return <Text
+              text={prop.toString()}
+              anchor={0.5}
+              scale={{x:scaleX, y:scaleY}} 
+              position={{x:xPos, y:yPos}}
+              angle={prop.getRotation()}
+              zIndex={1000}
+            />
+  }
+
   const drawDungeon = () => {
-    
     return props.dungeon.map((room) => {
       let roomMaxX =(room.getPosition().getX()+room.getDimensions().getX()) * size * scaleX;
       let roomMaxY = (room.getPosition().getY()+room.getDimensions().getY()) * size * scaleY;
@@ -113,6 +125,13 @@ const RendererCanvas = (props) => {
     })
   }
 
+  const drawProps = () => {
+    return props.dungeon.map((room) => {
+      console.log(room.getPropMap())
+      return room.getPropMap().entries().map((prop) => drawProp(prop, room.getPosition()))
+    })
+  }
+
   const zoom = (factor) => {
     let viewport = stageRef.current.mountNode.containerInfo.children[0];
     let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
@@ -126,6 +145,7 @@ const RendererCanvas = (props) => {
   // get the current window size
   const [width, height] = useResize();
   let dungeon = drawDungeon()
+  let propsList = drawProps()
   return (
     <>
       <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
@@ -136,6 +156,7 @@ const RendererCanvas = (props) => {
           screenHeight={height}
         >
          { dungeon }
+         { propsList }
         </Viewport>
       </Stage>
 
