@@ -22,25 +22,21 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         sortableChildren: true,
         ...viewportProps
         });
-
-
-        let x = viewport.toWorld(maxX,maxY).x;
-        let y = viewport.toWorld(maxX,maxY).y;
         viewport.drag().pinch().wheel()
         .decelerate({
             friction: 0.90,
         })
         .clampZoom({
-            minScale: (maxY >= maxX ? viewportProps.screenHeight/y : viewportProps.screenWidth/x) * 0.75,
+            minScale: (maxY >= maxX ? viewportProps.screenHeight/maxY : viewportProps.screenWidth/maxX) * 0.5,
             maxScale: 8,
         });
         
-        viewport.moveCenter(x/2, y/2);
+        viewport.moveCenter(maxX/2, maxY/2);
         if(maxX > maxY) {
-            viewport.fitWidth(x, true, true, true);
+            viewport.fitWidth(maxX*1.5, true, true, true);
         }
         if(maxY >= maxX) {
-            viewport.fitHeight(y, true, true, true);
+            viewport.fitHeight(maxY*1.5, true, true, true);
         }
         return viewport;
     },
