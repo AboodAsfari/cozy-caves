@@ -8,7 +8,6 @@ const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
 
-  // const tileIDImageMap = TileID.map((id) => { return { id: id, img: `resources/${id}.png` }})
   const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/${k}.png` }]));
 
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
@@ -42,6 +41,8 @@ const RendererCanvas = (props) => {
   const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
+  let maxX = 0
+  let maxY = 0
 
   const drawTile = (tile, roomPos) => {
 
@@ -58,22 +59,32 @@ const RendererCanvas = (props) => {
   }
 
   const drawDungeon = () => {
-    return props.dungeon.map((room) => room.getTiles().map((tile) => drawTile(tile, room.getPosition())))
+    
+    return props.dungeon.map((room) => {
+      if(room.getPosition().getX()+room.getDimensions().getX() > maxX) maxX = room.getPosition().getX()+room.getDimensions().getX()
+      if(room.getPosition().getY()+room.getDimensions().getY() > maxY) maxY = room.getPosition().getY()+room.getDimensions().getY()
+      return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
+    })
   }
 
   // get the current window size
   const [width, height] = useResize();
-
+  let dungeon = drawDungeon()
+  maxX = maxX * size * scaleX
+  maxY = maxY * size * scaleY
+  console.log(maxX/2, maxY/2)
   return (
     <>
       <Stage width={width} height={height} options={stageOptions}>
         <Viewport
+          maxX={maxX}
+          maxY={maxY}
           screenWidth={width}
           screenHeight={height}
           worldWidth={width * 4}
           worldHeight={height * 4}
         >
-         { drawDungeon() }
+         { dungeon }
         </Viewport>
       </Stage>
     </>
