@@ -140,6 +140,12 @@
                 "desc": "A tiny sack containing scattered gems throughout the map, valuable as trade items or components for magical rituals.",
                 "rarity": "uncommon",
                 "contains_items": true
+            },
+            {
+                "name": "Gem of Seeing",
+                "desc": "A gem that allows truesight out to 120 feet when you peer through the gem.",
+                "rarity": "rare",
+                "contains_items": true
             }
         ]
     }

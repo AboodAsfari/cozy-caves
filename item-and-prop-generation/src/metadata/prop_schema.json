@@ -1,38 +1,37 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-      "prop_categories": {
-        "type": "object",
-        "patternProperties": {
-          "^[A-Za-z0-9_]+$": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "desc": {
-                  "type": "string"
-                },
-                "rarity": {
-                  "type": "string",
-                  "enum": ["common", "uncommon", "rare"]
-                },
-                "contains_items": {
-                  "type": "boolean"
-                }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "prop_categories": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Za-z\\s]+$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
               },
-              "required": ["name", "desc", "rarity", "contains_items"],
-              "additionalProperties": false
-            }
+              "desc": {
+                "type": "string"
+              },
+              "rarity": {
+                "type": "string",
+                "enum": ["common", "uncommon", "rare"]
+              },
+              "contains_items": {
+                "type": "boolean"
+              }
+            },
+            "required": ["name", "desc", "rarity", "contains_items"],
+            "additionalProperties": false
           }
-        },
-        "additionalProperties": false
-      }
-    },
-    "required": ["prop_categories"],
-    "additionalProperties": false
-  }
-  
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["prop_categories"],
+  "additionalProperties": false
+}
