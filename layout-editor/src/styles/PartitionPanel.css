@@ -87,3 +87,80 @@
 .ColorPicker input:focus {
     border-bottom: 2px solid white;
 }
+
+.Checkbox {
+    display: flex;
+    align-items: center;
+    color: white;
+    margin-left: 4px;
+}
+
+.Checkbox .MuiTypography-root {
+    font-size: 20px;
+}
+
+.Checkbox .MuiCheckbox-root {
+    color: white;
+} 
+
+.Checkbox .MuiCheckbox-root.Mui-checked {
+    color: #7da36d;
+}
+
+.Checkbox .MuiCheckbox-root.Mui-disabled, .Checkbox .MuiCheckbox-root.Mui-disabled + .MuiTypography-root {
+    color: grey;
+}
+
+.ScalingAccordion {
+    margin-left: -1.5rem;
+    width: calc(100% + 3rem);
+    border-radius: 0 !important;
+    background-color: #1e1f1e !important;
+    box-shadow: none !important;
+}
+
+.ScalingAccordion:before {
+    display: none !important;
+}
+
+.ScalingAccordion .MuiAccordionSummary-root, .ScalingAccordion .MuiAccordionDetails-root {
+    color: white;
+    margin-left: 25px;
+}
+
+.ScalingAccordion .MuiAccordionSummary-root .MuiTypography-root {
+    font-size: 25px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiTypography-root {
+    font-size: 20px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root {
+    width: 40%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    color: white;
+    font-size: 20px;
+    margin-top: -4px;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root fieldset {
+    border: none !important;
+}
+
+.ScalingAccordion .MuiAccordionDetails-root .MuiInputBase-root.Mui-focused {
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.directionToggle .MuiToggleButton-root {
+    color: white;
+    border: 2px solid white;
+} 
+
+.directionToggle .MuiToggleButton-root.Mui-selected {
+    color: #7da36d;
+}
+

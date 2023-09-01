@@ -9,8 +9,8 @@ class Partition {
     #lockRatio = true; // Whether X/Y ratio should stay the same.
     #lockX = false; // Whether X can scale.
     #lockY = false; // Whether Y can scale.
-    #splitScalingOnX = true; // Whether X scaling will be in increments or using split scaling.
-    #splitScalingOnY = true; // Whether Y scaling will be in increments or using split scaling.
+    #splitScalingOnX = false; // Whether X scaling will be in increments or using split scaling.
+    #splitScalingOnY = false; // Whether Y scaling will be in increments or using split scaling.
     #incrementAmtX = 1; // Amount to increment by.
     #incrementAmtY = 1; // Amount to increment by.
     #xDir = 1; // Direction to scale in the X axis.
