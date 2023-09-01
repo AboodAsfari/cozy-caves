@@ -1,6 +1,7 @@
 const Point = require("@cozy-caves/utils").Point;
 const seedrandom = require('seedrandom');
 const { exampleLayout } = require("../layout/layout");
+const populateRoom = require("@cozy-caves/item-and-prop-generation");
 
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
@@ -41,6 +42,8 @@ class RoomBuilder {
 
         // Normally, would choose from a pool of layouts based on params.
         let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+        let propMap = populateRoom(room, 5);
+        room.setPropMap(propMap);
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
@@ -73,7 +76,7 @@ class RoomBuilder {
         this.#leniency = new Point(0, 0);
         this.#allowOvergrow = false;
         this.#allowNonRects = true;
-        this.#populateWithItems = false;
+        this.#populateWithItems = true;
         this.#tilerType = "default";
         this.#layoutBlacklist = [];
     }

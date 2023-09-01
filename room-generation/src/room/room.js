@@ -4,6 +4,7 @@ class Room {
     #tiles = new Map();
     #dimensions;
     #position;
+    #propMap;
 
     constructor(dimensions) {
         if (!Point.isPositivePoint(dimensions)) throw new Error('Invalid dimensions provided.');
@@ -13,6 +14,10 @@ class Room {
     setPosition(pos) {
         if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#position = pos; 
+    }
+
+    setPropMap(propMap) {
+        this.#propMap = propMap;
     }
 
     getRightEdges() { return this.#edgeFetcher(true, false); }
@@ -43,6 +48,7 @@ class Room {
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }
     getPosition() { return this.#position; }
     getDimensions() { return this.#dimensions; }
+    getPropMap() { return this.#propMap; }
 
     toString() {
         let tileArray = [];
