@@ -6,12 +6,11 @@ const ItemGenerator = require("./itemGenerator");
 
 class PropGenerator {
     rarityList = ["common", "uncommon", "rare"];
-
     constructor () {
         const validate = new Ajv().compile(schema);
         // checking whether or not the metadata is valid
         if (!validate(metadata)) {
-            throw new Error("Invalid metadata format");
+            throw new Error("Invalid metadata format: " + JSON.stringify(validate.errors, null, 2));
         }
     }
 
@@ -45,12 +44,17 @@ class PropGenerator {
     getPropByRarity(rarity) { 
         if (!this.rarityList.includes(rarity)) throw new Error("Invalid rarity category: ${rarity}");
 
-        const categories = metadata.item_categories;
-        // groups all props by rarity regardless of their category
-        const filteredProps = categories.reduce((props, category) => {
-            return props.concat(category.filter(p => p.rarity === rarity));
-        }, []);
-        if (filteredProps.length === 0) throw new Error("No props found for rarity: ${rarity}");
+        const categories = metadata.prop_categories;
+        const filteredProps = [];
+
+        for (const category in categories) {
+            if (categories.hasOwnProperty(category) && Array.isArray(categories[category])) {
+                const categoryItems = categories[category];
+                filteredProps.push(...categoryItems.filter(p => p.rarity === rarity));
+            }
+        }
+
+        if (filteredProps.length === 0) throw new Error(`No props found for rarity: ${rarity}`);
 
         // Generate a random index based on the length of the filtered props
         const randomIndex = Math.floor(Math.random() * filteredProps.length);
@@ -68,7 +72,7 @@ class PropGenerator {
 
     getPropByCategory(category){
         const temp = metadata[category];
-        if (temp.length === 0) throw new Error("No props found for category: ${category}");
+        if (temp.length === 0) throw new Error(`No props found for category: ${category}`);
 
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(Math.random() * temp.length); 
