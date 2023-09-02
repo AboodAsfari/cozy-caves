@@ -377,12 +377,19 @@ const App = () => {
         }).catch(() => { });
     }
 
+    const handleNewLayout = () => {
+        layout.clearLayout();
+        setTileMap({});
+        setFileEdited(true);
+        setFileDisplayName("Untitled Layout.json");
+    }
+
     return (
         <Box>
             <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
                 handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
-                handleFileSave={handleFileSave} />
+                handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>

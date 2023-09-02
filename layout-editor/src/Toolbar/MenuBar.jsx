@@ -34,6 +34,7 @@ const MenuBar = (props) => {
         handleFileOpen,
         handleFileSave,
         handleFileSaveAs,
+        handleNewLayout,
         handleNewPartition,
         layout,
         setBrushInfo,
@@ -126,6 +127,11 @@ const MenuBar = (props) => {
         return ret;
     }
 
+    const handleNew = () => {
+        setFileMenuAnchorEl(null);
+        handleNewLayout();
+    }
+
     const handleOpen = () => {
         setFileMenuAnchorEl(null);
         handleFileOpen();
@@ -163,7 +169,7 @@ const MenuBar = (props) => {
 
         <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
             sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
-            <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleNew} className="MenuItem" disableRipple>
                 <Typography> New </Typography>
             </MenuItem>
             <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
