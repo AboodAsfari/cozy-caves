@@ -304,10 +304,35 @@ const App = () => {
         setUpdater(!updater);
     }
 
+    const handleOpenFile = () => {
+        let options = {
+            types: [
+                {
+                    description: "JSON",
+                    accept: { "application/json": [".json"] }
+                }
+            ]
+        }
+
+        window.showOpenFilePicker(options).then(([fileHandle]) => {
+            fileHandle.getFile().then((file) => file.text()).then(text => {
+                layout.clearLayout();
+                Layout.fromSerializableLayout(JSON.parse(text), layout);
+
+                let newTileMap = {};
+                layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
+                setTileMap(newTileMap);
+
+                if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0});
+            });
+        }).catch(() => {});
+    }
+
     return (
         <Box>
             <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
-                layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} />
+                layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
+                handleOpenFile={handleOpenFile} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
