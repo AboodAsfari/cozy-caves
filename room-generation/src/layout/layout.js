@@ -294,6 +294,21 @@ class Layout {
     }
 
     /**
+     * Gets a list of all tiles in this layout.
+     * 
+     * @return List of all tiles.
+     */
+    getTiles() {
+        let tileList = [];
+        this.#excludedTiles.forEach(tile => tileList.push(tile));
+        this.#unscaledTiles.forEach(tile => tileList.push(tile));
+        this.#scalePartitions.forEach(partition => {
+            partition.getTiles().forEach(tile => tileList.push(tile));
+        });
+        return tileList;
+    }  
+
+    /**
      * Deletes a tile from the editable maps of the layout,
      * to ensure the actual layout info does not change.
      *
