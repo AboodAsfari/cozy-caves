@@ -130,7 +130,24 @@ const MenuBar = (props) => {
     }
 
     const handleSaveAs = () => {
+        setFileMenuAnchorEl(null);
+        
+        let options = {
+            suggestedName: "layout.json",
+            types: [
+                {
+                    description: "JSON",
+                    accept: { "application/json": [".json"] }
+                }
+            ]
+        };
 
+        window.showSaveFilePicker(options).then((fileHandle) => {
+            fileHandle.createWritable().then((file) => {
+                file.write(JSON.stringify(layout.getSerializableLayout()));
+                file.close();
+            });
+        }).catch(() => { });
     }
 
     return (
