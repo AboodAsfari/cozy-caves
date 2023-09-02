@@ -340,7 +340,12 @@ const App = () => {
     const handleFileSave = () => {
         if (!fileHandle) handleFileSaveAs();
         else {
-            console.log("WOAH")
+            fileHandle.createWritable().then((file) => {
+                file.write(JSON.stringify(layout.getSerializableLayout()));
+                file.close();
+                setFileEdited(false);
+                setFileDisplayName(fileHandle.name);
+            }).catch(() => {});
         }
     }
 
