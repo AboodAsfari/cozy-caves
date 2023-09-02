@@ -48,6 +48,18 @@ class Tile {
     getRotation() { return this.#rotation; }
     getDepth() { return this.#depth; }
     
+    /**
+     * Creates a new object with information needed to save the tile.
+     * 
+     * @returns Serializable tile object.
+     */
+    getSerializableTile() {
+        return {
+            tileType: this.#tileType,
+            position: this.#position.toString(),
+            partitionNum: this.#partitionNum
+        };
+    }
 
     /**
      * Creates a clone of the tile, optionally
