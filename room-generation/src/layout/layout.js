@@ -23,7 +23,7 @@ class Layout {
     #leniency; // How much the room size can deviate from max.
     #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
-    #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);; // Smallest encountered X/Y positions in partition.
+    #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); // Smallest encountered X/Y positions in partition.
 
     #generateRoom(tilerType) {
         let room = new Room(this.#getDimensions());
@@ -386,6 +386,19 @@ class Layout {
             partitionDisplayInfo.push({ name: partition.getPartitionName(), color: partition.getPartitionColor(), icon: partition.getPartitionIcon() });
         }
         return partitionDisplayInfo;
+    }
+
+    /**
+     * Resets all fields in this object
+     * to their defaults.
+     */
+    clearLayout() {
+        this.#tags = []; 
+        this.#excludedTiles = new Map(); 
+        this.#unscaledTiles = new Map(); 
+        this.#excludedEditableTiles = new Map(); 
+        this.#unscaledEditableTiles = new Map(); 
+        this.#scalePartitions = []; 
     }
 
     /**
