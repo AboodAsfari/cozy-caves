@@ -29,6 +29,7 @@ const GridTile = (props) => {
         setBrushInfo,
         setCurrPartition,
         setCurrTool,
+        setFileEdited,
         setMouseInfo,
         setPartitionAssigner,
         setTileMap,
@@ -86,6 +87,8 @@ const GridTile = (props) => {
     const handlePen = (e) => {
         if (e.button !== 0) return;
 
+        setFileEdited(true);
+
         let lastAction = undoStack[undoStack.length - 1];
         let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
         if (mouseInfo.dragButton === -1 || swappedBrushes) {
@@ -111,6 +114,8 @@ const GridTile = (props) => {
     }
 
     const handleEraser = (e) => {
+        setFileEdited(true);
+        
         if (mouseInfo.dragButton === -1) {
             undoStack.push(new PenAction(false, Tools.ERASER));
             redoStack.splice(0, redoStack.length);
@@ -171,6 +176,8 @@ const GridTile = (props) => {
 
     const handleFill = (e) => {
         if (e.synthetic) return;
+
+        setFileEdited(true);
 
         undoStack.push(new PenAction(false, Tools.FILL));
         redoStack.splice(0, redoStack.length);

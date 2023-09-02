@@ -54,7 +54,7 @@ const App = () => {
 
     const [fileHandle, setFileHandle] = React.useState(null);
     const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
-    const [fileEdited, setFileEdited] = React.useState(false);
+    const [fileEdited, setFileEdited] = React.useState(true);
 
     React.useEffect(() => {
         document.addEventListener("mousedown", handleMouseDown, []);
@@ -217,6 +217,8 @@ const App = () => {
     }
 
     const handlePartitionChange = (partitionNum) => {
+        setFileEdited(true);
+
         let action = new PenAction(false, null);
         undoStack.push(action);
 
@@ -248,6 +250,8 @@ const App = () => {
     }
 
     const handleNewPartition = () => {
+        setFileEdited(true);
+
         let partition = layout.newPartition();
         let partitionNum = layout.getPartitionDisplayInfo().length;
         partition.setPartitionName("Partition #" + partitionNum);
@@ -278,6 +282,8 @@ const App = () => {
 
     const removePartition = () => {
         if (currPartition === null) return;
+
+        setFileEdited(true);
         
         undoStack.splice(0, undoStack.length);
         redoStack.splice(0, redoStack.length);
@@ -386,6 +392,7 @@ const App = () => {
                                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
                                 partitionAssigner={partitionAssigner} setPartitionAssigner={setPartitionAssigner} setCurrPartition={updateActivePartition}
+                                setFileEdited={setFileEdited}
                             />
                         )}
                     </Stack>
@@ -409,7 +416,8 @@ const App = () => {
                 </MenuItem>
             </Menu>
 
-            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} />
+            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} 
+                locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} setFileEdited={setFileEdited} />
         </Box>
     );
 }
