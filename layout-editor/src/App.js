@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    AppBar,
     Box,
     Menu,
     MenuItem,
@@ -307,10 +306,8 @@ const App = () => {
 
     return (
         <Box>
-            <AppBar position="sticky" component="nav">
-                <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
-                    layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} />
-            </AppBar>
+            <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
+                layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
