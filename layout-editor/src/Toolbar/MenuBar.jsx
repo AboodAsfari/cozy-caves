@@ -31,9 +31,10 @@ const MenuBar = (props) => {
         currTool,
         fileDisplayName,
         fileEdited,
+        handleFileOpen,
+        handleFileSave,
         handleFileSaveAs,
         handleNewPartition,
-        handleOpenFile,
         layout,
         setBrushInfo,
         setCurrTool,
@@ -127,11 +128,12 @@ const MenuBar = (props) => {
 
     const handleOpen = () => {
         setFileMenuAnchorEl(null);
-        handleOpenFile();
+        handleFileOpen();
     }
 
     const handleSave = () => {
         setFileMenuAnchorEl(null);
+        handleFileSave();
     }
 
     const handleSaveAs = () => {

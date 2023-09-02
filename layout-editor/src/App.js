@@ -50,9 +50,11 @@ const App = () => {
     const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
     const [partitionLocked, setPartitionLocked] = React.useState(false);
+    const [updater, setUpdater] = React.useState(false);
+
+    const [fileHandle, setFileHandle] = React.useState(null);
     const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
     const [fileEdited, setFileEdited] = React.useState(false);
-    const [updater, setUpdater] = React.useState(false);
 
     React.useEffect(() => {
         document.addEventListener("mousedown", handleMouseDown, []);
@@ -306,7 +308,7 @@ const App = () => {
         setUpdater(!updater);
     }
 
-    const handleOpenFile = () => {
+    const handleFileOpen = () => {
         let options = {
             types: [
                 {
@@ -316,8 +318,9 @@ const App = () => {
             ]
         }
 
-        window.showOpenFilePicker(options).then(([fileHandle]) => {
-            fileHandle.getFile().then((file) => {
+        window.showOpenFilePicker(options).then(([fh]) => {
+            setFileHandle(fh);
+            fh.getFile().then((file) => {
                 setFileDisplayName(file.name);
                 setFileEdited(false);
                 return file.text();
@@ -334,6 +337,13 @@ const App = () => {
         }).catch(() => {});
     }
 
+    const handleFileSave = () => {
+        if (!fileHandle) handleFileSaveAs();
+        else {
+            console.log("WOAH")
+        }
+    }
+
     const handleFileSaveAs = () => {
         let options = {
             suggestedName: fileDisplayName,
@@ -345,12 +355,13 @@ const App = () => {
             ]
         };
 
-        window.showSaveFilePicker(options).then((fileHandle) => {
-            fileHandle.createWritable().then((file) => {
+        window.showSaveFilePicker(options).then(fh => {
+            setFileHandle(fh);
+            fh.createWritable().then((file) => {
                 file.write(JSON.stringify(layout.getSerializableLayout()));
-                file.close(); // dont close, store handle instead?
+                file.close();
                 setFileEdited(false);
-                setFileDisplayName(fileHandle.name);
+                setFileDisplayName(fh.name);
             });
         }).catch(() => { });
     }
@@ -359,7 +370,8 @@ const App = () => {
         <Box>
             <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
-                handleOpenFile={handleOpenFile} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} />
+                handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
+                handleFileSave={handleFileSave} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
