@@ -56,12 +56,7 @@ class DungeonBuilder {
     }
     setMinGap(minGap){
         if(typeof minGap !== 'number') throw new Error('Invalid minimum gap size provided');
-        this.#minGap = minGap;
-        return this;
-    }
-    setMaxDepth(maxDepth){
-        if(typeof maxDepth !== 'number') throw new Error('Invalid maximum depth provided');
-        this.#maxDepth = maxDepth;
+        this.#minGap = minGap; 
         return this;
     }
     setTotalCoverage(totalCoverage){
@@ -89,6 +84,20 @@ class DungeonBuilder {
         const startPosition = min + minDistance;
         return startPosition + Math.floor(this.#rng() * range);
         
+    }
+
+    /**
+     * Calculates the appropriate maximum recursion depth according to 
+     * the dimensions of the map and the minimum room size 
+     */
+    #calculateMaxDepth(){
+        let difference = Number.MAX_SAFE_INTEGER;
+        for(let n = 1; n <= 10; n++){
+            if(Math.abs(((25*n)**2) - (this.#width * this.#height)) < difference){
+                difference = Math.abs(((25*n)**2) - (this.#width * this.#height));
+                this.#maxDepth = n + 6 + (7 - this.#minGap);
+            }
+        }
     }
 
     /**
@@ -196,6 +205,7 @@ class DungeonBuilder {
      */
     build(){
         this.#checkSet();
+        this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
         this.#reset();
