@@ -29,6 +29,9 @@ const MenuBar = (props) => {
     const {
         brushInfo,
         currTool,
+        fileDisplayName,
+        fileEdited,
+        handleFileSaveAs,
         handleNewPartition,
         handleOpenFile,
         layout,
@@ -133,30 +136,14 @@ const MenuBar = (props) => {
 
     const handleSaveAs = () => {
         setFileMenuAnchorEl(null);
-        
-        let options = {
-            suggestedName: "layout.json",
-            types: [
-                {
-                    description: "JSON",
-                    accept: { "application/json": [".json"] }
-                }
-            ]
-        };
-
-        window.showSaveFilePicker(options).then((fileHandle) => {
-            fileHandle.createWritable().then((file) => {
-                file.write(JSON.stringify(layout.getSerializableLayout()));
-                file.close();
-            });
-        }).catch(() => { });
+        handleFileSaveAs();
     }
 
     return (
         <>
         <AppBar position="sticky" component="nav">
             <Toolbar className="Toolbar">
-                <Stack direction={"row"} sx={{ alignItems: "center" }}>
+                <Stack direction={"row"} sx={{ alignItems: "center", width: "100%" }}>
                     <Button disableRipple className="NavButton" onClick={(e) => setFileMenuAnchorEl(e.currentTarget)}> File </Button>
                     <Button disableRipple className="NavButton"> View </Button>
                     <Divider variant="middle" sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
@@ -167,6 +154,7 @@ const MenuBar = (props) => {
                             </Collapse>
                         )}
                     </TransitionGroup>
+                    <Typography sx={{ flexGrow: 1, textAlign: "right", mr: "10px", fontWeight: 600 }}> {fileDisplayName} {fileEdited && "*"} </Typography>
                 </Stack>
             </Toolbar>
         </AppBar>
@@ -174,11 +162,13 @@ const MenuBar = (props) => {
         <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
             sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
             <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
+                <Typography> New </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
                 <Typography> Open </Typography>
             </MenuItem>
             <MenuItem onClick={handleSave} className="MenuItem" disableRipple>
                 <Typography> Save </Typography>
-                {/* sx={{ ml: 1.2, mr: 2, mt: 0.5 }} */}
             </MenuItem>
             <MenuItem onClick={handleSaveAs} className="MenuItem" disableRipple>
                 <Typography> Save As </Typography>

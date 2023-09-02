@@ -50,6 +50,8 @@ const App = () => {
     const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
     const [partitionLocked, setPartitionLocked] = React.useState(false);
+    const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
+    const [fileEdited, setFileEdited] = React.useState(false);
     const [updater, setUpdater] = React.useState(false);
 
     React.useEffect(() => {
@@ -315,7 +317,11 @@ const App = () => {
         }
 
         window.showOpenFilePicker(options).then(([fileHandle]) => {
-            fileHandle.getFile().then((file) => file.text()).then(text => {
+            fileHandle.getFile().then((file) => {
+                setFileDisplayName(file.name);
+                setFileEdited(false);
+                return file.text();
+            }).then(text => {
                 layout.clearLayout();
                 Layout.fromSerializableLayout(JSON.parse(text), layout);
 
@@ -323,16 +329,37 @@ const App = () => {
                 layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
                 setTileMap(newTileMap);
 
-                if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0});
+                if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
             });
         }).catch(() => {});
+    }
+
+    const handleFileSaveAs = () => {
+        let options = {
+            suggestedName: fileDisplayName,
+            types: [
+                {
+                    description: "JSON",
+                    accept: { "application/json": [".json"] }
+                }
+            ]
+        };
+
+        window.showSaveFilePicker(options).then((fileHandle) => {
+            fileHandle.createWritable().then((file) => {
+                file.write(JSON.stringify(layout.getSerializableLayout()));
+                file.close(); // dont close, store handle instead?
+                setFileEdited(false);
+                setFileDisplayName(fileHandle.name);
+            });
+        }).catch(() => { });
     }
 
     return (
         <Box>
             <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
-                handleOpenFile={handleOpenFile} />
+                handleOpenFile={handleOpenFile} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
