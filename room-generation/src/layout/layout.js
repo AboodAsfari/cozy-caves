@@ -372,6 +372,19 @@ class Layout {
         }
         return partitionDisplayInfo;
     }
+
+    /**
+     * Creates a new object with information needed to save the layout.
+     * 
+     * @returns Serializable layout object.
+     */
+    getSerializableLayout() {
+        return {
+            excludedTiles: Array.from(this.#excludedTiles.values()).map(tile => tile.getSerializableTile()),
+            unscaledTiles: Array.from(this.#unscaledTiles.values()).map(tile => tile.getSerializableTile()),
+            scalePartitions: this.#scalePartitions.map(partition => partition.getSerializablePartition())
+        };        
+    }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!

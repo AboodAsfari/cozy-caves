@@ -286,7 +286,7 @@ class Partition {
             xDir: this.#xDir,
             yDir: this.#yDir,
             tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
-        }
+        };
     }
 }
 
