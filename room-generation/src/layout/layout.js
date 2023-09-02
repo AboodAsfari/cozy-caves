@@ -414,15 +414,13 @@ class Layout {
         };        
     }
 
-
     /**
      * Reads a stringified serializable layout and converts it 
      * to a full layout object.
      * 
      * @returns Layout.
      */
-    static fromSerializableLayout(serializedLayout) {
-        let layout = new Layout();
+    static fromSerializableLayout(serializedLayout, layout = new Layout()) {
         serializedLayout.excludedTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.unscaledTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.scalePartitions.forEach(serializedPartition => {
