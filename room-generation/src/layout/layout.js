@@ -385,6 +385,37 @@ class Layout {
             scalePartitions: this.#scalePartitions.map(partition => partition.getSerializablePartition())
         };        
     }
+
+
+    /**
+     * Reads a stringified serializable layout and converts it 
+     * to a full layout object.
+     * 
+     * @returns Layout.
+     */
+    static fromSerializableLayout(serializedLayout) {
+        let layout = new Layout();
+        serializedLayout.excludedTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        serializedLayout.unscaledTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        serializedLayout.scalePartitions.forEach(serializedPartition => {
+            let partition = layout.newPartition();
+            partition.setPartitionName(serializedPartition.name);
+            partition.setPartitionColor(serializedPartition.color);
+            partition.setPartitionIcon(serializedPartition.icon);
+            partition.setLockRatio(serializedPartition.lockRatio);
+            partition.setLockX(serializedPartition.lockX);
+            partition.setLockY(serializedPartition.lockY);
+            partition.setSplitScalingOnX(serializedPartition.splitScalingOnX);
+            partition.setSplitScalingOnY(serializedPartition.splitScalingOnY);
+            partition.setIncrementAmtX(serializedPartition.incrementAmtX);
+            partition.setIncrementAmtY(serializedPartition.incrementAmtY);
+            partition.setXDir(serializedPartition.xDir);
+            partition.setYDir(serializedPartition.yDir);
+            serializedPartition.tiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        });
+
+        return layout;
+    }
 }
 
 // VERY TEMP, there should be a layout editor and a layout loader!

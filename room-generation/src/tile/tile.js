@@ -62,6 +62,18 @@ class Tile {
     }
 
     /**
+     * Reads a stringified serializable tile and converts it 
+     * to a full tile object.
+     * 
+     * @returns Tile.
+     */
+    static fromSerializableTile(serializedTile) {
+        let posArray = serializedTile.position.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        return new Tile(serializedTile.tileType, pos, serializedTile.partitionNum);
+    }
+
+    /**
      * Creates a clone of the tile, optionally
      * at a new position
      *
