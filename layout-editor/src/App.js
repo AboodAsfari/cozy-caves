@@ -52,6 +52,8 @@ const App = () => {
     const [partitionLocked, setPartitionLocked] = React.useState(false);
     const [updater, setUpdater] = React.useState(false);
 
+    const [directoryHandle, setDirectoryHandle] = React.useState(null);
+    const [directoryFiles ,setDirectoryFiles] = React.useState([]);
     const [fileHandle, setFileHandle] = React.useState(null);
     const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
     const [fileEdited, setFileEdited] = React.useState(true);
@@ -154,11 +156,13 @@ const App = () => {
             }));
         } else if (e.ctrlKey && e.key === "z") {
             if (undoStack.length === 0) return;
+            setFileEdited(true);
             let action = undoStack.pop();
             action.undo(layout, setTileMap, setMouseInfo, changeTool);
             redoStack.push(action);
         } else if (e.ctrlKey && e.key === "y") {
             if (redoStack.length === 0) return;
+            setFileEdited(true);
             let action = redoStack.pop();
             action.redo(layout, setTileMap, setMouseInfo, changeTool);
             undoStack.push(action);
@@ -324,23 +328,29 @@ const App = () => {
             ]
         }
 
-        window.showOpenFilePicker(options).then(([fh]) => {
-            setFileHandle(fh);
-            fh.getFile().then((file) => {
-                setFileDisplayName(file.name);
-                setFileEdited(false);
-                return file.text();
-            }).then(text => {
-                layout.clearLayout();
-                Layout.fromSerializableLayout(JSON.parse(text), layout);
+        window.showOpenFilePicker(options).then(([fh]) => loadHandle(fh)).catch(() => {});
+    }
 
-                let newTileMap = {};
-                layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
-                setTileMap(newTileMap);
+    const loadHandle = (fh) => {
+        setFileHandle(fh);
+        
+        fh.getFile().then((file) => {
+            setFileDisplayName(file.name);
+            setFileEdited(false);
+            return file.text();
+        }).then(text => {
+            undoStack.splice(0, undoStack.length);
+            redoStack.splice(0, redoStack.length);
 
-                if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
-            });
-        }).catch(() => {});
+            layout.clearLayout();
+            Layout.fromSerializableLayout(JSON.parse(text), layout);
+
+            let newTileMap = {};
+            layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
+            setTileMap(newTileMap);
+
+            if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
+        });
     }
 
     const handleFileSave = () => {
@@ -377,6 +387,31 @@ const App = () => {
         }).catch(() => { });
     }
 
+    const handleFolderOpen = () => {
+        let options = {
+            id: "layout-folder",
+            mode: "readwrite"
+        }
+
+        window.showDirectoryPicker(options).then(dh => {
+            setDirectoryHandle(dh);
+            updateFileList(dh);
+        }).catch(() => {});
+    }
+
+    const updateFileList = async (dh = directoryHandle) => {
+        if (dh === null) return;
+
+        let files = [];
+        for await (const fileHandle of dh.values()) {
+            if (fileHandle.kind === "file") {
+                const file = await fileHandle.getFile();
+                if (file !== null && file.type === "application/json") files.push(fileHandle);;
+            }
+        }
+        setDirectoryFiles(files);
+    }
+
     const handleNewLayout = () => {
         layout.clearLayout();
         setTileMap({});
@@ -389,7 +424,8 @@ const App = () => {
             <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
                 handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
-                handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} />
+                handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} handleFolderOpen={handleFolderOpen} directoryFiles={directoryFiles} 
+                fileHandle={fileHandle} loadHandle={loadHandle} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
