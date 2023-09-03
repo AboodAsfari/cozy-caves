@@ -61,7 +61,6 @@ class Layout {
      * @returns A room object built from the scaled layout, null if invalid layout.
      */
     scaleRoom(maxSize, leniency, allowOvergrow, tilerType) {
-        if (!(maxSize instanceof Point) || !(leniency instanceof Point)) throw new Error('Invalid size or leniency provided.');
         this.#maxSize = maxSize;
         this.#leniency = leniency;
         this.#allowOvergrow = !!allowOvergrow;
@@ -246,7 +245,6 @@ class Layout {
      * @param partitionNum Partition number to add tile to.
      */
     addTile(tile) { 
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         let partitionNum = tile.getPartitionNum();
         if (partitionNum < -2) throw new Error('Invalid partition number provided.');
         else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
@@ -260,7 +258,6 @@ class Layout {
      * @param pos Position of tile to remove.
      */
     removeTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#excludedTiles.delete(pos.toString());
         this.#unscaledTiles.delete(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
@@ -285,7 +282,6 @@ class Layout {
      * @param pos Position of tile to get.
      */
     getTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         if (this.#excludedTiles.has(pos.toString())) return this.#excludedTiles.get(pos.toString());
         else if (this.#unscaledTiles.has(pos.toString())) return this.#unscaledTiles.get(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
@@ -316,8 +312,6 @@ class Layout {
      * @param deleteExcluded Whether to delete the tile if it's excluded.
      */
     removeEditableTile(pos, deleteExcluded = false) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
-
         if (deleteExcluded) this.#excludedEditableTiles.delete(pos.toString());
         this.#unscaledEditableTiles.delete(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {

@@ -2,7 +2,7 @@ const Point = require("@cozy-caves/utils").Point;
 const seedrandom = require('seedrandom');
 const { exampleLayout } = require("../layout/layout");
 const populateRoom = require("@cozy-caves/item-and-prop-generation");
-
+const rectroom = require("../../layouts/rectangular-room.json");
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
     #numGen; // Seeded number generator.
@@ -24,6 +24,7 @@ class RoomBuilder {
      * @param builderSeed Seed to use for room generation.
      */
     constructor(builderSeed) {
+        console.log(38381)
         if (builderSeed) this.#builderSeed = builderSeed;
         else this.#builderSeed = Math.random();
         this.#numGen = seedrandom(this.#builderSeed);
@@ -42,10 +43,12 @@ class RoomBuilder {
 
         // Normally, would choose from a pool of layouts based on params.
         let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
-        if (populateWithItems) {
+        if (this.#populateWithItems) {
             let propMap = populateRoom(room, 5);
             room.setPropMap(propMap);
         }
+
+        console.log(rectroom);
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
@@ -54,12 +57,10 @@ class RoomBuilder {
     // Setters (That return the object as well).
     setResetOnBuild(resetOnBuild) { this.#resetOnBuild = !!resetOnBuild; return this; }
     setSize(size) { 
-        if (!Point.isPositivePoint(size)) throw new Error('Invalid size provided.');
         this.#size = size; 
         return this; 
     }
     setLeniency(leniency) { 
-        if (!(leniency instanceof Point)) throw new Error('Invalid leniency provided.');
         this.#leniency = leniency; 
         return this; 
     }

@@ -23,7 +23,7 @@ class Tile {
      * @param position Position of the tile in the room.
      */
     constructor(tileType, position, partitionNum = -1) {
-        if (!tileType || !(position instanceof Point)) throw new Error('Invalid tile provided.');
+        if (!tileType) throw new Error('Invalid tile provided.');
         if (!Number.isInteger(partitionNum) || partitionNum < -2) throw new Error('Invalid partition number provided.');
         this.#tileType = tileType.toString();
         this.#position = position;
