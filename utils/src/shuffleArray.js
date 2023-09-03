@@ -1,8 +1,8 @@
-const shuffleArray = (array) => {
+const shuffleArray = (array, numGen = Math.random) => {
     let currentIndex = array.length,  randomIndex;
 
     while (currentIndex > 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
+        randomIndex = Math.floor(numGen() * currentIndex);
         currentIndex--;
 
         [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
