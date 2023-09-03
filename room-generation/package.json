@@ -15,7 +15,7 @@
     "license": "ISC",
     "dependencies": {
         "@cozy-caves/item-and-prop-generation": "^1.0.1",
-        "@cozy-caves/utils": "^1.0.4",
+        "@cozy-caves/utils": "^1.0.5",
         "seedrandom": "^3.0.5"
     },
     "devDependencies": {

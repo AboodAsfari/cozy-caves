@@ -1,8 +1,10 @@
-const Point = require("@cozy-caves/utils").Point;
+const { Point, shuffleArray } = require("@cozy-caves/utils");
 const seedrandom = require('seedrandom');
-const { exampleLayout } = require("../layout/layout");
+const { exampleLayout, Layout } = require("../layout/layout");
 const populateRoom = require("@cozy-caves/item-and-prop-generation");
-const rectroom = require("../../layouts/rectangular-room.json");
+const layoutList = require("../../layouts/layout-list.json");
+const Room = require("./room");
+
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
     #numGen; // Seeded number generator.
@@ -24,7 +26,6 @@ class RoomBuilder {
      * @param builderSeed Seed to use for room generation.
      */
     constructor(builderSeed) {
-        console.log(38381)
         if (builderSeed) this.#builderSeed = builderSeed;
         else this.#builderSeed = Math.random();
         this.#numGen = seedrandom(this.#builderSeed);
@@ -41,28 +42,41 @@ class RoomBuilder {
     build() {
         if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
-        // Normally, would choose from a pool of layouts based on params.
-        let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
-        if (this.#populateWithItems) {
-            let propMap = populateRoom(room, 5);
-            room.setPropMap(propMap);
+        let room = null;
+        let layoutPool = [...layoutList.layouts];
+        if (this.#allowNonRects) {
+            shuffleArray(layoutPool, this.#numGen);
+            while (room === null && layoutPool.length > 0) {
+                let serializedLayout = require("../../layouts/" + layoutPool[0]);
+                let layout = Layout.fromSerializableLayout(serializedLayout);
+                room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+            }
+        } else {
+            let serializedLayout = require("../../layouts/" + layoutPool[0]);
+            let layout = Layout.fromSerializableLayout(serializedLayout);
+            room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
         }
 
-        console.log(rectroom);
+        if (this.#populateWithItems) {
+            // let propMap = populateRoom(room, 5);
+            // room.setPropMap(propMap);
+        }
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
+        if (room.getDimensions().getX() === 7) return room;
+        else return new Room(new Point(2, 2));
     }
 
     // Setters (That return the object as well).
     setResetOnBuild(resetOnBuild) { this.#resetOnBuild = !!resetOnBuild; return this; }
-    setSize(size) { 
-        this.#size = size; 
-        return this; 
+    setSize(size) {
+        this.#size = size;
+        return this;
     }
-    setLeniency(leniency) { 
-        this.#leniency = leniency; 
-        return this; 
+    setLeniency(leniency) {
+        this.#leniency = leniency;
+        return this;
     }
     setAllowOvergrow(allowOvergrow) { this.#allowOvergrow = allowOvergrow; return this; }
     setAllowNonRects(allowNonRects) { this.#allowNonRects = allowNonRects; return this; }

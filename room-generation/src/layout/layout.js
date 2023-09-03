@@ -28,9 +28,7 @@ class Layout {
     #generateRoom(tilerType) {
         let room = new Room(this.#getDimensions());
 
-        let posUpdater = new Point(0, 0);
-        if (this.#minEncountered.getX() < 0) posUpdater.setX(-this.#minEncountered.getX());
-        if (this.#minEncountered.getY() < 0) posUpdater.setY(-this.#minEncountered.getY());
+        let posUpdater = new Point(-this.#minEncountered.getX(), -this.#minEncountered.getY());
 
         const addTiles = (collection) => {
             for (const value of Array.from(collection)) {
