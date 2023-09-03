@@ -175,7 +175,6 @@ class Partition {
      * @param tile Tile to add.
      */
     addTile(tile) { 
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         this.#tiles.set(tile.getPosition().toString(), tile); 
     }
 
@@ -185,7 +184,6 @@ class Partition {
      * @param pos Pos of tie to remove. 
      */
     removeTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#tiles.delete(pos.toString());
     }
 
@@ -195,7 +193,6 @@ class Partition {
      * @param pos Position of tile to get.
      */
     getTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         return this.#tiles.get(pos.toString());
     }
 
@@ -206,7 +203,6 @@ class Partition {
      * @param pos Position of tile to remove.
      */
     removeScaledTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         if (!this.#scaledTiles.delete(pos.toString())) return;
 
         this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
@@ -265,6 +261,29 @@ class Partition {
     getScaleCountY() { return this.#scaleCountY; }
     getTiles() { return this.#tiles; }
     getScaledTiles() { return Array.from(this.#scaledTiles.values()); }
+
+    /**
+     * Creates a new object with information needed to save the partition.
+     * 
+     * @returns Serializable partition object.
+     */
+    getSerializablePartition() {
+        return {
+            name: this.#partitionName,
+            color: this.#partitionColor,
+            icon: this.#partitionIcon,
+            lockRatio: this.#lockRatio,
+            lockX: this.#lockX,
+            lockY: this.#lockY,
+            splitScalingOnX: this.#splitScalingOnX,
+            splitScalingOnY: this.#splitScalingOnY,
+            incrementAmtX: this.#incrementAmtX,
+            incrementAmtY: this.#incrementAmtY,
+            xDir: this.#xDir,
+            yDir: this.#yDir,
+            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
+        };
+    }
 }
 
 module.exports = Partition;

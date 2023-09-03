@@ -29,6 +29,7 @@ const GridTile = (props) => {
         setBrushInfo,
         setCurrPartition,
         setCurrTool,
+        setFileEdited,
         setMouseInfo,
         setPartitionAssigner,
         setTileMap,
@@ -74,7 +75,6 @@ const GridTile = (props) => {
         if (overlayValue !== undefined) tile = overlayValue;
         else tile = tileMap[pos.toString()];
 
-        // console.log(tile.getPartitionNum())
         let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
         return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
     }
@@ -87,6 +87,8 @@ const GridTile = (props) => {
     const handlePen = (e) => {
         if (e.button !== 0) return;
 
+        setFileEdited(true);
+
         let lastAction = undoStack[undoStack.length - 1];
         let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
         if (mouseInfo.dragButton === -1 || swappedBrushes) {
@@ -97,8 +99,8 @@ const GridTile = (props) => {
         undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
         undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
 
+        layout.removeTile(pos);
         if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
-            layout.removeTile(pos);
             setTileMap(prev => ({ ...prev, [pos.toString()]: undefined }));
             undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
             setMouseInfo(prev => ({ ...prev, dragButton: e.button }));
@@ -112,6 +114,8 @@ const GridTile = (props) => {
     }
 
     const handleEraser = (e) => {
+        setFileEdited(true);
+        
         if (mouseInfo.dragButton === -1) {
             undoStack.push(new PenAction(false, Tools.ERASER));
             redoStack.splice(0, redoStack.length);
@@ -173,6 +177,8 @@ const GridTile = (props) => {
     const handleFill = (e) => {
         if (e.synthetic) return;
 
+        setFileEdited(true);
+
         undoStack.push(new PenAction(false, Tools.FILL));
         redoStack.splice(0, redoStack.length);
 
@@ -188,8 +194,8 @@ const GridTile = (props) => {
             undoStack[undoStack.length - 1].oldTiles.push({ pos: curr, tile: oldTile });
 
             let newTile = new Tile(brushInfo.fillBrush, curr, brushInfo.defaultPartition);
+            layout.removeTile(curr);
             if (brushInfo.fillBrush === "none") {
-                layout.removeTile(curr);
                 setTileMap(prev => ({ ...prev, [curr.toString()]: undefined }));
                 undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
             } else {

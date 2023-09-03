@@ -12,7 +12,6 @@ class Room {
     }
 
     setPosition(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#position = pos; 
     }
 

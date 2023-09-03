@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    AppBar,
     Box,
     Button,
     Collapse,
@@ -28,14 +29,26 @@ const MenuBar = (props) => {
     const {
         brushInfo,
         currTool,
+        directoryFiles,
+        fileDisplayName,
+        fileEdited,
+        fileHandle,
+        handleFileOpen,
+        handleFileSave,
+        handleFileSaveAs,
+        handleFolderOpen,
+        handleNewLayout,
         handleNewPartition,
         layout,
+        loadHandle,
         setBrushInfo,
         setCurrTool,
         updateActivePartition
     } = props;
 
     const [defaultPartitionAnchorEl, setDefaultPartitionAnchorEl] = React.useState(null);
+    const [fileMenuAnchorEl, setFileMenuAnchorEl] = React.useState(null);
+    const [fileListAnchorEl, setFileListAnchorEl] = React.useState(null);
 
     const swapBrushes = () => {
         setBrushInfo(prev => ({
@@ -119,21 +132,83 @@ const MenuBar = (props) => {
         return ret;
     }
 
+    const handleNew = () => {
+        setFileMenuAnchorEl(null);
+        handleNewLayout();
+    }
+
+    const handleOpen = () => {
+        setFileMenuAnchorEl(null);
+        handleFileOpen();
+    }
+
+    const handleFolder = () => {
+        setFileMenuAnchorEl(null);
+        handleFolderOpen();
+    }
+
+    const handleSave = () => {
+        setFileMenuAnchorEl(null);
+        handleFileSave();
+    }
+
+    const handleSaveAs = () => {
+        setFileMenuAnchorEl(null);
+        handleFileSaveAs();
+    }
+
     return (
-        <Toolbar className="Toolbar">
-            <Stack direction={"row"} sx={{ alignItems: "center" }}>
-                <Button disableRipple className="NavButton"> File </Button>
-                <Button disableRipple className="NavButton"> View </Button>
-                <Divider variant="middle" sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
-                <TransitionGroup style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    {getToolbarItems().map((item, i) =>
-                        <Collapse orientation="horizontal" key={item.key}>
-                            {item}
-                        </Collapse>
-                    )}
-                </TransitionGroup>
-            </Stack>
-        </Toolbar>
+        <>
+        <AppBar position="sticky" component="nav">
+            <Toolbar className="Toolbar">
+                <Stack direction={"row"} sx={{ alignItems: "center", width: "100%" }}>
+                    <Button disableRipple className="NavButton" onClick={(e) => setFileMenuAnchorEl(e.currentTarget)}> File </Button>
+                    <Button disableRipple className="NavButton"> View </Button>
+                    <Divider variant="middle" sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
+                    <TransitionGroup style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        {getToolbarItems().map((item, i) =>
+                            <Collapse orientation="horizontal" key={item.key}>
+                                {item}
+                            </Collapse>
+                        )}
+                    </TransitionGroup>
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Button className="NavButton" disabled={directoryFiles.length === 0} sx={{ textTransform: "none", textWrap: "nowrap", mr: 3 }} disableRipple
+                        endIcon={directoryFiles.length === 0 ? null : <KeyboardArrowDownIcon />} onClick={(e) => setFileListAnchorEl(e.currentTarget)}>
+                        {fileDisplayName} {fileEdited && "*"}
+                    </Button>
+                </Stack>
+            </Toolbar>
+        </AppBar>
+
+        <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+            <MenuItem onClick={handleNew} className="MenuItem" disableRipple>
+                <Typography> New </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
+                <Typography> Open </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleFolder} className="MenuItem" disableRipple>
+                <Typography> Open Folder </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleSave} className="MenuItem" disableRipple>
+                <Typography> Save </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleSaveAs} className="MenuItem" disableRipple>
+                <Typography> Save As </Typography>
+            </MenuItem>
+        </Menu>
+
+        <Menu anchorEl={fileListAnchorEl} open={!!fileListAnchorEl} onClose={() => setFileListAnchorEl(null)}
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+            {directoryFiles.map((file, i) => fileHandle !== null && file.name === fileHandle.name ? null :
+                <MenuItem key={file.name} onClick={() => { loadHandle(file); setFileListAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
+                    <Typography> {file.name} </Typography>
+                </MenuItem>
+            )}
+        </Menu>
+        </>
     );
 }
 

@@ -8,15 +8,13 @@ class Point {
         this.#y = y;
     }
 
-    static isPositivePoint(point) { return point instanceof Point && point.getX() > 0 && point.getY() > 0; }
+    static isPositivePoint(point) { return point.getX() > 0 && point.getY() > 0; }
 
     add(point) {
-        if (!(point instanceof Point)) throw new Error('Invalid point provided.');
         return new Point(this.#x + point.getX(), this.#y + point.getY());
     }
 
     subtract(point) {
-        if (!(point instanceof Point)) throw new Error('Invalid point provided.');
         return new Point(this.#x - point.getX(), this.#y - point.getY());
     }
 

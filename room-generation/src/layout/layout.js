@@ -23,14 +23,12 @@ class Layout {
     #leniency; // How much the room size can deviate from max.
     #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
-    #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);; // Smallest encountered X/Y positions in partition.
+    #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); // Smallest encountered X/Y positions in partition.
 
     #generateRoom(tilerType) {
         let room = new Room(this.#getDimensions());
 
-        let posUpdater = new Point(0, 0);
-        if (this.#minEncountered.getX() < 0) posUpdater.setX(-this.#minEncountered.getX());
-        if (this.#minEncountered.getY() < 0) posUpdater.setY(-this.#minEncountered.getY());
+        let posUpdater = new Point(-this.#minEncountered.getX(), -this.#minEncountered.getY());
 
         const addTiles = (collection) => {
             for (const value of Array.from(collection)) {
@@ -61,7 +59,6 @@ class Layout {
      * @returns A room object built from the scaled layout, null if invalid layout.
      */
     scaleRoom(maxSize, leniency, allowOvergrow, tilerType) {
-        if (!(maxSize instanceof Point) || !(leniency instanceof Point)) throw new Error('Invalid size or leniency provided.');
         this.#maxSize = maxSize;
         this.#leniency = leniency;
         this.#allowOvergrow = !!allowOvergrow;
@@ -246,7 +243,6 @@ class Layout {
      * @param partitionNum Partition number to add tile to.
      */
     addTile(tile) { 
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         let partitionNum = tile.getPartitionNum();
         if (partitionNum < -2) throw new Error('Invalid partition number provided.');
         else if (partitionNum === -2) this.#excludedTiles.set(tile.getPosition().toString(), tile);
@@ -260,7 +256,6 @@ class Layout {
      * @param pos Position of tile to remove.
      */
     removeTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#excludedTiles.delete(pos.toString());
         this.#unscaledTiles.delete(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
@@ -285,13 +280,27 @@ class Layout {
      * @param pos Position of tile to get.
      */
     getTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         if (this.#excludedTiles.has(pos.toString())) return this.#excludedTiles.get(pos.toString());
         else if (this.#unscaledTiles.has(pos.toString())) return this.#unscaledTiles.get(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
             if (this.#scalePartitions[i].getTile(pos)) return this.#scalePartitions[i].getTile(pos);
         }
     }
+
+    /**
+     * Gets a list of all tiles in this layout.
+     * 
+     * @return List of all tiles.
+     */
+    getTiles() {
+        let tileList = [];
+        this.#excludedTiles.forEach(tile => tileList.push(tile));
+        this.#unscaledTiles.forEach(tile => tileList.push(tile));
+        this.#scalePartitions.forEach(partition => {
+            partition.getTiles().forEach(tile => tileList.push(tile));
+        });
+        return tileList;
+    }  
 
     /**
      * Deletes a tile from the editable maps of the layout,
@@ -301,8 +310,6 @@ class Layout {
      * @param deleteExcluded Whether to delete the tile if it's excluded.
      */
     removeEditableTile(pos, deleteExcluded = false) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
-
         if (deleteExcluded) this.#excludedEditableTiles.delete(pos.toString());
         this.#unscaledEditableTiles.delete(pos.toString());
         for (let i = this.#scalePartitions.length - 1; i >= 0; i--) {
@@ -372,41 +379,61 @@ class Layout {
         }
         return partitionDisplayInfo;
     }
+
+    /**
+     * Resets all fields in this object
+     * to their defaults.
+     */
+    clearLayout() {
+        this.#tags = []; 
+        this.#excludedTiles = new Map(); 
+        this.#unscaledTiles = new Map(); 
+        this.#excludedEditableTiles = new Map(); 
+        this.#unscaledEditableTiles = new Map(); 
+        this.#scalePartitions = []; 
+    }
+
+    /**
+     * Creates a new object with information needed to save the layout.
+     * 
+     * @returns Serializable layout object.
+     */
+    getSerializableLayout() {
+        return {
+            excludedTiles: Array.from(this.#excludedTiles.values()).map(tile => tile.getSerializableTile()),
+            unscaledTiles: Array.from(this.#unscaledTiles.values()).map(tile => tile.getSerializableTile()),
+            scalePartitions: this.#scalePartitions.map(partition => partition.getSerializablePartition())
+        };        
+    }
+
+    /**
+     * Reads a stringified serializable layout and converts it 
+     * to a full layout object.
+     * 
+     * @returns Layout.
+     */
+    static fromSerializableLayout(serializedLayout, layout = new Layout()) {
+        serializedLayout.excludedTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        serializedLayout.unscaledTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        serializedLayout.scalePartitions.forEach(serializedPartition => {
+            let partition = layout.newPartition();
+            partition.setPartitionName(serializedPartition.name);
+            partition.setPartitionColor(serializedPartition.color);
+            partition.setPartitionIcon(serializedPartition.icon);
+            partition.setLockRatio(serializedPartition.lockRatio);
+            partition.setLockX(serializedPartition.lockX);
+            partition.setLockY(serializedPartition.lockY);
+            partition.setSplitScalingOnX(serializedPartition.splitScalingOnX);
+            partition.setSplitScalingOnY(serializedPartition.splitScalingOnY);
+            partition.setIncrementAmtX(serializedPartition.incrementAmtX);
+            partition.setIncrementAmtY(serializedPartition.incrementAmtY);
+            partition.setXDir(serializedPartition.xDir);
+            partition.setYDir(serializedPartition.yDir);
+            serializedPartition.tiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
+        });
+
+        return layout;
+    }
 }
 
-// VERY TEMP, there should be a layout editor and a layout loader!
-const exampleLayout = new Layout();
-exampleLayout.newPartition();
-exampleLayout.newPartition();
-exampleLayout.newPartition();
-exampleLayout.getPartition(0).setLockY(true);
-exampleLayout.getPartition(0).setXDir(1);
-exampleLayout.getPartition(0).setSplitScalingOnX(false);
-exampleLayout.getPartition(0).setIncrementAmtX(1);
-
-exampleLayout.getPartition(1).setXDir(1);
-exampleLayout.getPartition(1).setYDir(1);
-exampleLayout.getPartition(1).setSplitScalingOnX(false);
-exampleLayout.getPartition(1).setSplitScalingOnY(false);
-exampleLayout.getPartition(1).setLockRatio(false);
-exampleLayout.getPartition(1).setIncrementAmtX(1);
-
-exampleLayout.getPartition(2).setXDir(1);
-exampleLayout.getPartition(2).setYDir(1);
-exampleLayout.getPartition(2).setSplitScalingOnX(false);
-exampleLayout.getPartition(2).setSplitScalingOnY(false);
-exampleLayout.getPartition(2).setLockRatio(false);
-exampleLayout.getPartition(2).setIncrementAmtX(1);
-
-exampleLayout.addTile(new Tile("floor", new Point(0, 0), 2));
-exampleLayout.addTile(new Tile("wall", new Point(-1, 0), -1));
-exampleLayout.addTile(new Tile("wall", new Point(1, 0), 0));
-exampleLayout.addTile(new Tile("wall", new Point(0, 1), 1));
-exampleLayout.addTile(new Tile("wall", new Point(0, -1), -1));
-exampleLayout.addTile(new Tile("wall", new Point(1, -1), 0));
-exampleLayout.addTile(new Tile("wall", new Point(-1, -1), -1));
-exampleLayout.addTile(new Tile("wall", new Point(-1, 1), 1));
-exampleLayout.addTile(new Tile("wall", new Point(1, 1), 1));
-// Temp layout ends here.
-
-module.exports = { Layout, exampleLayout }
+module.exports = { Layout }
