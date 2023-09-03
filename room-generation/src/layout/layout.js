@@ -436,39 +436,4 @@ class Layout {
     }
 }
 
-// VERY TEMP, there should be a layout editor and a layout loader!
-const exampleLayout = new Layout();
-exampleLayout.newPartition();
-exampleLayout.newPartition();
-exampleLayout.newPartition();
-exampleLayout.getPartition(0).setLockY(true);
-exampleLayout.getPartition(0).setXDir(1);
-exampleLayout.getPartition(0).setSplitScalingOnX(false);
-exampleLayout.getPartition(0).setIncrementAmtX(1);
-
-exampleLayout.getPartition(1).setXDir(1);
-exampleLayout.getPartition(1).setYDir(1);
-exampleLayout.getPartition(1).setSplitScalingOnX(false);
-exampleLayout.getPartition(1).setSplitScalingOnY(false);
-exampleLayout.getPartition(1).setLockRatio(false);
-exampleLayout.getPartition(1).setIncrementAmtX(1);
-
-exampleLayout.getPartition(2).setXDir(1);
-exampleLayout.getPartition(2).setYDir(1);
-exampleLayout.getPartition(2).setSplitScalingOnX(false);
-exampleLayout.getPartition(2).setSplitScalingOnY(false);
-exampleLayout.getPartition(2).setLockRatio(false);
-exampleLayout.getPartition(2).setIncrementAmtX(1);
-
-exampleLayout.addTile(new Tile("floor", new Point(0, 0), 2));
-exampleLayout.addTile(new Tile("wall", new Point(-1, 0), -1));
-exampleLayout.addTile(new Tile("wall", new Point(1, 0), 0));
-exampleLayout.addTile(new Tile("wall", new Point(0, 1), 1));
-exampleLayout.addTile(new Tile("wall", new Point(0, -1), -1));
-exampleLayout.addTile(new Tile("wall", new Point(1, -1), 0));
-exampleLayout.addTile(new Tile("wall", new Point(-1, -1), -1));
-exampleLayout.addTile(new Tile("wall", new Point(-1, 1), 1));
-exampleLayout.addTile(new Tile("wall", new Point(1, 1), 1));
-// Temp layout ends here.
-
-module.exports = { Layout, exampleLayout }
+module.exports = { Layout }

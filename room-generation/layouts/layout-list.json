@@ -1,6 +1,6 @@
 {
-    "layouts": [
-        "rectangular-room.json",
-        "testing.json"
-    ]
+    "layouts": {
+        "rectangular-room.json": 3,
+        "testing.json": 1
+    }
 }

@@ -1,6 +1,6 @@
 const { Point, shuffleArray } = require("@cozy-caves/utils");
 const seedrandom = require('seedrandom');
-const { exampleLayout, Layout } = require("../layout/layout");
+const { Layout } = require("../layout/layout");
 const populateRoom = require("@cozy-caves/item-and-prop-generation");
 const layoutList = require("../../layouts/layout-list.json");
 const Room = require("./room");
@@ -43,7 +43,8 @@ class RoomBuilder {
         if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
         let room = null;
-        let layoutPool = [...layoutList.layouts];
+        let layoutPool = [];
+        for (let layout in layoutList.layouts) for (let i = 0; i < layoutList.layouts[layout]; i++) layoutPool.push(layout);
         if (this.#allowNonRects) {
             shuffleArray(layoutPool, this.#numGen);
             while (room === null && layoutPool.length > 0) {
@@ -54,7 +55,7 @@ class RoomBuilder {
         } else {
             let serializedLayout = require("../../layouts/" + layoutPool[0]);
             let layout = Layout.fromSerializableLayout(serializedLayout);
-            room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+            room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
         }
 
         if (this.#populateWithItems) {
@@ -64,8 +65,6 @@ class RoomBuilder {
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
-        if (room.getDimensions().getX() === 7) return room;
-        else return new Room(new Point(2, 2));
     }
 
     // Setters (That return the object as well).
