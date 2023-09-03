@@ -384,7 +384,8 @@ const App = () => {
                 file.close();
                 setFileEdited(false);
                 setFileDisplayName(fh.name);
-            });
+                updateFileList();
+            })
         }).catch(() => { });
     }
 
