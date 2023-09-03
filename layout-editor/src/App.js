@@ -225,7 +225,6 @@ const App = () => {
 
         let action = new PenAction(false, null);
         undoStack.push(action);
-
         if (isInSelection(partitionAssignerRef.current.pos) && mouseInfoRef.current.selectEnd.toString() !== "-1,-1") {
             for (let key in tileMapRef.current) {
                 if (!tileMapRef.current[key] || !isInSelection(tileMapRef.current[key].getPosition())) continue;
@@ -262,7 +261,6 @@ const App = () => {
         setBrushInfo(prev => ({ ...prev, defaultPartition: partitionNum - 3 }));
         setCurrPartition({partition, num: partitionNum - 3});
 
-        setPartitionAssigner(null);
         return partitionNum - 3;
     }
 
@@ -345,11 +343,14 @@ const App = () => {
             layout.clearLayout();
             Layout.fromSerializableLayout(JSON.parse(text), layout);
 
+            if (layout.getPartition(0)) {
+                setBrushInfo(prev => ({ ...prev, defaultPartition: 0 }));
+                setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
+            } else setBrushInfo(prev => ({ ...prev, defaultPartition: -1 }));
+
             let newTileMap = {};
             layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
             setTileMap(newTileMap);
-
-            if (layout.getPartition(0)) setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
         });
     }
 
@@ -413,8 +414,13 @@ const App = () => {
     }
 
     const handleNewLayout = () => {
+        undoStack.splice(0, undoStack.length);
+        redoStack.splice(0, redoStack.length);
+
         layout.clearLayout();
         setTileMap({});
+        setBrushInfo(prev => ({ ...prev, defaultPartition: -1 }));
+        setFileHandle(null);
         setFileEdited(true);
         setFileDisplayName("Untitled Layout.json");
     }
