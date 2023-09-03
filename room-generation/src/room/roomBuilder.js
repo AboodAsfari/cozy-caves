@@ -3,7 +3,6 @@ const seedrandom = require('seedrandom');
 const { Layout } = require("../layout/layout");
 const populateRoom = require("@cozy-caves/item-and-prop-generation");
 const layoutList = require("../../layouts/layout-list.json");
-const Room = require("./room");
 
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
@@ -51,7 +50,7 @@ class RoomBuilder {
                 let serializedLayout = require("../../layouts/" + layoutPool[0]);
                 let layout = Layout.fromSerializableLayout(serializedLayout);
                 room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
-                layoutPool.shift();
+                if (!room) layoutPool.shift();
             }
         } else {
             let serializedLayout = require("../../layouts/" + layoutPool[0]);
