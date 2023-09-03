@@ -99,8 +99,8 @@ const GridTile = (props) => {
         undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
         undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
 
+        layout.removeTile(pos);
         if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
-            layout.removeTile(pos);
             setTileMap(prev => ({ ...prev, [pos.toString()]: undefined }));
             undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
             setMouseInfo(prev => ({ ...prev, dragButton: e.button }));
@@ -194,8 +194,8 @@ const GridTile = (props) => {
             undoStack[undoStack.length - 1].oldTiles.push({ pos: curr, tile: oldTile });
 
             let newTile = new Tile(brushInfo.fillBrush, curr, brushInfo.defaultPartition);
+            layout.removeTile(curr);
             if (brushInfo.fillBrush === "none") {
-                layout.removeTile(curr);
                 setTileMap(prev => ({ ...prev, [curr.toString()]: undefined }));
                 undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
             } else {
