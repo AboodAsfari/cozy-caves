@@ -462,6 +462,7 @@ const App = () => {
 
         layout.clearLayout();
         setTileMap({});
+        setCurrPartition(null);
         setBrushInfo(prev => ({ ...prev, defaultPartition: -1 }));
         setFileHandle(null);
         setFileEdited(true);
