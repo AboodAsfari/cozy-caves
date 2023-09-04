@@ -166,7 +166,17 @@ const App = () => {
             let action = redoStack.pop();
             action.redo(layout, setTileMap, setMouseInfo, changeTool);
             undoStack.push(action);
-        }
+        } else if (e.key === "x") {
+            setBrushInfo(prev => ({
+                ...prev,
+                primaryBrush: prev.secondaryBrush,
+                secondaryBrush: prev.primaryBrush
+            }));
+        } else if (e.key === "b") changeTool(Tools.PEN);
+        else if (e.key === "e") changeTool(Tools.ERASER);
+        else if (e.key === "g") changeTool(Tools.FILL);
+        else if (e.key === "v") changeTool(Tools.SELECTOR);
+        else if (e.key === "i") changeTool(Tools.PICKER);
     }
 
     const changeTool = (tool) => {
