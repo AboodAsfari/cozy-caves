@@ -22,6 +22,7 @@ import "../styles/MenuBar.css";
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
@@ -43,6 +44,7 @@ const MenuBar = (props) => {
         loadHandle,
         setBrushInfo,
         setCurrTool,
+        setHelpOpen,
         updateActivePartition
     } = props;
 
@@ -162,9 +164,13 @@ const MenuBar = (props) => {
         <AppBar position="sticky" component="nav">
             <Toolbar className="Toolbar">
                 <Stack direction={"row"} sx={{ alignItems: "center", width: "100%" }}>
+                    <Button className="NavButton" disabled={directoryFiles.length === 0} sx={{ textTransform: "none", textWrap: "nowrap" }} disableRipple
+                        endIcon={directoryFiles.length === 0 ? null : <KeyboardArrowDownIcon />} onClick={(e) => setFileListAnchorEl(e.currentTarget)}>
+                        {fileDisplayName} {fileEdited && "*"}
+                    </Button>
                     <Button disableRipple className="NavButton" onClick={(e) => setFileMenuAnchorEl(e.currentTarget)}> File </Button>
                     <Button disableRipple className="NavButton"> View </Button>
-                    <Divider variant="middle" sx={{ ml: 4, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
+                    <Divider variant="middle" sx={{ ml: 3, mr: 3.8, borderWidth: 1, borderColor: "white", height: "35px" }} />
                     <TransitionGroup style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         {getToolbarItems().map((item, i) =>
                             <Collapse orientation="horizontal" key={item.key}>
@@ -173,10 +179,8 @@ const MenuBar = (props) => {
                         )}
                     </TransitionGroup>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Button className="NavButton" disabled={directoryFiles.length === 0} sx={{ textTransform: "none", textWrap: "nowrap", mr: 3 }} disableRipple
-                        endIcon={directoryFiles.length === 0 ? null : <KeyboardArrowDownIcon />} onClick={(e) => setFileListAnchorEl(e.currentTarget)}>
-                        {fileDisplayName} {fileEdited && "*"}
-                    </Button>
+                    <HelpOutlineIcon onClick={() => setHelpOpen(true)} sx={{ color: "white", "&:hover": { color: "#7da36d", cursor: "pointer" } }} />
+                    
                 </Stack>
             </Toolbar>
         </AppBar>

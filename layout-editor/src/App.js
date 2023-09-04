@@ -475,7 +475,7 @@ const App = () => {
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
                 handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
                 handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} handleFolderOpen={handleFolderOpen} directoryFiles={directoryFiles} 
-                fileHandle={fileHandle} loadHandle={loadHandle} />
+                fileHandle={fileHandle} loadHandle={loadHandle} setHelpOpen={setHelpOpen} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
