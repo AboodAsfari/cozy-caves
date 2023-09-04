@@ -64,7 +64,8 @@ const GridTile = (props) => {
         let tileType;
         if (overlayValue !== undefined) tileType = overlayValue.getTileType();
         else tileType = tileMap[pos.toString()].getTileType();
-        return tileType === "wall" ? "W" : "F";
+        // return tileType === "wall" ? "W" : "F";
+        return ""
     }
 
     const getPartitionIcon = () => {
@@ -76,8 +77,75 @@ const GridTile = (props) => {
         else tile = tileMap[pos.toString()];
 
         let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
-        return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
+        // return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
     }
+
+    const getTileImage = () => {
+        let overlayValue = getOverlayMap()[pos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return null;
+        let tile = overlayValue === undefined ? tileMap[pos.toString()] : overlayValue;
+        if (tile.getTileType() === "wall") {
+            let rightNeighbor = getNeighbor(pos.add(new Point(1, 0)));
+            let leftNeighbor = getNeighbor(pos.add(new Point(-1, 0)));
+            let topNeighbor = getNeighbor(pos.add(new Point(0, -1)));
+            let bottomNeighbor = getNeighbor(pos.add(new Point(0, 1)));
+            let topRightNeighbor = getNeighbor(pos.add(new Point(1, -1)));
+            let topLeftNeighbor = getNeighbor(pos.add(new Point(-1, -1)));
+            let bottomRightNeighbor = getNeighbor(pos.add(new Point(1, 1)));
+            let bottomLeftNeighbor = getNeighbor(pos.add(new Point(-1, 1)));
+
+            if ((isWall(rightNeighbor) && isWall(topNeighbor) && isFloor(bottomLeftNeighbor)) || (isWall(rightNeighbor) && isWall(bottomNeighbor) && isFloor(topLeftNeighbor)) || 
+                (isWall(leftNeighbor) && isWall(topNeighbor) && isFloor(bottomRightNeighbor)) || (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor))) return "./resources/tileSprites/OUTER_CORNER_WALL.png";
+            if ((isWall(rightNeighbor) && isWall(topNeighbor)) || (isWall(rightNeighbor) && isWall(bottomNeighbor)) || 
+                (isWall(leftNeighbor) && isWall(topNeighbor)) || (isWall(leftNeighbor) && isWall(bottomNeighbor))) return "./resources/tileSprites/CORNER_WALL.png";
+            return "./resources/tileSprites/EDGE_WALL.png";
+        }
+        if (tile.getTileType() === "floor") return "./resources/tileSprites/FLOOR.png";
+        return null;
+    }
+
+    const getImageTransform = () => {
+        let overlayValue = getOverlayMap()[pos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return "";
+        let tile = overlayValue === undefined ? tileMap[pos.toString()] : overlayValue;
+        if (tile.getTileType() === "floor") return "";
+
+        if (tile.getTileType() === "wall") {
+            let rightNeighbor = getNeighbor(pos.add(new Point(1, 0)));
+            let leftNeighbor = getNeighbor(pos.add(new Point(-1, 0)));
+            let topNeighbor = getNeighbor(pos.add(new Point(0, -1)));
+            let bottomNeighbor = getNeighbor(pos.add(new Point(0, 1)));
+            let topRightNeighbor = getNeighbor(pos.add(new Point(1, -1)));
+
+            // if (isWall(rightNeighbor) && isWall(topNeighbor)) return "rotate(270deg)";
+            // if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return "";
+            // if (isWall(leftNeighbor) && isWall(topNeighbor)) return "rotate(180deg)";
+            if (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor)) return "rotate(90deg)";
+
+            if (isWall(rightNeighbor) && isWall(topNeighbor)) return "rotate(270deg)";
+            if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return "";
+            if (isWall(leftNeighbor) && isWall(topNeighbor)) return "rotate(180deg)";
+            if (isWall(leftNeighbor) && isWall(bottomNeighbor)) return "rotate(90deg)";
+
+            // EDGES HERE
+            if (!rightNeighbor && !isWall(leftNeighbor)) return "rotate(180deg)";
+            if (!leftNeighbor && !isWall(rightNeighbor)) return "";
+            if (!topNeighbor && !isWall(bottomNeighbor)) return "rotate(90deg)";
+            if (!isWall(topNeighbor)) return "rotate(-90deg)";
+
+        }
+        
+        return "";
+    }
+
+    const getNeighbor = (neighborPos) => {
+        let overlayValue = getOverlayMap()[neighborPos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[neighborPos.toString()])) return null;
+        return overlayValue === undefined ? tileMap[neighborPos.toString()] : overlayValue;
+    }
+
+    const isWall = (tile) => tile && tile.getTileType() === "wall";
+    const isFloor = (tile) => tile && tile.getTileType() === "floor";
 
     const handleMouseOver = (e) => {
         let syntheticEvent = { ...e, button: mouseInfo.dragButton, synthetic: true };
@@ -259,6 +327,7 @@ const GridTile = (props) => {
                 <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none", position: "absolute", zIndex: 1 }} >
                     {getLabel()}
                 </Typography>
+                {getTileImage() && <img src={getTileImage()} alt="tile source" style={{ transform: getImageTransform() }} />}
                 {getPartitionIcon()}
             </Box>
         </Box>
