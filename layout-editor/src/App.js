@@ -1,6 +1,11 @@
 import React from "react";
 import {
     Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Menu,
     MenuItem,
     Stack,
@@ -24,6 +29,7 @@ import "./styles/MenuBar.css";
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
+import HelpDialog from "./HelpDialog";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
@@ -50,6 +56,7 @@ const App = () => {
     const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
     const [partitionLocked, setPartitionLocked, partitionLockedRef] = useState(false);
+    const [helpOpen, setHelpOpen] = React.useState(false);
     const [updater, setUpdater] = React.useState(false);
 
     const [directoryHandle, setDirectoryHandle] = React.useState(null);
@@ -188,9 +195,10 @@ const App = () => {
         } else if (e.shiftKey && e.key === "N") {
             e.preventDefault();
             handleNewLayout();
-        }
-        
-        else if (e.key === "x") {
+        } else if (e.ctrlKey && e.key === "/") {
+            e.preventDefault();
+            setHelpOpen(true);
+        } else if (e.key === "x") {
             setBrushInfo(prev => ({
                 ...prev,
                 primaryBrush: prev.secondaryBrush,
@@ -483,6 +491,9 @@ const App = () => {
                 )}
             </Box>
 
+            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} 
+                locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} setFileEdited={setFileEdited} />
+
             <Menu open={partitionAssigner !== null} onClose={() => setPartitionAssigner(null)} anchorReference="anchorPosition"
                 anchorPosition={partitionAssigner !== null ? { top: partitionAssigner.mouseY, left: partitionAssigner.mouseX } : undefined}
                 onContextMenu={handlePartitionContextMenu} sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
@@ -500,8 +511,7 @@ const App = () => {
                 </MenuItem>
             </Menu>
 
-            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} 
-                locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} setFileEdited={setFileEdited} />
+            <HelpDialog open={helpOpen} setOpen={setHelpOpen} />
         </Box>
     );
 }
