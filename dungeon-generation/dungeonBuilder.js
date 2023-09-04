@@ -6,7 +6,7 @@ class DungeonBuilder {
 
     #height; // Height of map.
     #width; // Width of map.
-    #minGap; // Minimum gap between two partitions (Dictates minimum room size).
+    #minRoomSize; // Minimum room size.
     #maxDepth; // Maximum recursion depth for BSP.
     #totalCoverage; // Desired total percent floor coverage of the map.
     #dungeonSeed; // Seed used for random number generator.
@@ -19,9 +19,9 @@ class DungeonBuilder {
 
     // Preset values for input parameters
     #presets = {
-        Small: [50, 50, 7, 5, 50],
-        Medium: [100, 100, 7, 10, 60],
-        Large: [175, 175, 7, 13, 70],
+        Small: [50, 50, 7, 50],
+        Medium: [100, 100, 7, 60],
+        Large: [175, 175, 7, 70],
     };
 
     /**
@@ -42,7 +42,7 @@ class DungeonBuilder {
     //Setters
     setPreset(preset){
         if (this.#presets[preset]){
-            [this.#height, this.#width, this.#minGap, this.#maxDepth, this.#totalCoverage] = this.#presets[preset];
+            [this.#height, this.#width, this.#minRoomSize, this.#totalCoverage] = this.#presets[preset];
             this.#dungeonSeed = Math.random();
         }
         return this;
@@ -54,14 +54,9 @@ class DungeonBuilder {
         this.#width = width;
         return this;
     }
-    setMinGap(minGap){
-        if(typeof minGap !== 'number') throw new Error('Invalid minimum gap size provided');
-        this.#minGap = minGap;
-        return this;
-    }
-    setMaxDepth(maxDepth){
-        if(typeof maxDepth !== 'number') throw new Error('Invalid maximum depth provided');
-        this.#maxDepth = maxDepth;
+    setMinRoomSize(minRoomSize){
+        if(typeof minRoomSize !== 'number') throw new Error('Invalid minimum gap size provided');
+        this.#minRoomSize = minRoomSize; 
         return this;
     }
     setTotalCoverage(totalCoverage){
@@ -92,6 +87,20 @@ class DungeonBuilder {
     }
 
     /**
+     * Calculates the appropriate maximum recursion depth according to 
+     * the dimensions of the map and the minimum room size 
+     */
+    #calculateMaxDepth(){
+        let difference = Number.MAX_SAFE_INTEGER;
+        for(let n = 1; n <= 10; n++){
+            if(Math.abs(((25*n)**2) - (this.#width * this.#height)) < difference){
+                difference = Math.abs(((25*n)**2) - (this.#width * this.#height));
+                this.#maxDepth = n + 6 + (7 - this.#minRoomSize);
+            }
+        }
+    }
+
+    /**
      * Recursive Binary Space Partitioning method. More can be read about this 
      * inside the module README
      * 
@@ -107,7 +116,7 @@ class DungeonBuilder {
         this.#splitHorizontal = this.#splitHorizontal ? this.#splitHorizontal = this.#rng() > 0.8 : this.#splitHorizontal = this.#rng() > 0.2;
         
         //Exits if max depth reached OR if width/height is less than 2x+1 to ensure min room size is not too small
-        if (recursions <= 0 || (w < (this.#minGap*2 + 1) && !this.#splitHorizontal) || (h < (this.#minGap*2 +1) && this.#splitHorizontal)) {
+        if (recursions <= 0 || (w < (this.#minRoomSize*2 + 1) && !this.#splitHorizontal) || (h < (this.#minRoomSize*2 +1) && this.#splitHorizontal)) {
             if (w / 3 > h) {
                 this.#splitHorizontal = false;
             } else if (h / 3 > w) {
@@ -127,11 +136,11 @@ class DungeonBuilder {
         }
         
         if (this.#splitHorizontal) {
-            const splitPosition = this.#generateSplitPosition(y, y + h, this.#minGap);
+            const splitPosition = this.#generateSplitPosition(y, y + h, this.#minRoomSize);
             this.#bsp(x, y, w, splitPosition - y, recursions - 1);
             this.#bsp(x, splitPosition, w, h - (splitPosition - y), recursions - 1);
         } else {
-            const splitPosition = this.#generateSplitPosition(x, x + w, this.#minGap);
+            const splitPosition = this.#generateSplitPosition(x, x + w, this.#minRoomSize);
             this.#bsp(x, y, splitPosition - x, h, recursions - 1);
             this.#bsp(splitPosition, y, w - (splitPosition - x), h, recursions - 1);
         }
@@ -173,11 +182,11 @@ class DungeonBuilder {
         let minRoomH = Math.floor(2*rH/3);
         
         //Calculate random room height and width 
-        let roomWid = (minRoomW < this.#minGap) ? Math.floor(this.#rng() * (rW - this.#minGap + 1)) + this.#minGap : Math.floor(this.#rng() * (rW - minRoomW + 1)) + minRoomW;
-        let roomHgt = (minRoomH < this.#minGap) ?  Math.floor(this.#rng() * (rH - this.#minGap + 1)) + this.#minGap: Math.floor(this.#rng() * (rH - minRoomH + 1)) + minRoomH;
+        let roomWid = (minRoomW < this.#minRoomSize) ? Math.floor(this.#rng() * (rW - this.#minRoomSize + 1)) + this.#minRoomSize : Math.floor(this.#rng() * (rW - minRoomW + 1)) + minRoomW;
+        let roomHgt = (minRoomH < this.#minRoomSize) ?  Math.floor(this.#rng() * (rH - this.#minRoomSize + 1)) + this.#minRoomSize: Math.floor(this.#rng() * (rH - minRoomH + 1)) + minRoomH;
         //Calculate how much leniency to allow
-        let widLeniency = (minRoomW < this.#minGap) ? 0 : Math.floor((roomWid - minRoomW)/2);
-        let hgtLeniency = (minRoomH < this.#minGap) ? 0 : Math.floor((roomHgt - minRoomH)/2);
+        let widLeniency = (minRoomW < this.#minRoomSize) ? 0 : Math.floor((roomWid - minRoomW)/2);
+        let hgtLeniency = (minRoomH < this.#minRoomSize) ? 0 : Math.floor((roomHgt - minRoomH)/2);
         //Calculate random room position within region space
         let roomX = rX + Math.floor(this.#rng() * (rW - roomWid + 1));
         let roomY = rY + Math.floor(this.#rng() * (rH - roomHgt + 1));
@@ -196,6 +205,7 @@ class DungeonBuilder {
      */
     build(){
         this.#checkSet();
+        this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
         this.#reset();
@@ -217,7 +227,7 @@ class DungeonBuilder {
     #checkSet(){
         if(typeof this.#height === 'undefined'){ throw new Error('Height has not been set');}
         if(typeof this.#width === 'undefined'){ throw new Error('Width has not been set');}
-        if(typeof this.#minGap === 'undefined'){ throw new Error('Minimum gap has not been set');}
+        if(typeof this.#minRoomSize === 'undefined'){ throw new Error('Minimum gap has not been set');}
         if(typeof this.#maxDepth === 'undefined'){ throw new Error('Maximum depth has not been set');}
         if(typeof this.#totalCoverage === 'undefined'){ throw new Error('Total Coverage has not been set');}
         if(typeof this.#dungeonSeed === 'undefined'){ throw new Error('Dungeon Seed has not been set');}
