@@ -34,7 +34,7 @@ import HelpDialog from "./HelpDialog";
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
-    const gridSize = new Point(parseInt((window.innerWidth * 0.75 ) / 100), parseInt((window.innerHeight - 64 ) / 100));
+    const gridSize = new Point(parseInt((window.innerWidth * 0.75 ) / 100), parseInt((window.innerHeight - 50 ) / 100));
     const layout = React.useRef(new Layout()).current;
     const undoStack = React.useRef([]).current;
     const redoStack = React.useRef([]).current;
