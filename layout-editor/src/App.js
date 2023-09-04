@@ -54,7 +54,7 @@ const App = () => {
 
     const [directoryHandle, setDirectoryHandle] = React.useState(null);
     const [directoryFiles ,setDirectoryFiles] = React.useState([]);
-    const [fileHandle, setFileHandle] = React.useState(null);
+    const [fileHandle, setFileHandle, fileHandleRef] = useState(null);
     const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
     const [fileEdited, setFileEdited] = React.useState(true);
 
@@ -173,7 +173,22 @@ const App = () => {
             setBrushInfo(prev => ({ ...prev, defaultPartition: num }));
             if (num >= 0) updateActivePartition(num);
         } else if (e.altKey && e.key === "=") handleNewPartition();
-        
+        else if (e.ctrlKey && e.key === "o") {
+            e.preventDefault();
+            handleFileOpen();
+        } else if (e.ctrlKey && e.shiftKey && e.key === "O") {
+            e.preventDefault();
+            handleFolderOpen();
+        } else if (e.ctrlKey && e.key === "s") {
+            e.preventDefault();
+            handleFileSave();
+        } else if (e.ctrlKey && e.shiftKey && e.key === "S") {
+            e.preventDefault();
+            handleFileSaveAs();
+        } else if (e.shiftKey && e.key === "N") {
+            e.preventDefault();
+            handleNewLayout();
+        }
         
         else if (e.key === "x") {
             setBrushInfo(prev => ({
@@ -374,13 +389,13 @@ const App = () => {
     }
 
     const handleFileSave = () => {
-        if (!fileHandle) handleFileSaveAs();
+        if (!fileHandleRef.current) handleFileSaveAs();
         else {
-            fileHandle.createWritable().then((file) => {
+            fileHandleRef.current.createWritable().then((file) => {
                 file.write(JSON.stringify(layout.getSerializableLayout()));
                 file.close();
                 setFileEdited(false);
-                setFileDisplayName(fileHandle.name);
+                setFileDisplayName(fileHandleRef.current.name);
             }).catch(() => {});
         }
     }
