@@ -49,7 +49,7 @@ const App = () => {
     });
     const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
-    const [partitionLocked, setPartitionLocked] = React.useState(false);
+    const [partitionLocked, setPartitionLocked, partitionLockedRef] = useState(false);
     const [updater, setUpdater] = React.useState(false);
 
     const [directoryHandle, setDirectoryHandle] = React.useState(null);
@@ -166,7 +166,16 @@ const App = () => {
             let action = redoStack.pop();
             action.redo(layout, setTileMap, setMouseInfo, changeTool);
             undoStack.push(action);
-        } else if (e.key === "x") {
+        } else if (e.ctrlKey && !isNaN(e.key)) {
+            e.preventDefault();
+            let num = e.key === "0" ? 7 : parseInt(e.key) - 3;
+            if (num > layout.getPartitionDisplayInfo().length - 3 || num < -2) return;
+            setBrushInfo(prev => ({ ...prev, defaultPartition: num }));
+            if (num >= 0) updateActivePartition(num);
+        }
+        
+        
+        else if (e.key === "x") {
             setBrushInfo(prev => ({
                 ...prev,
                 primaryBrush: prev.secondaryBrush,
@@ -287,7 +296,7 @@ const App = () => {
     }
 
     const updateActivePartition = (partitionNum) => {
-        if (partitionNum < 0 || partitionLocked) return;
+        if (partitionNum < 0 || partitionLockedRef.current) return;
         let partition = layout.getPartition(partitionNum);
         setCurrPartition({partition, num: partitionNum});
     }
