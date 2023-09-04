@@ -34,7 +34,7 @@ import HelpDialog from "./HelpDialog";
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
-    const gridSize = new Point(10, 8);
+    const gridSize = new Point(parseInt((window.innerWidth * 0.75 ) / 100), parseInt((window.innerHeight - 64 ) / 100));
     const layout = React.useRef(new Layout()).current;
     const undoStack = React.useRef([]).current;
     const redoStack = React.useRef([]).current;
@@ -66,6 +66,7 @@ const App = () => {
     const [fileEdited, setFileEdited] = React.useState(true);
 
     React.useEffect(() => {
+        console.log(gridSize.toString())
         document.addEventListener("mousedown", handleMouseDown, []);
         document.addEventListener("mouseup", handleMouseUp, []);
         document.addEventListener("keydown", handleKeyPress, []);
