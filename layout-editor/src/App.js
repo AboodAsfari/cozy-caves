@@ -259,7 +259,7 @@ const App = () => {
         let partitionNum = layout.getPartitionDisplayInfo().length;
         partition.setPartitionName("Partition #" + partitionNum);
         setBrushInfo(prev => ({ ...prev, defaultPartition: partitionNum - 3 }));
-        setCurrPartition({partition, num: partitionNum - 3});
+        updateActivePartition(partitionNum - 3);
 
         return partitionNum - 3;
     }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@cozy-caves/room-generation": "^1.0.9",
+    "@cozy-caves/room-generation": "^1.1.11",
     "@cozy-caves/utils": "^1.0.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
