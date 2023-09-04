@@ -77,7 +77,7 @@ const GridTile = (props) => {
         else tile = tileMap[pos.toString()];
 
         let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
-        // return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
+        return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 5, right: 5 }}> {iconMap[partitionInfo.icon]} </Box>
     }
 
     const getTileImage = () => {
