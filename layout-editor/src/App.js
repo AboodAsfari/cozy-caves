@@ -166,13 +166,13 @@ const App = () => {
             let action = redoStack.pop();
             action.redo(layout, setTileMap, setMouseInfo, changeTool);
             undoStack.push(action);
-        } else if (e.ctrlKey && !isNaN(e.key)) {
+        } else if (e.altKey && !isNaN(e.key)) {
             e.preventDefault();
             let num = e.key === "0" ? 7 : parseInt(e.key) - 3;
             if (num > layout.getPartitionDisplayInfo().length - 3 || num < -2) return;
             setBrushInfo(prev => ({ ...prev, defaultPartition: num }));
             if (num >= 0) updateActivePartition(num);
-        }
+        } else if (e.altKey && e.key === "=") handleNewPartition();
         
         
         else if (e.key === "x") {
