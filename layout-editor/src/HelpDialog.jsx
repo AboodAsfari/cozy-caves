@@ -16,7 +16,7 @@ const HelpDialog = (props) => {
     } = props;
 
     return (
-        <Dialog open={open} onClose={() => setOpen(false)}>
+        <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ style: { backgroundColor: '#7d7a7a', color: "white" }}}>
             <DialogTitle sx={{ fontSize: 40 }}> Layout Editor Keybinds </DialogTitle>
             <DialogContent sx={{ width: "89%" }}>
                 <Stack>
@@ -43,7 +43,7 @@ const HelpDialog = (props) => {
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setOpen(false)} autoFocus disableRipple> OK </Button>
+                <Button onClick={() => setOpen(false)} className="NavButton" autoFocus disableRipple> OK </Button>
             </DialogActions>
         </Dialog>
     );
@@ -68,7 +68,7 @@ const BindingText = (props) => {
     return (
         <Stack direction="row" sx={{ width: "100%" }}>
             <Typography> {name} </Typography>
-            <Typography sx={{ ml: "auto", textAlign: "right", color: "grey" }}> {binding} </Typography>
+            <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9" }}> {binding} </Typography>
         </Stack>  
     );
 }
