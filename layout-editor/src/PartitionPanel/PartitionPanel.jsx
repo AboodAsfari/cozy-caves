@@ -188,8 +188,8 @@ const PartitionPanel = (props) => {
                             tempIncrement={tempIncrementY} accordionOpen={yAccordionOpen} setAccordionOpen={setYAccordionOpen} />
 
 
-                        <Button disableRipple variant="contained" sx={{ position: "absolute", bottom: "15px", right: "20px", width: "150px", textTransform: "none",
-                            backgroundColor: "gray", "&:hover": { backgroundColor: "red" } }} onClick={removePartition}> Delete Partition </Button>
+                        <Button disableRipple variant="contained" sx={{ color: "white", position: "absolute", bottom: "15px", right: "20px", width: "150px", textTransform: "none",
+                            backgroundColor: "gray", "&:hover": { backgroundColor: "red" }, borderRadius: 0 }} onClick={removePartition}> Delete Partition </Button>
                     </Stack>
 
                     <PartitionIconPopover partition={partition} iconAnchor={iconAnchor} setIconAnchor={setIconAnchor} update={update} />
