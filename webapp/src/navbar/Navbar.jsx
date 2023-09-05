@@ -24,4 +24,16 @@ const Navbar = (props) => {
     );
 };
 
+const nav = (props) => {
+    return (
+        <>
+            <nav className="navbar">
+                <Box>
+
+                </Box>
+            </nav>
+        </>
+    );
+};
+
 export default Navbar;

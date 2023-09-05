@@ -6,8 +6,13 @@ const darkTheme = createTheme({
         background: {
             default: "#000000",
         },
+        primary: {
+            main: "#000000",
+        },
+        secondary: {
+            main: "#4C9553", //put bright green color here
+        }
     },
-
     components: {
         MuiButton: {
             styleOverrides: {
@@ -22,7 +27,21 @@ const darkTheme = createTheme({
                     background: "#000000",
                 },
             }
+        }
+    },
+    typography: {
+        h1: {
+            fontSize: "10rem",
+            fontWeight: 100,
         },
+        h2: {
+            fontSize: "4rem",
+            fontWeight: 100,
+        },
+        h3: {
+            fontSize: "2.5rem",
+            fontWeight: 100,
+        }
     }
 });
 

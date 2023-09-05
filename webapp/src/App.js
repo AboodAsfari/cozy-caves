@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ThemeProvider, Box } from "@mui/material";
+import { ThemeProvider, Container, Box } from "@mui/material";
 
 import defaultTheme from "./themes/DarkTheme";
 import Homepage from "./home/Homepage";
@@ -33,12 +33,12 @@ function App() {
   }
 
   return (
-    <Box>
+    <Container maxWidth={false} sx={{ maxWidth: '107rem', bgcolor:'tomato'}}>
       <ThemeProvider theme={defaultTheme}>
         {getPageHeader()}
         {getPage()}
       </ThemeProvider>
-    </Box>
+    </Container>
   );
 }
 
