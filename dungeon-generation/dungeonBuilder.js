@@ -228,7 +228,6 @@ class DungeonBuilder {
         if(typeof this.#height === 'undefined'){ throw new Error('Height has not been set');}
         if(typeof this.#width === 'undefined'){ throw new Error('Width has not been set');}
         if(typeof this.#minRoomSize === 'undefined'){ throw new Error('Minimum gap has not been set');}
-        if(typeof this.#maxDepth === 'undefined'){ throw new Error('Maximum depth has not been set');}
         if(typeof this.#totalCoverage === 'undefined'){ throw new Error('Total Coverage has not been set');}
         if(typeof this.#dungeonSeed === 'undefined'){ throw new Error('Dungeon Seed has not been set');}
     }
