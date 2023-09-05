@@ -157,28 +157,27 @@ const GridTile = (props) => {
 
         setFileEdited(true);
 
-        let lastAction = undoStack[undoStack.length - 1];
-        let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
-        if (mouseInfo.dragButton === -1 || swappedBrushes) {
+        if (mouseInfo.dragButton === -1) {
             undoStack.push(new PenAction(!e.altKey, Tools.PEN));
             redoStack.splice(0, redoStack.length);
         } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
 
-        undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
-        undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+        let action = undoStack[undoStack.length - 1];
+        action.oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+        action.encounteredPos.push(pos.toString());
 
         layout.removeTile(pos);
-        if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
+        if ((action.isPrimary && brushInfo.primaryBrush === "none") || (!action.isPrimary && brushInfo.secondaryBrush === "none")) {
             setTileMap(prev => ({ ...prev, [pos.toString()]: undefined }));
-            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
+            action.newTiles.push({ pos, tile: undefined });
             setMouseInfo(prev => ({ ...prev, dragButton: e.button }));
             return;
         };
-        let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
+        let newTileType = action.isPrimary ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
         let newTile = new Tile(newTileType, pos, brushInfo.defaultPartition);
         layout.addTile(newTile);
         setTileMap(prev => ({ ...prev, [pos.toString()]: newTile }));
-        undoStack[undoStack.length - 1].newTiles.push({ pos, tile: newTile });
+        action.newTiles.push({ pos, tile: newTile });
     }
 
     const handleEraser = (e) => {
