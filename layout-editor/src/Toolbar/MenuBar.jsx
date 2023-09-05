@@ -113,19 +113,21 @@ const MenuBar = (props) => {
                     <Box sx={{ "& .icon": { color: layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].color, mr: 1, mt: 0.7 } }}> {iconMap[layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].icon]} </Box>
                     {layout.getPartitionDisplayInfo()[brushInfo.defaultPartition + 2].name}
                 </Button>
+
                 <Menu anchorEl={defaultPartitionAnchorEl} open={!!defaultPartitionAnchorEl} onClose={() => setDefaultPartitionAnchorEl(null)}
-                    sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+                   sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}
+                >
                     {layout.getPartitionDisplayInfo().map((info, i) =>
                         <MenuItem key={info.name + i} onClick={() => { updateActivePartition(i - 2); setBrushInfo(prev => ({ ...prev, defaultPartition: i - 2 })); setDefaultPartitionAnchorEl(null); }}
                             className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
-                            <Box sx={{ color: info.color, display: "flex", alignItems: "center", mt: 0.2 }}> {iconMap[info.icon]} </Box>
+                            <Box sx={{ color: info.color, mt: 1 }}> {iconMap[info.icon]} </Box>
                             <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> {info.name} </Typography>
                             {brushInfo.defaultPartition === i - 2 && <CheckIcon />}
                         </MenuItem>
                     )}
-                    <MenuItem onClick={() => { handleNewPartition(); setDefaultPartitionAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
+                    <MenuItem onClick={() => { handleNewPartition(); setDefaultPartitionAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140, py: "4px !important" }} disableRipple>
                         <AddIcon />
-                        <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
+                        <Typography sx={{ ml: 1.2, mr: 2, mt: 0.4 }}> Create new partition </Typography>
                     </MenuItem>
                 </Menu>
             </>);
@@ -187,19 +189,19 @@ const MenuBar = (props) => {
 
         <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
             sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
-            <MenuItem onClick={handleNew} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleNew} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> New </Typography>
             </MenuItem>
-            <MenuItem onClick={handleOpen} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleOpen} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open </Typography>
             </MenuItem>
-            <MenuItem onClick={handleFolder} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleFolder} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open Folder </Typography>
             </MenuItem>
-            <MenuItem onClick={handleSave} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleSave} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save </Typography>
             </MenuItem>
-            <MenuItem onClick={handleSaveAs} className="MenuItem" disableRipple>
+            <MenuItem onClick={handleSaveAs} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save As </Typography>
             </MenuItem>
         </Menu>
@@ -207,7 +209,7 @@ const MenuBar = (props) => {
         <Menu anchorEl={fileListAnchorEl} open={!!fileListAnchorEl} onClose={() => setFileListAnchorEl(null)}
             sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
             {directoryFiles.map((file, i) => fileHandle !== null && file.name === fileHandle.name ? null :
-                <MenuItem key={file.name} onClick={() => { loadHandle(file); setFileListAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
+                <MenuItem key={file.name} onClick={() => { loadHandle(file); setFileListAnchorEl(null); }} className="MenuItem" sx={{ minWidth: 140, py: "6px !important" }} disableRipple>
                     <Typography> {file.name} </Typography>
                 </MenuItem>
             )}

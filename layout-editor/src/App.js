@@ -506,9 +506,9 @@ const App = () => {
                         {isPartitionActiveForTile(i - 2) && <CheckIcon />}
                     </MenuItem>
                 )}
-                <MenuItem onClick={() => handlePartitionChange(handleNewPartition())} className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
+                <MenuItem onClick={() => handlePartitionChange(handleNewPartition())} className="MenuItem" sx={{ minWidth: 140, py: "4px !important" }} disableRipple>
                     <AddIcon />
-                    <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
+                    <Typography sx={{ ml: 1.2, mr: 2, mt: 0.4 }}> Create new partition </Typography>
                 </MenuItem>
             </Menu>
 
