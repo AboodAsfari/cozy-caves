@@ -66,7 +66,6 @@ const App = () => {
     const [fileEdited, setFileEdited] = React.useState(true);
 
     React.useEffect(() => {
-        console.log(gridSize.toString())
         document.addEventListener("mousedown", handleMouseDown, []);
         document.addEventListener("mouseup", handleMouseUp, []);
         document.addEventListener("keydown", handleKeyPress, []);

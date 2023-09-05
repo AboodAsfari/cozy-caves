@@ -326,7 +326,7 @@ const GridTile = (props) => {
                 <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none", position: "absolute", zIndex: 1 }} >
                     {getLabel()}
                 </Typography>
-                {getTileImage() && <img src={getTileImage()} alt="tile source" style={{ transform: getImageTransform() }} />}
+                {getTileImage() && <img src={getTileImage()} alt="tile source" style={{ transform: getImageTransform(), pointerEvents: "none" }} />}
                 {getPartitionIcon()}
             </Box>
         </Box>
