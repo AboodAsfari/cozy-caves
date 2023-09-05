@@ -9,8 +9,7 @@ const Options = (props) => {
     // Store dungeon options
     const [dungeonHeight, setDungeonHeight] = React.useState(50);
     const [dungeonWidth, setDungeonWidth] = React.useState(50);
-    const [minGap, setMinGap] = React.useState(5);
-    const [maxDepth, setMaxDepth] = React.useState(5);
+    const [minRoomSize, setMinRoomSize] = React.useState(7);
     const [totalCoverage, setTotalCoverage] = React.useState(50);
     const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
     
@@ -23,11 +22,8 @@ const Options = (props) => {
     const handleWidthChange = (event) => {
         setDungeonWidth(Number(event.target.value));
     };
-    const handleMinGapChange = (event) => {
-        setMinGap(Number(event.target.value));
-    };
-    const handleMaxDepthChange = (event) => {
-        setMaxDepth(Number(event.target.value));
+    const handleMinRoomSizeChange = (event) => {
+        setMinRoomSize(Number(event.target.value));
     };
     const handleTotalCoverageChange = (event) => {
         setTotalCoverage(Number(event.target.value));
@@ -42,8 +38,7 @@ const Options = (props) => {
         let dungeonBuilder = new DungeonBuilder(dungeonSeed);
         let dungeon = dungeonBuilder
                             .setSize(dungeonWidth, dungeonHeight)
-                            .setMinGap(minGap)
-                            .setMaxDepth(maxDepth)
+                            .setMinRoomSize(minRoomSize)
                             .setTotalCoverage(totalCoverage)
                             .build();
         props.setDungeon(dungeon);
@@ -68,16 +63,10 @@ const Options = (props) => {
                         How many tiles wide the dungeon is.
                     </Grid>
                     <Grid item xs={textFieldWidth}>
-                        <TextField value={minGap} label="Minimum Partition Gap" fullWidth onChange={handleMinGapChange}/>
+                        <TextField value={minRoomSize} label="Minimum Room Size" fullWidth onChange={handleMinRoomSizeChange}/>
                     </Grid>
                     <Grid item xs={descriptionWidth} color={"white"} textAlign={"left"}>
-                        Minimum gap between two partitions (Dictates minimum room size).
-                    </Grid>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={maxDepth} label="Max Recursion Depth" fullWidth onChange={handleMaxDepthChange}/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"} textAlign={"left"}>
-                        Maximum recursion depth for BSP.
+                        Will be used for both the width and height of the floor. 
                     </Grid>
                     <Grid item xs={textFieldWidth}>
                         <TextField value={totalCoverage} label="Floor Coverage" fullWidth onChange={handleTotalCoverageChange}/>
