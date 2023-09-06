@@ -1,35 +1,8 @@
 import React from 'react';
-import { Typography,Box, Button, TextField, Grid, InputAdornment, Input, Slider } from "@mui/material";
+import { Typography,Box, Button, TextField, Grid } from "@mui/material";
+import InputSlider from './InputSlider';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
-
-
-const InputSlider = (props) => {
-    return (
-            <Grid item>
-                <Typography color={"white"}>
-                    {props.name}
-                </Typography>
-                <Slider
-                    value={props.value}
-                    onChange={props.handleChange}
-                    aria-labelledby="height-input-slider"
-                    min={props.min}
-                    max={props.max}
-                />
-                <Input
-                    value={props.value}
-                    size="small"
-                    onChange={props.handleChange}
-                        inputProps={{
-                        step: 10,
-                        min: props.min,
-                        max: props.max,
-                    }}
-                />
-        </Grid>
-    );
-}
 
 const Options = (props) => {
 
@@ -47,9 +20,6 @@ const Options = (props) => {
     const [roomSizeValid, setRoomSizeValid] = React.useState(true);
     const [coverageValid, setCoverageValid] = React.useState(true);
 
-    const textFieldWidth = 2;
-    const descriptionWidth = 4;
-
     const minWidth = 5;
     const minHeight = 5;
     const minRoomSize = 6;
@@ -57,6 +27,8 @@ const Options = (props) => {
     const maxWidth = 200;
     const maxHeight = 200;
     const maxRoomSize = 15;
+
+    const inputWidth = 3;
 
     // Handle option changes
     const handleWidthChange = (event) => {
@@ -102,15 +74,17 @@ const Options = (props) => {
             <Typography variant="h4" marginY={3} sx={{ textAlign: "center", color: "white" }}> Map Settings </Typography>
             <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
                 <Grid container spacing={2}>
-                    <InputSlider name="Height" value={dungeonHeight} handleChange={handleHeightChange} min={minHeight} max={maxHeight}/>
-                    <InputSlider name="Width" value={dungeonWidth} handleChange={handleWidthChange} min={minWidth} max={maxWidth}/>  
-                    <InputSlider name="Room Size" value={roomSize} handleChange={handleMinRoomSizeChange} min={minRoomSize} max={maxRoomSize}/>
-                    <InputSlider name="Floor Coverage" value={totalCoverage} handleChange={handleTotalCoverageChange} min={0} max={100}/>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={dungeonSeed} label="Dungeon Seed" fullWidth onChange={handleSeedChange}/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"} textAlign={"left"}>
-                        Seed for random generation (Leave blank for random seed)
+                    <InputSlider name="Height" xs={inputWidth} value={dungeonHeight} handleChange={handleHeightChange} min={minHeight} max={maxHeight}/>
+                    <InputSlider name="Width" xs={inputWidth} value={dungeonWidth} handleChange={handleWidthChange} min={minWidth} max={maxWidth}/>  
+                    <InputSlider name="Room Size" xs={inputWidth} value={roomSize} handleChange={handleMinRoomSizeChange} min={minRoomSize} max={maxRoomSize}/>
+                    <InputSlider name="Floor Coverage" xs={inputWidth} value={totalCoverage} handleChange={handleTotalCoverageChange} min={0} max={100}/>
+                    <Grid item xs={inputWidth}>
+                        <Grid item>
+                            <TextField value={dungeonSeed} label="Dungeon Seed" fullWidth onChange={handleSeedChange}/>
+                        </Grid>
+                        <Grid item color={"white"} textAlign={"left"}>
+                            Seed for random generation <br/> (Leave blank for random seed)
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box>
