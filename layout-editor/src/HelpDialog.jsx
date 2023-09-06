@@ -16,7 +16,7 @@ const HelpDialog = (props) => {
     } = props;
 
     return (
-        <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ style: { backgroundColor: '#7d7a7a', color: "white" }}}>
+        <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ style: { backgroundColor: '#1e1f1e', color: "white" }}}>
             <DialogTitle sx={{ fontSize: 40 }}> Layout Editor Keybinds </DialogTitle>
             <DialogContent sx={{ width: "89%" }}>
                 <Stack>
