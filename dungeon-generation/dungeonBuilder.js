@@ -21,22 +21,14 @@ class DungeonBuilder {
     #presets = {
         Small: [50, 50, 7, 50],
         Medium: [100, 100, 7, 60],
-        Large: [175, 175, 7, 70],
+        Large: [150, 150, 7, 70],
     };
 
     /**
-     * Creates an instance of the dungeon builder. Will
-     * Use a random seed if one is not provided.
-     * 
-     * @constructor
-     * @param seed Optional seed for dungeon generation
+     * Constructor just to initialize seedrandom()
      */
-    constructor(seed = null) {
-        this.#dungeonSeed = seed ? seed : Math.random();
-        this.#rng = seedrandom(this.#dungeonSeed);
-        this.#roomBuilder = new RoomBuilder(this.#rng());
-        this.#splitHorizontal = this.#rng() > 0.5;
-        this.#allRegions = [];
+    constructor() {
+        this.#rng = seedrandom()
     }
 
     //Setters
@@ -66,8 +58,7 @@ class DungeonBuilder {
     }
     setSeed(seed){
         this.#dungeonSeed = seed; 
-        this.#rng = seedrandom(this.#dungeonSeed);
-        this.#roomBuilder = new RoomBuilder(this.#rng());
+        this.#rng = seedrandom(this.#dungeonSeed)
         return this;
     }
 
@@ -93,6 +84,7 @@ class DungeonBuilder {
     #calculateMaxDepth(){
         let difference = Number.MAX_SAFE_INTEGER;
         for(let n = 1; n <= 10; n++){
+            //Compares map area to 25n^2 and finds closest n value
             if(Math.abs(((25*n)**2) - (this.#width * this.#height)) < difference){
                 difference = Math.abs(((25*n)**2) - (this.#width * this.#height));
                 this.#maxDepth = n + 6 + (7 - this.#minRoomSize);
@@ -204,11 +196,11 @@ class DungeonBuilder {
      * @returns Returns a Map list containing all Rooms
      */
     build(){
+        this.#reset();
         this.#checkSet();
         this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
-        this.#reset();
 
         return map;
     }
