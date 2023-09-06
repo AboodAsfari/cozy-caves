@@ -13,7 +13,7 @@ const Navbar = (props) => {
                 <Toolbar sx={{height: 70}}>
                     <Stack direction={"row"} sx={{ position: "fixed" }}>
                     <Box sx={{ ml: 2, mt: 0 }}>
-                        <Typography fontSize={"30px"} component="div" onClick={() => props.setActivePage("home")}>
+                        <Typography fontSize={"30px"} component="div" sx={{"&:hover": { cursor: "pointer"}}} onClick={() => props.setActivePage("home")}>
                             Cozy Caves: Map Generator
                         </Typography>
                     </Box>

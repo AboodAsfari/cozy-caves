@@ -25,10 +25,9 @@ html {
 body {
     margin: 0px;
     text-align: center;
-    background-color: #0e0d0d;
+    background-color: #2c2929;
     color: rgb(255, 255, 255);
     font-family: 'Khand' sans-serif;
-    background-image: url("https://i.redd.it/1w07p4rqqmr51.jpg");
     background-size:  cover;
     background-position: center center;
     background-attachment: fixed;

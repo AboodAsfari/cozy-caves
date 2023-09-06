@@ -11,7 +11,7 @@ const darkTheme = createTheme({
             sub: "#ffffff",
         },
         secondary: {
-            main: "#4C9553", //put bright green color here
+            main: "#4C9553",
         }
     },
     components: {
