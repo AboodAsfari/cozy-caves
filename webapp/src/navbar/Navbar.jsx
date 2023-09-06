@@ -8,12 +8,12 @@ import {
 
 const Navbar = (props) => {
     return (
-        <Box sx={{ mt: 8 }}>
+        <Box>
             <AppBar position="fixed" component="nav">
-                <Toolbar>
+                <Toolbar sx={{height: 70}}>
                     <Stack direction={"row"} sx={{ position: "fixed" }}>
                     <Box sx={{ ml: 2, mt: 0 }}>
-                        <Typography variant="h6" component="div" style={{fontFamily: "frijole"}} onClick={() => props.setActivePage("home")}>
+                        <Typography fontSize={"30px"} component="div" sx={{"&:hover": { cursor: "pointer"}}} onClick={() => props.setActivePage("home")}>
                             Cozy Caves: Map Generator
                         </Typography>
                     </Box>

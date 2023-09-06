@@ -1,12 +1,13 @@
 import React from "react";
 
-import { ThemeProvider, Box } from "@mui/material";
+import { ThemeProvider, Container, Box } from "@mui/material";
 
 import defaultTheme from "./themes/DarkTheme";
 import Homepage from "./home/Homepage";
 import MapPage from "./mapview/MapPage";
 import Navbar from "./navbar/Navbar";
 import Options from "./options/Options";
+
 
 function App() {
   

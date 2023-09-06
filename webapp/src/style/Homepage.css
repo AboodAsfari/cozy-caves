@@ -1,0 +1,33 @@
+
+.HomeButton.MuiButton-root {
+    width: 300px;
+    height: 100px;
+    margin: 16px; 
+}
+
+#titleContainer  {
+    position: relative;
+}
+
+#welcomeOutline {
+    font-family: 'Khand' sans-serif;
+    font-size: 200px;
+    font-style: normal;
+    font-weight: bold;
+    -webkit-text-stroke: 3px #ffffff;
+    color: #1f1d1d;
+    position: relative;
+}
+
+
+#welcomeShadow {
+    font-family: 'Khand' sans-serif;
+    font-size: 200px;
+    font-style: normal;
+    font-weight: bold;
+    -webkit-text-stroke: 3px #4C9553;
+    color: transparent;
+    position: absolute;
+    top: 9px;
+    left: 8px;
+}
