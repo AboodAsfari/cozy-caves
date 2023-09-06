@@ -18,6 +18,10 @@ class Layout {
     #unscaledEditableTiles = new Map(); // Unlike its counterpart, can be edited while scaling.
     #scalePartitions = []; // Partitions containing tiles to scale and scaling rules.
 
+    #allowFlipX = true; // Whether to allow flipping in the X axis.
+    #allowFlipY = true; // Whether to allow flipping in the X axis.
+    #allowRotate = true; // Whether to allow rotating by 90 degrees.
+
     // Used when attempt to generate a room.
     #maxSize; // The maximum size of the room.
     #leniency; // How much the room size can deviate from max.
@@ -379,6 +383,16 @@ class Layout {
         }
         return partitionDisplayInfo;
     }
+
+    // Setters.
+    setAllowFlipX(allowFlipX) { this.#allowFlipX = !!allowFlipX; }
+    setAllowFlipY(allowFlipY) { this.#allowFlipY = !!allowFlipY; }
+    setAllowRotate(allowRotate) { this.#allowRotate = !!allowRotate; }
+
+    // Getters
+    getAllowFlipX() { return this.#allowFlipX; }
+    getAllowFlipY() { return this.#allowFlipY; }
+    getAllowRotate() { return this.#allowRotate; }
 
     /**
      * Resets all fields in this object
