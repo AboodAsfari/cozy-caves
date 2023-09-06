@@ -8,6 +8,7 @@ const darkTheme = createTheme({
         },
         primary: {
             main: "#000000",
+            sub: "#ffffff",
         },
         secondary: {
             main: "#4C9553", //put bright green color here

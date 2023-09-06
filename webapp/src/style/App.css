@@ -7,8 +7,15 @@
 
 @font-face {
     font-family: 'Khand';
-    src: url('../fonts/Khand/Khand-Bold.ttf') format('truetype');
+    src: url('../fonts/Khand/Khand-Medium.ttf') format('truetype');
     font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KhandBold';
+    src: url('../fonts/Khand/Khand-Bold.ttf') format('truetype');
+    font-weight: bolder;
     font-style: normal;
 }
 
@@ -18,5 +25,11 @@ html {
 body {
     margin: 0px;
     text-align: center;
-    background-color: #523e3e;
+    background-color: #0e0d0d;
+    color: rgb(255, 255, 255);
+    font-family: 'Khand' sans-serif;
+    background-image: url("https://i.redd.it/1w07p4rqqmr51.jpg");
+    background-size:  cover;
+    background-position: center center;
+    background-attachment: fixed;
 }

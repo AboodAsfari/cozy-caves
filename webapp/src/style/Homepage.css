@@ -4,12 +4,37 @@
     height: 100px;
     margin: 16px; 
 }
-/* 
-.#title {
-    text-shadow: 9px 7px 0px #4C9553;
+
+#titleContainer  {
+    position: relative;
+    margin-top: 180px;
+}
+
+#welcomeOutline {
+    /* text-shadow: 9px 7px 0px #4C9553; */
     font-family: 'Khand' sans-serif;
     font-size: 200px;
     font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-} */
+    font-weight: bold;
+    -webkit-text-stroke: 3px #ffffff;
+    color: transparent;
+    /* background-image: url("https://i.redd.it/1w07p4rqqmr51.jpg");
+    background-position: 80% 50%;
+    background-size: cover; */
+    -webkit-background-clip: text;
+    position: relative;
+}
+
+
+#welcomeShadow {
+    font-family: 'Khand' sans-serif;
+    font-size: 200px;
+    font-style: normal;
+    font-weight: bold;
+    -webkit-text-stroke: 3px #4C9553;
+    color: transparent;
+    position: absolute;
+    top: 9px;
+    left: 7px;
+    /* z-index:; */
+}

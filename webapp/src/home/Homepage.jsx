@@ -25,10 +25,13 @@ const Homepage = (props) => {
     const handleOpenJoin = () => setOpen(true);
     const handleJoinClose = () => setOpen(false);
     return (
-        <Box sx={{maxWidth: '100vw', maxHeight: '100vh'}}>
-            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ mt: 20}}>
-                <Typography variant="h1" id="title">WELCOME</Typography>
-                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 8}} color="primary.main">
+        <Box sx={{width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                <Box id="titleContainer">
+                    <Typography variant="h1" id="welcomeShadow">WELCOME</Typography>
+                    <Typography variant="h1" id="welcomeOutline">WELCOME</Typography>
+                </Box>
+                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 8}}>
                     <Box>
                         <Typography variant="h6" sx={{ ml: 20, mr:2, textAlign: 'right'}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
                     </Box>
