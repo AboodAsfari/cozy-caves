@@ -50,11 +50,12 @@ const MenuBar = (props) => {
         setBrushInfo,
         setCurrTool,
         setHelpOpen,
+        setSettingsOpen,
+        settingsOpen,
         updateActivePartition
     } = props;
 
     const [defaultPartitionAnchorEl, setDefaultPartitionAnchorEl] = React.useState(null);
-    const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [fileMenuAnchorEl, setFileMenuAnchorEl] = React.useState(null);
     const [fileListAnchorEl, setFileListAnchorEl] = React.useState(null);
     const [updater, setUpdater] = React.useState(false);
