@@ -1,0 +1,15 @@
+
+.HomeButton.MuiButton-root {
+    width: 300px;
+    height: 100px;
+    margin: 16px; 
+}
+/* 
+.#title {
+    text-shadow: 9px 7px 0px #4C9553;
+    font-family: 'Khand' sans-serif;
+    font-size: 200px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+} */

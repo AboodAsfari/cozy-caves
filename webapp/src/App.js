@@ -8,6 +8,7 @@ import MapPage from "./mapview/MapPage";
 import Navbar from "./navbar/Navbar";
 import Options from "./options/Options";
 
+
 function App() {
   
   const [ dungeon, setDungeon ] = React.useState([]);
@@ -33,12 +34,12 @@ function App() {
   }
 
   return (
-    <Container maxWidth={false} sx={{ maxWidth: '107rem', bgcolor:'tomato'}}>
+    <Box>
       <ThemeProvider theme={defaultTheme}>
         {getPageHeader()}
         {getPage()}
       </ThemeProvider>
-    </Container>
+    </Box>
   );
 }
 

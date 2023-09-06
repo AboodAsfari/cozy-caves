@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Box, Button, Modal } from "@mui/material";
+import "../style/Homepage.css";
 /* 
 This needs to be split into multiple components
 some of the boxes can probably 
@@ -18,11 +19,6 @@ const style = {
     p: 4,
   };
 
-const buttonStyle = {
-    minWidth: 300,
-    minHeight: 100,
-    m: 2,
-};
 
 const Homepage = (props) => {
     const [open, setOpen] = React.useState(false);
@@ -31,21 +27,22 @@ const Homepage = (props) => {
     return (
         <Box sx={{maxWidth: '100vw', maxHeight: '100vh'}}>
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ mt: 20}}>
-                <Typography variant="h1">WELCOME</Typography>
+                <Typography variant="h1" id="title">WELCOME</Typography>
                 <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 8}} color="primary.main">
                     <Box>
-                        <Typography variant="h6" sx={{ ml: 10, mr:2, textAlign: 'right'}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
+                        <Typography variant="h6" sx={{ ml: 20, mr:2, textAlign: 'right'}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
                     </Box>
                     <Box>
-                        <Typography variant="h6" sx={{ ml: 2, mr:10, textAlign: 'left'}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
+                        <Typography variant="h6" sx={{ ml: 2, mr:20, textAlign: 'left'}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
                     </Box>
                 </Box>
-                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 10}} color="secondary.main">
-                    <Button variant="contained" sx={buttonStyle} onClick={() => props.setActivePage("options")}>
-                        <Typography variant="h3">GENERATE</Typography>
+                
+                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 10}}>
+                    <Button variant="contained" className="HomeButton" sx={{bgcolor: "#4C9553", "&:hover": {bgcolor: "black"}}} onClick={() => props.setActivePage("options")}>
+                        <Typography variant="h2">GENERATE</Typography>
                     </Button>
-                    <Button variant="contained" sx={buttonStyle} onClick={handleOpenJoin}>
-                        <Typography variant="h3">JOIN</Typography>
+                    <Button variant="contained" className="HomeButton" sx={{color: "black", bgcolor: "white", "&:hover": {bgcolor: "black", color: "white"}}} onClick={handleOpenJoin}>
+                        <Typography variant="h2">JOIN</Typography>
                     </Button>
                     <Modal
                         open={open}

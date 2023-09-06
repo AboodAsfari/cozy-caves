@@ -30,16 +30,18 @@ const darkTheme = createTheme({
         }
     },
     typography: {
+        fontFamily: "'Khand', sans-serif",
+        fontColor: "white",
         h1: {
-            fontSize: "10rem",
+            fontSize: "200px",
             fontWeight: 100,
         },
         h2: {
-            fontSize: "4rem",
+            fontSize: "60px",
             fontWeight: 100,
         },
         h3: {
-            fontSize: "2.5rem",
+            fontSize: "38px",
             fontWeight: 100,
         }
     }

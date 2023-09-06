@@ -1,8 +1,22 @@
+@font-face {
+    font-family: 'Khand';
+    src: url('../fonts/Khand/Khand-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Khand';
+    src: url('../fonts/Khand/Khand-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 html {
     height: 100%;
 }
 body {
     margin: 0px;
     text-align: center;
-    background-color: #635f5d;
+    background-color: #523e3e;
 }
