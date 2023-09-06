@@ -20,7 +20,6 @@ class Layout {
 
     #allowFlipX = true; // Whether to allow flipping in the X axis.
     #allowFlipY = true; // Whether to allow flipping in the X axis.
-    #allowRotate = true; // Whether to allow rotating by 90 degrees.
 
     // Used when attempt to generate a room.
     #maxSize; // The maximum size of the room.
@@ -397,12 +396,10 @@ class Layout {
     // Setters.
     setAllowFlipX(allowFlipX) { this.#allowFlipX = !!allowFlipX; }
     setAllowFlipY(allowFlipY) { this.#allowFlipY = !!allowFlipY; }
-    setAllowRotate(allowRotate) { this.#allowRotate = !!allowRotate; }
 
     // Getters
     getAllowFlipX() { return this.#allowFlipX; }
     getAllowFlipY() { return this.#allowFlipY; }
-    getAllowRotate() { return this.#allowRotate; }
 
     /**
      * Resets all fields in this object
@@ -424,6 +421,9 @@ class Layout {
      */
     getSerializableLayout() {
         return {
+            tags: this.#tags,
+            allowFlipX: this.#allowFlipX,
+            allowFlipY: this.#allowFlipY,
             excludedTiles: Array.from(this.#excludedTiles.values()).map(tile => tile.getSerializableTile()),
             unscaledTiles: Array.from(this.#unscaledTiles.values()).map(tile => tile.getSerializableTile()),
             scalePartitions: this.#scalePartitions.map(partition => partition.getSerializablePartition())
@@ -437,6 +437,9 @@ class Layout {
      * @returns Layout.
      */
     static fromSerializableLayout(serializedLayout, layout = new Layout()) {
+        layout.#tags = serializedLayout.tags;
+        layout.#allowFlipX = serializedLayout.allowFlipX;
+        layout.#allowFlipY = serializedLayout.allowFlipY;
         serializedLayout.excludedTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.unscaledTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.scalePartitions.forEach(serializedPartition => {
