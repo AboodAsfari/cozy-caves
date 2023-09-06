@@ -64,7 +64,7 @@ const Options = (props) => {
         } else {
             dungeon = dungeonBuilder
                                 .setSeed(dungeonSeed)
-                                .setSize(Number(dungeonHeight), Number(dungeonWidth))
+                                .setSize(Number(dungeonWidth), Number(dungeonHeight))
                                 .setMinRoomSize(Number(roomSize))
                                 .setTotalCoverage(Number(totalCoverage))
                                 .build();
