@@ -7,20 +7,36 @@ const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 const Options = (props) => {
 
     // Store dungeon options
-    const [dungeonHeight, setDungeonHeight] = React.useState(50);
     const [dungeonWidth, setDungeonWidth] = React.useState(50);
+    const [dungeonHeight, setDungeonHeight] = React.useState(50);
     const [minRoomSize, setMinRoomSize] = React.useState(7);
     const [totalCoverage, setTotalCoverage] = React.useState(50);
     const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
     
+    // Options validation
+    const [widthValid, setWidthValid] = React.useState(true);
+    const [heightValid, setHeightValid] = React.useState(true);
+    const [roomSizeValid, setRoomSizeValid] = React.useState(true);
+    const [coverageValid, setCoverageValid] = React.useState(true);
+
     const textFieldWidth = 2;
     const descriptionWidth = 4;
 
-    const handleHeightChange = (event) => {
-        setDungeonHeight(Number(event.target.value));
-    };
+    const minWidth = 2;
+    const minHeight = 2;
+    const maxWidth = 500;
+    const maxHeight = 500;
+
+    // Handle option changes
     const handleWidthChange = (event) => {
-        setDungeonWidth(Number(event.target.value));
+        let value = Number(event.target.value);
+        setWidthValid(value >= minWidth && value <= maxWidth);
+        if(!Number.isNaN(value)) setDungeonWidth(event.target.value);
+    };
+    const handleHeightChange = (event) => {
+        let value = Number(event.target.value);
+        setHeightValid(value >= minHeight && value <= maxHeight);
+        if(!Number.isNaN(value)) setDungeonHeight(event.target.value);
     };
     const handleMinRoomSizeChange = (event) => {
         setMinRoomSize(Number(event.target.value));
@@ -32,6 +48,13 @@ const Options = (props) => {
         setDungeonSeed(event.target.value);
     };
 
+    // Helper text for validation
+    const getWidthHelperText = () => {
+        return dungeonWidth > maxWidth ? "Width must be less than " + maxWidth : dungeonWidth < minWidth ? "Width must be greater than " + minWidth : "";
+    };
+    const getHeightHelperText = () => {
+        return dungeonHeight > maxHeight ? "Height must be less than " + maxHeight : dungeonHeight < minHeight ? "Height must be greater than " + minHeight : "";
+    };
 
     // Create dungeon using options and set it in the parent
     const createDungeon = () => {
@@ -51,16 +74,18 @@ const Options = (props) => {
             <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
                 <Grid container spacing={2}>
                     <Grid item xs={textFieldWidth}>
-                        <TextField value={dungeonHeight} label="Dungeon Height" fullWidth onChange={handleHeightChange}/>
+                        <TextField value={dungeonHeight} label="Dungeon Height" onChange={handleHeightChange}
+                        error={!heightValid} helperText={ getHeightHelperText() }/>
                     </Grid>
                     <Grid item xs={descriptionWidth} color={"white"}textAlign={"left"}>
-                        How many tiles tall the dungeon is.
+                        How tall the dungeon is.
                     </Grid>
                     <Grid item xs={textFieldWidth}>
-                        <TextField value={dungeonWidth} label="Dungeon Width" fullWidth onChange={handleWidthChange}/>
+                        <TextField value={dungeonWidth} label="Dungeon Width" onChange={handleWidthChange}
+                        error={!widthValid} helperText={ getWidthHelperText() }/>
                     </Grid>
                     <Grid item xs={descriptionWidth} color={"white"}textAlign={"left"}>
-                        How many tiles wide the dungeon is.
+                        How wide the dungeon is.
                     </Grid>
                     <Grid item xs={textFieldWidth}>
                         <TextField value={minRoomSize} label="Minimum Room Size" fullWidth onChange={handleMinRoomSizeChange}/>
@@ -84,7 +109,7 @@ const Options = (props) => {
             </Box>
 
             <Box sx={{ display: "flex", justifyItems: "center" }}>
-                    <Button variant="contained" sx={{minWidth:100, minHeight: 20, margin: 2}} onClick={createDungeon}>
+                    <Button variant="contained" sx={{minWidth:100, minHeight: 20, margin: 2}} disabled={!widthValid || !heightValid} onClick={createDungeon}>
                         <Typography variant="h4" >Create</Typography>
                     </Button>
                     <Button variant="contained" sx={{minWidth:100, minHeight: 50, margin: 2}} onClick={() => props.setActivePage("home")}>
