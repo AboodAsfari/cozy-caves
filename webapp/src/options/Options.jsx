@@ -1,19 +1,47 @@
 import React from 'react';
-import { Typography,Box, Button, TextField, Grid } from "@mui/material";
+import { Typography,Box, Button, TextField, Grid, InputAdornment, Input, Slider } from "@mui/material";
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 
+
+const InputSlider = (props) => {
+    return (
+            <Grid item>
+                <Typography color={"white"}>
+                    {props.name}
+                </Typography>
+                <Slider
+                    value={props.value}
+                    onChange={props.handleChange}
+                    aria-labelledby="height-input-slider"
+                    min={props.min}
+                    max={props.max}
+                />
+                <Input
+                    value={props.value}
+                    size="small"
+                    onChange={props.handleChange}
+                        inputProps={{
+                        step: 10,
+                        min: props.min,
+                        max: props.max,
+                    }}
+                />
+        </Grid>
+    );
+}
 
 const Options = (props) => {
 
     // Store dungeon options
     const [dungeonWidth, setDungeonWidth] = React.useState(50);
     const [dungeonHeight, setDungeonHeight] = React.useState(50);
-    const [minRoomSize, setMinRoomSize] = React.useState(7);
+    const [roomSize, setMinRoomSize] = React.useState(7);
     const [totalCoverage, setTotalCoverage] = React.useState(50);
     const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
     
     // Options validation
+        <Grid item></Grid>
     const [widthValid, setWidthValid] = React.useState(true);
     const [heightValid, setHeightValid] = React.useState(true);
     const [roomSizeValid, setRoomSizeValid] = React.useState(true);
@@ -22,10 +50,13 @@ const Options = (props) => {
     const textFieldWidth = 2;
     const descriptionWidth = 4;
 
-    const minWidth = 2;
-    const minHeight = 2;
-    const maxWidth = 500;
-    const maxHeight = 500;
+    const minWidth = 5;
+    const minHeight = 5;
+    const minRoomSize = 6;
+
+    const maxWidth = 200;
+    const maxHeight = 200;
+    const maxRoomSize = 15;
 
     // Handle option changes
     const handleWidthChange = (event) => {
@@ -39,33 +70,31 @@ const Options = (props) => {
         if(!Number.isNaN(value)) setDungeonHeight(event.target.value);
     };
     const handleMinRoomSizeChange = (event) => {
-        setMinRoomSize(Number(event.target.value));
+        let value = Number(event.target.value);
+        setRoomSizeValid(value >= minRoomSize && value <= maxRoomSize);
+        if(!Number.isNaN(value)) setMinRoomSize(value);
     };
     const handleTotalCoverageChange = (event) => {
-        setTotalCoverage(Number(event.target.value));
+        let value = Number(event.target.value);
+        if(Number.isNaN(value)) return; 
+        value = value > 100 ? 100 : value;
+        value = value < 0 ? 0 : value;
+        setTotalCoverage(value);
     };
     const handleSeedChange = (event) => {
         setDungeonSeed(event.target.value);
-    };
-
-    // Helper text for validation
-    const getWidthHelperText = () => {
-        return dungeonWidth > maxWidth ? "Width must be less than " + maxWidth : dungeonWidth < minWidth ? "Width must be greater than " + minWidth : "";
-    };
-    const getHeightHelperText = () => {
-        return dungeonHeight > maxHeight ? "Height must be less than " + maxHeight : dungeonHeight < minHeight ? "Height must be greater than " + minHeight : "";
     };
 
     // Create dungeon using options and set it in the parent
     const createDungeon = () => {
         let dungeonBuilder = new DungeonBuilder(dungeonSeed);
         let dungeon = dungeonBuilder
-                            .setSize(dungeonWidth, dungeonHeight)
-                            .setMinRoomSize(minRoomSize)
-                            .setTotalCoverage(totalCoverage)
+                            .setSize(Number(dungeonHeight), Number(dungeonWidth))
+                            .setMinRoomSize(Number(roomSize))
+                            .setTotalCoverage(Number(totalCoverage))
                             .build();
         props.setDungeon(dungeon);
-        props.setActivePage("map")
+        props.setActivePage("map");
     }
 
     return (
@@ -73,32 +102,10 @@ const Options = (props) => {
             <Typography variant="h4" marginY={3} sx={{ textAlign: "center", color: "white" }}> Map Settings </Typography>
             <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
                 <Grid container spacing={2}>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={dungeonHeight} label="Dungeon Height" onChange={handleHeightChange}
-                        error={!heightValid} helperText={ getHeightHelperText() }/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"}textAlign={"left"}>
-                        How tall the dungeon is.
-                    </Grid>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={dungeonWidth} label="Dungeon Width" onChange={handleWidthChange}
-                        error={!widthValid} helperText={ getWidthHelperText() }/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"}textAlign={"left"}>
-                        How wide the dungeon is.
-                    </Grid>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={minRoomSize} label="Minimum Room Size" fullWidth onChange={handleMinRoomSizeChange}/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"} textAlign={"left"}>
-                        Will be used for both the width and height of the floor. 
-                    </Grid>
-                    <Grid item xs={textFieldWidth}>
-                        <TextField value={totalCoverage} label="Floor Coverage" fullWidth onChange={handleTotalCoverageChange}/>
-                    </Grid>
-                    <Grid item xs={descriptionWidth} color={"white"} textAlign={"left"}> 
-                        Desired total percent floor coverage of the map.
-                    </Grid>
+                    <InputSlider name="Height" value={dungeonHeight} handleChange={handleHeightChange} min={minHeight} max={maxHeight}/>
+                    <InputSlider name="Width" value={dungeonWidth} handleChange={handleWidthChange} min={minWidth} max={maxWidth}/>  
+                    <InputSlider name="Room Size" value={roomSize} handleChange={handleMinRoomSizeChange} min={minRoomSize} max={maxRoomSize}/>
+                    <InputSlider name="Floor Coverage" value={totalCoverage} handleChange={handleTotalCoverageChange} min={0} max={100}/>
                     <Grid item xs={textFieldWidth}>
                         <TextField value={dungeonSeed} label="Dungeon Seed" fullWidth onChange={handleSeedChange}/>
                     </Grid>
