@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography,Box, Button, TextField, Grid } from "@mui/material";
+import { Typography,Box, Button, TextField, Grid, Select, MenuItem, FormControl } from "@mui/material";
 import InputSlider from './InputSlider';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
@@ -12,6 +12,8 @@ const Options = (props) => {
     const [roomSize, setMinRoomSize] = React.useState(7);
     const [totalCoverage, setTotalCoverage] = React.useState(50);
     const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
+
+    const [presetName, setPresetName] = React.useState("small");
     
     // Options validation
         <Grid item></Grid>
@@ -29,6 +31,13 @@ const Options = (props) => {
     const maxRoomSize = 15;
 
     const inputWidth = 3;
+
+    const presets = {
+        small: [50,50,7,50],
+        medium: [100,100,7,50],
+        large: [200,200,7,50],
+        custom: [dungeonWidth, dungeonHeight, roomSize, totalCoverage]
+    };
 
     // Handle option changes
     const handleWidthChange = (event) => {
@@ -48,13 +57,14 @@ const Options = (props) => {
     };
     const handleTotalCoverageChange = (event) => {
         let value = Number(event.target.value);
-        if(Number.isNaN(value)) return; 
-        value = value > 100 ? 100 : value;
-        value = value < 0 ? 0 : value;
-        setTotalCoverage(value);
+        if(!Number.isNaN(value)) setTotalCoverage(value);
     };
     const handleSeedChange = (event) => {
         setDungeonSeed(event.target.value);
+    };
+
+    const handlePresetChange = (event) => {
+        setPresetName(event.target.value);
     };
 
     // Create dungeon using options and set it in the parent
@@ -73,7 +83,7 @@ const Options = (props) => {
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ flexGrow: 1}}>
             <Typography variant="h4" marginY={3} sx={{ textAlign: "center", color: "white" }}> Map Settings </Typography>
             <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
-                <Grid container spacing={2}>
+                <Grid container spacing={3}>
                     <InputSlider name="Height" xs={inputWidth} value={dungeonHeight} handleChange={handleHeightChange} min={minHeight} max={maxHeight}/>
                     <InputSlider name="Width" xs={inputWidth} value={dungeonWidth} handleChange={handleWidthChange} min={minWidth} max={maxWidth}/>  
                     <InputSlider name="Room Size" xs={inputWidth} value={roomSize} handleChange={handleMinRoomSizeChange} min={minRoomSize} max={maxRoomSize}/>
@@ -85,6 +95,25 @@ const Options = (props) => {
                         <Grid item color={"white"} textAlign={"left"}>
                             Seed for random generation <br/> (Leave blank for random seed)
                         </Grid>
+                    </Grid>
+                    <Grid item xs={inputWidth} textAlign={"left"}>
+                        <Select
+                            fullWidth
+                            labelId="preset-select-label"
+                            id="preset-select"
+                            value={presetName}
+                            label="Preset"
+                            onChange={handlePresetChange}
+                        >
+                            {Object.keys(presets).map((preset) => (  
+                                <MenuItem
+                                    key={preset} 
+                                    value={preset}
+                                >
+                                    {preset}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     </Grid>
                 </Grid>
             </Box>
