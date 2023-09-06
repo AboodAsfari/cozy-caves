@@ -13,7 +13,7 @@ const Options = (props) => {
     const [totalCoverage, setTotalCoverage] = React.useState(50);
     const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
 
-    const [presetName, setPresetName] = React.useState("small");
+    const [presetSelected, setPresetSelected] = React.useState("Small");
     
     // Options validation
         <Grid item></Grid>
@@ -32,18 +32,19 @@ const Options = (props) => {
 
     const inputWidth = 3;
 
-    const presets = {
-        small: [50,50,7,50],
-        medium: [100,100,7,50],
-        large: [200,200,7,50],
-        custom: [dungeonWidth, dungeonHeight, roomSize, totalCoverage]
-    };
+    const presets = [
+        "Small",
+        "Medium",
+        "Large",
+        "Custom"
+    ];
 
     // Handle option changes
     const handleInputChange = (event, eventProps) => {
         let value = Number(event.target.value);
         eventProps.setValid(value >= eventProps.min && value <= eventProps.max);
         if(!Number.isNaN(value)) eventProps.setValue(value);
+        setPresetSelected("Custom");
     };
 
     const handleSeedChange = (event) => {
@@ -51,17 +52,23 @@ const Options = (props) => {
     };
 
     const handlePresetChange = (event) => {
-        setPresetName(event.target.value);
+        setPresetSelected(event.target.value);
     };
 
     // Create dungeon using options and set it in the parent
     const createDungeon = () => {
-        let dungeonBuilder = new DungeonBuilder(dungeonSeed);
-        let dungeon = dungeonBuilder
-                            .setSize(Number(dungeonHeight), Number(dungeonWidth))
-                            .setMinRoomSize(Number(roomSize))
-                            .setTotalCoverage(Number(totalCoverage))
-                            .build();
+        let dungeonBuilder = new DungeonBuilder();
+        let dungeon;
+        if(presetSelected !== "Custom") {
+            dungeon = dungeonBuilder.setPreset(presetSelected).build();
+        } else {
+            dungeon = dungeonBuilder
+                                .setSeed(dungeonSeed)
+                                .setSize(Number(dungeonHeight), Number(dungeonWidth))
+                                .setMinRoomSize(Number(roomSize))
+                                .setTotalCoverage(Number(totalCoverage))
+                                .build();
+        }
         props.setDungeon(dungeon);
         props.setActivePage("map");
     }
@@ -96,11 +103,11 @@ const Options = (props) => {
                             fullWidth
                             labelId="preset-select-label"
                             id="preset-select"
-                            value={presetName}
+                            value={presetSelected}
                             label="Preset"
                             onChange={handlePresetChange}
                         >
-                            {Object.keys(presets).map((preset) => (  
+                            {presets.map((preset) => (  
                                 <MenuItem
                                     key={preset} 
                                     value={preset}
