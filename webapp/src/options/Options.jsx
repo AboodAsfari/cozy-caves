@@ -40,25 +40,12 @@ const Options = (props) => {
     };
 
     // Handle option changes
-    const handleWidthChange = (event) => {
+    const handleInputChange = (event, eventProps) => {
         let value = Number(event.target.value);
-        setWidthValid(value >= minWidth && value <= maxWidth);
-        if(!Number.isNaN(value)) setDungeonWidth(event.target.value);
+        eventProps.setValid(value >= eventProps.min && value <= eventProps.max);
+        if(!Number.isNaN(value)) eventProps.setValue(value);
     };
-    const handleHeightChange = (event) => {
-        let value = Number(event.target.value);
-        setHeightValid(value >= minHeight && value <= maxHeight);
-        if(!Number.isNaN(value)) setDungeonHeight(event.target.value);
-    };
-    const handleMinRoomSizeChange = (event) => {
-        let value = Number(event.target.value);
-        setRoomSizeValid(value >= minRoomSize && value <= maxRoomSize);
-        if(!Number.isNaN(value)) setMinRoomSize(value);
-    };
-    const handleTotalCoverageChange = (event) => {
-        let value = Number(event.target.value);
-        if(!Number.isNaN(value)) setTotalCoverage(value);
-    };
+
     const handleSeedChange = (event) => {
         setDungeonSeed(event.target.value);
     };
@@ -84,10 +71,18 @@ const Options = (props) => {
             <Typography variant="h4" marginY={3} sx={{ textAlign: "center", color: "white" }}> Map Settings </Typography>
             <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
                 <Grid container spacing={3}>
-                    <InputSlider name="Height" xs={inputWidth} value={dungeonHeight} handleChange={handleHeightChange} min={minHeight} max={maxHeight}/>
-                    <InputSlider name="Width" xs={inputWidth} value={dungeonWidth} handleChange={handleWidthChange} min={minWidth} max={maxWidth}/>  
-                    <InputSlider name="Room Size" xs={inputWidth} value={roomSize} handleChange={handleMinRoomSizeChange} min={minRoomSize} max={maxRoomSize}/>
-                    <InputSlider name="Floor Coverage" xs={inputWidth} value={totalCoverage} handleChange={handleTotalCoverageChange} min={0} max={100}/>
+                    <InputSlider name="Height" xs={inputWidth} value={dungeonHeight} min={minHeight} max={maxHeight}
+                        handleChange={(e) => handleInputChange(e, {value: dungeonHeight, setValue: setDungeonHeight, setValid: setHeightValid, min: minHeight, max: maxHeight})}
+                    />
+                    <InputSlider name="Width" xs={inputWidth} value={dungeonWidth} min={minWidth} max={maxWidth}
+                        handleChange={(e) => handleInputChange(e, {value: dungeonWidth, setValue: setDungeonWidth, setValid: setWidthValid, min: minWidth, max: maxWidth})}
+                    />  
+                    <InputSlider name="Room Size" xs={inputWidth} value={roomSize} min={minRoomSize} max={maxRoomSize}
+                        handleChange={(e) => handleInputChange(e, {value: roomSize, setValue: setMinRoomSize, setValid: setRoomSizeValid, min: minRoomSize, max: maxRoomSize})}
+                    />
+                    <InputSlider name="Floor Coverage" xs={inputWidth} value={totalCoverage} 
+                        handleChange={(e) => handleInputChange(e, {value: totalCoverage, setValue: setTotalCoverage, setValid: setCoverageValid, min: 0, max: 100})} min={0} max={100}
+                    />
                     <Grid item xs={inputWidth}>
                         <Grid item>
                             <TextField value={dungeonSeed} label="Dungeon Seed" fullWidth onChange={handleSeedChange}/>
