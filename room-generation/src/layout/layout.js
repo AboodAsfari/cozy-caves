@@ -28,15 +28,25 @@ class Layout {
     #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
     #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); // Smallest encountered X/Y positions in partition.
+    #maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER); // Largest encountered X/Y positions in partition.
 
-    #generateRoom(tilerType) {
+    #generateRoom(tilerType, numGen) {
         let room = new Room(this.#getDimensions());
 
         let posUpdater = new Point(-this.#minEncountered.getX(), -this.#minEncountered.getY());
+        let flipXUpdater = new Point(this.#maxEncountered.getX() - posUpdater.getX(), 0);
+        let flipYUpdater = new Point(0, this.#maxEncountered.getY() - posUpdater.getY());
+
+        let flipX = this.#allowFlipX && numGen() > 0.5;
+        let flipY = this.#allowFlipY && numGen() > 0.5;
 
         const addTiles = (collection) => {
             for (const value of Array.from(collection)) {
-                let updatedPos = new Point(value.getPosition().getX() + posUpdater.getX(), value.getPosition().getY() + posUpdater.getY());
+                let newX = value.getPosition().getX() + posUpdater.getX();
+                let newY = value.getPosition().getY() + posUpdater.getY();
+                if (flipX) newX = -value.getPosition().getX() + posUpdater.getX() + flipXUpdater.getX();
+                if (flipY) newY = -value.getPosition().getY() + posUpdater.getY() + flipYUpdater.getY();
+                let updatedPos = new Point(newX, newY);
                 room.addTile(value.clone(updatedPos));
             }
         }
@@ -62,7 +72,7 @@ class Layout {
      * @param tilerType The sprite decision logic to use when generating room.
      * @returns A room object built from the scaled layout, null if invalid layout.
      */
-    scaleRoom(maxSize, leniency, allowOvergrow, tilerType) {
+    scaleRoom(maxSize, leniency, allowOvergrow, tilerType, numGen) {
         this.#maxSize = maxSize;
         this.#leniency = leniency;
         this.#allowOvergrow = !!allowOvergrow;
@@ -81,7 +91,7 @@ class Layout {
         this.#satisfyLock(false);
         if (!this.#isValid(this.#getDimensions())) return null;
 
-        return this.#generateRoom(tilerType);
+        return this.#generateRoom(tilerType, numGen);
     }
 
     /**
@@ -180,18 +190,18 @@ class Layout {
      * @returns Current dimensions of the room.
      */
     #getDimensions() {
-        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
         this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 
-        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
-        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
+        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), this.#maxEncountered, this.#minEncountered);
+        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), this.#maxEncountered, this.#minEncountered);
         for (let partition of this.#scalePartitions) {
-            this.#dimensionCalculationHelper(partition.getMaxEncountered(), maxEncountered, this.#minEncountered);
-            this.#dimensionCalculationHelper(partition.getMinEncountered(), maxEncountered, this.#minEncountered);
+            this.#dimensionCalculationHelper(partition.getMaxEncountered(), this.#maxEncountered, this.#minEncountered);
+            this.#dimensionCalculationHelper(partition.getMinEncountered(), this.#maxEncountered, this.#minEncountered);
         }
 
-        let width = maxEncountered.getX() - this.#minEncountered.getX() + 1;
-        let height = maxEncountered.getY() - this.#minEncountered.getY() + 1;
+        let width = this.#maxEncountered.getX() - this.#minEncountered.getX() + 1;
+        let height = this.#maxEncountered.getY() - this.#minEncountered.getY() + 1;
         return new Point(width, height);
     }
 
