@@ -2,6 +2,8 @@ const Delaunator = require('delaunator');
 const Room = require('../room/room');
 const Point = require("@cozy-caves/utils").Point;
 const DisjointSet = require("./disjointSet");
+const Tile = require("../tile/tile");
+const { TileID } = require('@cozy-caves/utils');
 
 //fromRoom relative to toRoom
 const RelativePosX = Object.freeze({
@@ -201,70 +203,145 @@ function createHallwayFromShape(shape, from, to) {
     if (shape == HallwayShapes.RIGHT_TOP) {
         fromEdges = from.getRightEdges();
         toEdges = to.getTopEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.RIGHT_LEFT) {
         fromEdges = from.getRightEdges();
         toEdges = to.getLeftEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.RIGHT_DOWN) {
         fromEdges = from.getRightEdges();
         toEdges = to.getBottomEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.LEFT_RIGHT) {
         fromEdges = from.getLeftEdges();
         toEdges = to.getRightEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.LEFT_TOP) {
-        fromEdges = from.getRightEdges();
-        toEdges = to.getTopEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+        toEdges = from.getRightEdges();
+        fromEdges = to.getTopEdges();
+        shape = HallwayShapes.TOP_LEFT;
     } else if (shape == HallwayShapes.LEFT_DOWN) {
-        fromEdges = from.getLeftEdges();
-        toEdges = to.getBottomEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+        toEdges = from.getLeftEdges();
+        fromEdges = to.getBottomEdges();
+        shape = HallwayShapes.DOWN_LEFT;
     } else if (shape == HallwayShapes.TOP_DOWN) {
         fromEdges = from.getTopEdges();
         toEdges = to.getBottomEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.TOP_RIGHT) {
-        fromEdges = from.getTopEdges();
-        toEdges = to.getRightEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+        toEdges = from.getTopEdges();
+        fromEdges = to.getRightEdges();
+        shape = HallwayShapes.RIGHT_TOP;
     } else if (shape == HallwayShapes.TOP_LEFT) {
         fromEdges = from.getTopEdges();
         toEdges = to.getLeftEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.DOWN_TOP) {
         fromEdges = from.getBottomEdges();
         toEdges = to.getTopEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.DOWN_LEFT) {
         fromEdges = from.getBottomEdges();
         toEdges = to.getLeftEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.DOWN_RIGHT) {
-        fromEdges = from.getBottomEdges();
-        toEdges = to.getRightEdges();
-        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+        toEdges = from.getBottomEdges();
+        fromEdges = to.getRightEdges();
+        shape = HallwayShapes.RIGHT_DOWN
+        
     } 
-
-    createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()));
+    middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+    middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()), shape);
 }
 
-function createFromEntryExit(fromPos, toPos) {
+function createFromEntryExit(fromPos, toPos, shape) {
+    console.log(shape);
+    let startingX = fromPos.getX();
+    let toX = toPos.getX();
+    let startingY = fromPos.getY();
+    let toY = toPos.getY();
+
+    let diffX = Math.abs(toX - startingX);
+    let diffY = Math.abs(toY - startingY);
+
+    let hallway = new Room(new Point(diffX, diffY));
+    hallway.setPosition(new Point(startingX, startingY));
+
+    if (shape == HallwayShapes.RIGHT_TOP) {
+        for (let i = 0; i < diffX; i++) {
+            hallway.addTile(new Tile("wall", new Point(0 + i, 0)));
+            hallway.addTile(new Tile("wall", new Point(0 + i, 2)));
+        }
+        for (let i = 0; i < diffY; i++) {
+            hallway.addTile(new Tile("wall", new Point(diffX - 1, 0 + i)));
+            hallway.addTile(new Tile("wall", new Point(diffX - 3, 0 + i)));
+        }
+
+        for (let i = 0; i < diffX-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(0 + i, 1)));
+        }
+
+        for (let i = 0; i < diffY-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(diffX - 2, 1 + i)));
+        }
+        hallway.setPosition(new Point(startingX, startingY));
+    } 
     
+    else if (shape == HallwayShapes.DOWN_LEFT) {
+        for (let i = 0; i < diffY; i++) {
+            hallway.addTile(new Tile("wall", new Point(0, 0 + i)));
+            hallway.addTile(new Tile("wall", new Point(0, 2 + i)));
+        }
+        for (let i = 0; i < diffX; i++) {
+            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)));
+            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)));
+        }
+        for (let i = 0; i < diffY-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(1, 0 + i)));
+        }
+        for (let i = 0; i < diffX-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(1 + i, diffY - 2)));
+        }
+        hallway.setPosition(new Point(startingX, startingY));
+    }
+
+    else if (shape == HallwayShapes.RIGHT_DOWN) {
+        for (let i = 0; i < diffX; i++) {
+            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)));
+            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)));
+        }
+        for (let i = 0; i < diffY; i++) {
+            hallway.addTile(new Tile("wall", new Point(diffX - 1, 0 + i)));
+            hallway.addTile(new Tile("wall", new Point(diffX - 3, 0 + i)));
+        }
+
+        for (let i = 0; i < diffX-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(0 + i, diffY - 1)));
+        }
+
+        for (let i = 0; i < diffY-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(diffX - 2, 1 + i)));
+        }
+        hallway.setPosition(startingX, toY);
+    }
+
+    else if (shape == HallwayShapes.TOP_LEFT) {
+        for (let i = 0; i < diffY; i++) {
+            hallway.addTile(new Tile("wall", new Point(0, 0 + i)));
+            hallway.addTile(new Tile("wall", new Point(0 - 3, 0 + i)));
+        }
+
+        for (let i = 0; i < diffX; i++) {
+            hallway.addTile(new Tile("wall", new Point(0 + i, 0)));
+            hallway.addTile(new Tile("wall", new Point(0 + i, 2)));
+        }
+
+        for (let i = 0; i < diffY-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(1, 1 + i)));
+        }
+
+        for (let i = 0; i < diffX-1; i++) {
+            hallway.addTile(new Tile("floor", new Point(0 + i, 1)));
+        }
+
+        hallway.setPosition(startingX, toY);
+    }
+
+    console.log(hallway.toString());
+    hallways.push(hallway);
 }
 
 
