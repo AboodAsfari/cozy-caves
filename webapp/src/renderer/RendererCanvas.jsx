@@ -67,8 +67,6 @@ const RendererCanvas = (props) => {
   const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
-  let maxX = 0
-  let maxY = 0
 
   const drawTile = (tile, roomPos) => {
 
@@ -88,7 +86,7 @@ const RendererCanvas = (props) => {
               pointerdown={(e) => onClick(e, tileInfo)}
             />
   }
-
+  
   const drawProp = (prop, roomPos) => {
     let xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
     let yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
@@ -101,6 +99,10 @@ const RendererCanvas = (props) => {
               zIndex={1000}
             />
   }
+
+  // Keep track of the max X and Y values
+  let maxX = 0
+  let maxY = 0
 
   const drawDungeon = () => {
     return props.dungeon.map((room) => {
@@ -121,13 +123,14 @@ const RendererCanvas = (props) => {
         }
       }
       
+      // Get the sprites for each tile in this room
       return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
     })
   }
 
   const drawProps = () => {
     return props.dungeon.map((room) => {
-      console.log(room.getPropMap())
+      if(room.getPropMap() === undefined) return null
       return room.getPropMap().entries().map((prop) => drawProp(prop, room.getPosition()))
     })
   }
@@ -142,8 +145,9 @@ const RendererCanvas = (props) => {
     else  viewport.animate({ scale: newScale, time: 250 });  
   }
 
-  // get the current window size
+  // Get the current window size
   const [width, height] = useResize();
+  // Get the dungeon and prop sprites
   let dungeon = drawDungeon()
   let propsList = drawProps()
   return (
