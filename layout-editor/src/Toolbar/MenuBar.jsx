@@ -206,24 +206,30 @@ const MenuBar = (props) => {
         </AppBar>
 
         <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
-            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a", minWidth: "280px" }, mt: 1 }}>
             <MenuItem onClick={handleNew} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> New </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> SHIFT + N </Typography>
             </MenuItem>
             <MenuItem onClick={handleOpen} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + O </Typography>
             </MenuItem>
             <MenuItem onClick={handleFolder} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open Folder </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + SHIFT + O </Typography>
             </MenuItem>
             <MenuItem onClick={handleSave} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + S </Typography>
             </MenuItem>
             <MenuItem onClick={handleSaveAs} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save As </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + SHIFT + S </Typography>
             </MenuItem>
             <MenuItem onClick={() => { setSettingsOpen(true); setFileMenuAnchorEl(null); } } sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Settings </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + I </Typography>
             </MenuItem>
         </Menu>
 
