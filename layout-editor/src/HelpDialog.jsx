@@ -40,6 +40,7 @@ const HelpDialog = (props) => {
                     <BindingText name="Redo" binding="CTRL + Y" />
                     <BindingText name="Swap to Partition" binding="ALT + [0-9]" />
                     <BindingText name="Create Partition" binding="ALT + =" />
+                    <BindingText name="Layout Settings" binding="CTRL + I" />
                 </Stack>
             </DialogContent>
             <DialogActions>
