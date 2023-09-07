@@ -16,7 +16,7 @@ const HelpDialog = (props) => {
     } = props;
 
     return (
-        <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ style: { backgroundColor: '#7d7a7a', color: "white" }}}>
+        <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ style: { backgroundColor: '#1e1f1e', color: "white" }}}>
             <DialogTitle sx={{ fontSize: 40 }}> Layout Editor Keybinds </DialogTitle>
             <DialogContent sx={{ width: "89%" }}>
                 <Stack>
@@ -40,6 +40,7 @@ const HelpDialog = (props) => {
                     <BindingText name="Redo" binding="CTRL + Y" />
                     <BindingText name="Swap to Partition" binding="ALT + [0-9]" />
                     <BindingText name="Create Partition" binding="ALT + =" />
+                    <BindingText name="Layout Settings" binding="CTRL + I" />
                 </Stack>
             </DialogContent>
             <DialogActions>

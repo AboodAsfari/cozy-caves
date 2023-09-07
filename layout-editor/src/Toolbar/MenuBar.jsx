@@ -3,7 +3,12 @@ import {
     AppBar,
     Box,
     Button,
+    Checkbox,
     Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Menu,
     MenuItem,
@@ -45,12 +50,15 @@ const MenuBar = (props) => {
         setBrushInfo,
         setCurrTool,
         setHelpOpen,
+        setSettingsOpen,
+        settingsOpen,
         updateActivePartition
     } = props;
 
     const [defaultPartitionAnchorEl, setDefaultPartitionAnchorEl] = React.useState(null);
     const [fileMenuAnchorEl, setFileMenuAnchorEl] = React.useState(null);
     const [fileListAnchorEl, setFileListAnchorEl] = React.useState(null);
+    const [updater, setUpdater] = React.useState(false);
 
     const swapBrushes = () => {
         setBrushInfo(prev => ({
@@ -161,6 +169,16 @@ const MenuBar = (props) => {
         handleFileSaveAs();
     }
 
+    const handleAllowFlipX = (e) => {
+        layout.setAllowFlipX(e.target.checked);
+        setUpdater(!updater);
+    }
+
+    const handleAllowFlipY = (e) => {
+        layout.setAllowFlipY(e.target.checked);
+        setUpdater(!updater);
+    }
+
     return (
         <>
         <AppBar position="sticky" component="nav">
@@ -188,21 +206,30 @@ const MenuBar = (props) => {
         </AppBar>
 
         <Menu anchorEl={fileMenuAnchorEl} open={!!fileMenuAnchorEl} onClose={() => setFileMenuAnchorEl(null)}
-            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a" }, mt: 1 }}>
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#7d7a7a", minWidth: "280px" }, mt: 1 }}>
             <MenuItem onClick={handleNew} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> New </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> SHIFT + N </Typography>
             </MenuItem>
             <MenuItem onClick={handleOpen} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + O </Typography>
             </MenuItem>
             <MenuItem onClick={handleFolder} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Open Folder </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + SHIFT + O </Typography>
             </MenuItem>
             <MenuItem onClick={handleSave} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + S </Typography>
             </MenuItem>
             <MenuItem onClick={handleSaveAs} sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
                 <Typography> Save As </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + SHIFT + S </Typography>
+            </MenuItem>
+            <MenuItem onClick={() => { setSettingsOpen(true); setFileMenuAnchorEl(null); } } sx={{ py: "4px !important" }} className="MenuItem" disableRipple>
+                <Typography> Settings </Typography>
+                <Typography sx={{ ml: "auto", textAlign: "right", color: "#dbd9d9", fontSize: 13 }}> CTRL + I </Typography>
             </MenuItem>
         </Menu>
 
@@ -214,6 +241,27 @@ const MenuBar = (props) => {
                 </MenuItem>
             )}
         </Menu>
+
+        <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} sx={{ "& .MuiPaper-root": { backgroundColor: "#1e1f1e", minWidth: "600px" } }}>
+            <DialogTitle sx={{ color: "white", alignSelf: "center", fontSize: "40px" }}> Layout Settings </DialogTitle>
+            <DialogContent >
+                <Typography sx={{ fontSize: 30, color: "white" }}> Room Build Options </Typography>
+                <Stack direction="row" className="Checkbox" sx={{ ml: 0 }}>
+                    <Checkbox disableRipple checked={layout.getAllowFlipX()} onChange={(handleAllowFlipX)} sx={{ ml: "0px !important" }} />
+                    <Typography> Allow Room Flip X </Typography>
+                </Stack>
+                <Stack direction="row" className="Checkbox" sx={{ ml: 0 }}>
+                    <Checkbox disableRipple checked={layout.getAllowFlipY()} onChange={handleAllowFlipY} sx={{ ml: "0px !important" }} />
+                    <Typography> Allow Room Flip Y </Typography>
+                </Stack>
+
+                <Typography sx={{ fontSize: 30, color: "white", mt: 4 }}> Custom Layout Metadata </Typography>
+                <Typography sx={{ fontSize: 20, color: "white", ml: 1.5 }}> To Be Implemented </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setSettingsOpen(false)} className="NavButton" autoFocus disableRipple> OK </Button>
+            </DialogActions>
+        </Dialog>
         </>
     );
 }

@@ -1,11 +1,6 @@
 import React from "react";
 import {
     Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Menu,
     MenuItem,
     Stack,
@@ -57,6 +52,7 @@ const App = () => {
     const [currPartition, setCurrPartition] = React.useState(null);
     const [partitionLocked, setPartitionLocked, partitionLockedRef] = useState(false);
     const [helpOpen, setHelpOpen] = React.useState(false);
+    const [settingsOpen, setSettingsOpen, settingsOpenRef] = useState(false);
     const [updater, setUpdater] = React.useState(false);
 
     const [directoryHandle, setDirectoryHandle] = React.useState(null);
@@ -204,7 +200,8 @@ const App = () => {
                 primaryBrush: prev.secondaryBrush,
                 secondaryBrush: prev.primaryBrush
             }));
-        } else if (e.key === "b") changeTool(Tools.PEN);
+        } else if (e.ctrlKey && e.key === "i") setSettingsOpen(!settingsOpenRef.current);
+        else if (e.key === "b") changeTool(Tools.PEN);
         else if (e.key === "e") changeTool(Tools.ERASER);
         else if (e.key === "g") changeTool(Tools.FILL);
         else if (e.key === "v") changeTool(Tools.SELECTOR);
@@ -475,7 +472,7 @@ const App = () => {
                 layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
                 handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
                 handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} handleFolderOpen={handleFolderOpen} directoryFiles={directoryFiles} 
-                fileHandle={fileHandle} loadHandle={loadHandle} setHelpOpen={setHelpOpen} />
+                fileHandle={fileHandle} loadHandle={loadHandle} setHelpOpen={setHelpOpen} settingsOpen={settingsOpen} setSettingsOpen={setSettingsOpen} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>

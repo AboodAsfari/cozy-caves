@@ -49,7 +49,7 @@ class RoomBuilder {
             while (room === null && layoutPool.length > 0) {
                 let serializedLayout = require("../../layouts/" + layoutPool[0]);
                 let layout = Layout.fromSerializableLayout(serializedLayout);
-                room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+                room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType, this.#numGen);
                 if (!room) layoutPool.shift();
             }
         } else {

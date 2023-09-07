@@ -1,16 +1,11 @@
 import React from "react";
 import {
     Box,
-    Button,
-    Divider,
-    Grid,
     Popover,
     Stack,
     Typography
 } from "@mui/material";
 import { HexColorPicker, HexColorInput } from "react-colorful";
-
-import iconMap from "../PartitionIcons";
 
 import "../styles/PartitionPanel.css";
 
@@ -22,12 +17,7 @@ const PartitionIconPopover = (props) => {
         update
     } = props;
 
-    const [colorMenu, setColorMenu] = React.useState(false);
     const counter = React.useRef(0);
-
-    React.useEffect(() => {
-        if (!!iconAnchor) setColorMenu(false);
-    }, [iconAnchor]);
 
     return (
         <Popover className="PartitionIconPanel" open={!!iconAnchor} anchorEl={iconAnchor} onClose={() => { setIconAnchor(null); }} sx={{ mt: 1 }}

@@ -18,21 +18,34 @@ class Layout {
     #unscaledEditableTiles = new Map(); // Unlike its counterpart, can be edited while scaling.
     #scalePartitions = []; // Partitions containing tiles to scale and scaling rules.
 
+    #allowFlipX = true; // Whether to allow flipping in the X axis.
+    #allowFlipY = true; // Whether to allow flipping in the X axis.
+
     // Used when attempt to generate a room.
     #maxSize; // The maximum size of the room.
     #leniency; // How much the room size can deviate from max.
     #allowOvergrow; // Whether leniency allows room to be bigger than max. 
 
     #minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); // Smallest encountered X/Y positions in partition.
+    #maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER); // Largest encountered X/Y positions in partition.
 
-    #generateRoom(tilerType) {
+    #generateRoom(tilerType, numGen) {
         let room = new Room(this.#getDimensions());
 
         let posUpdater = new Point(-this.#minEncountered.getX(), -this.#minEncountered.getY());
+        let flipXUpdater = new Point(this.#maxEncountered.getX() - posUpdater.getX(), 0);
+        let flipYUpdater = new Point(0, this.#maxEncountered.getY() - posUpdater.getY());
+
+        let flipX = this.#allowFlipX && numGen() > 0.5;
+        let flipY = this.#allowFlipY && numGen() > 0.5;
 
         const addTiles = (collection) => {
             for (const value of Array.from(collection)) {
-                let updatedPos = new Point(value.getPosition().getX() + posUpdater.getX(), value.getPosition().getY() + posUpdater.getY());
+                let newX = value.getPosition().getX() + posUpdater.getX();
+                let newY = value.getPosition().getY() + posUpdater.getY();
+                if (flipX) newX = -value.getPosition().getX() + posUpdater.getX() + flipXUpdater.getX();
+                if (flipY) newY = -value.getPosition().getY() + posUpdater.getY() + flipYUpdater.getY();
+                let updatedPos = new Point(newX, newY);
                 room.addTile(value.clone(updatedPos));
             }
         }
@@ -58,7 +71,7 @@ class Layout {
      * @param tilerType The sprite decision logic to use when generating room.
      * @returns A room object built from the scaled layout, null if invalid layout.
      */
-    scaleRoom(maxSize, leniency, allowOvergrow, tilerType) {
+    scaleRoom(maxSize, leniency, allowOvergrow, tilerType, numGen) {
         this.#maxSize = maxSize;
         this.#leniency = leniency;
         this.#allowOvergrow = !!allowOvergrow;
@@ -77,7 +90,7 @@ class Layout {
         this.#satisfyLock(false);
         if (!this.#isValid(this.#getDimensions())) return null;
 
-        return this.#generateRoom(tilerType);
+        return this.#generateRoom(tilerType, numGen);
     }
 
     /**
@@ -176,18 +189,18 @@ class Layout {
      * @returns Current dimensions of the room.
      */
     #getDimensions() {
-        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
         this.#minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 
-        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
-        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), maxEncountered, this.#minEncountered);
+        for (let tile of this.#unscaledTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), this.#maxEncountered, this.#minEncountered);
+        for (let tile of this.#excludedTiles.values()) this.#dimensionCalculationHelper(tile.getPosition(), this.#maxEncountered, this.#minEncountered);
         for (let partition of this.#scalePartitions) {
-            this.#dimensionCalculationHelper(partition.getMaxEncountered(), maxEncountered, this.#minEncountered);
-            this.#dimensionCalculationHelper(partition.getMinEncountered(), maxEncountered, this.#minEncountered);
+            this.#dimensionCalculationHelper(partition.getMaxEncountered(), this.#maxEncountered, this.#minEncountered);
+            this.#dimensionCalculationHelper(partition.getMinEncountered(), this.#maxEncountered, this.#minEncountered);
         }
 
-        let width = maxEncountered.getX() - this.#minEncountered.getX() + 1;
-        let height = maxEncountered.getY() - this.#minEncountered.getY() + 1;
+        let width = this.#maxEncountered.getX() - this.#minEncountered.getX() + 1;
+        let height = this.#maxEncountered.getY() - this.#minEncountered.getY() + 1;
         return new Point(width, height);
     }
 
@@ -380,6 +393,14 @@ class Layout {
         return partitionDisplayInfo;
     }
 
+    // Setters.
+    setAllowFlipX(allowFlipX) { this.#allowFlipX = !!allowFlipX; }
+    setAllowFlipY(allowFlipY) { this.#allowFlipY = !!allowFlipY; }
+
+    // Getters
+    getAllowFlipX() { return this.#allowFlipX; }
+    getAllowFlipY() { return this.#allowFlipY; }
+
     /**
      * Resets all fields in this object
      * to their defaults.
@@ -400,6 +421,9 @@ class Layout {
      */
     getSerializableLayout() {
         return {
+            tags: this.#tags,
+            allowFlipX: this.#allowFlipX,
+            allowFlipY: this.#allowFlipY,
             excludedTiles: Array.from(this.#excludedTiles.values()).map(tile => tile.getSerializableTile()),
             unscaledTiles: Array.from(this.#unscaledTiles.values()).map(tile => tile.getSerializableTile()),
             scalePartitions: this.#scalePartitions.map(partition => partition.getSerializablePartition())
@@ -413,6 +437,9 @@ class Layout {
      * @returns Layout.
      */
     static fromSerializableLayout(serializedLayout, layout = new Layout()) {
+        layout.#tags = serializedLayout.tags;
+        layout.#allowFlipX = serializedLayout.allowFlipX;
+        layout.#allowFlipY = serializedLayout.allowFlipY;
         serializedLayout.excludedTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.unscaledTiles.forEach(tile => layout.addTile(Tile.fromSerializableTile(tile)));
         serializedLayout.scalePartitions.forEach(serializedPartition => {
