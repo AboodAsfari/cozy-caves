@@ -40,4 +40,5 @@
     border-radius: 0 !important;
     background-color: black !important;
     font-size: 15px !important;
+    user-select: none;
 }
