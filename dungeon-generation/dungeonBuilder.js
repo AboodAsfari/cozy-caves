@@ -223,6 +223,11 @@ class DungeonBuilder {
         if(typeof this.#totalCoverage === 'undefined'){ throw new Error('Total Coverage has not been set');}
         if(typeof this.#dungeonSeed === 'undefined'){ throw new Error('Dungeon Seed has not been set');}
     }
+
+    // Getter methods
+    getSeed(){ return this.#dungeonSeed; }
+    getPresets() { return this.#presets; }
+
 }
 
 module.exports = DungeonBuilder;
