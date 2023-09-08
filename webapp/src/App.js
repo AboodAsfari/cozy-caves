@@ -26,7 +26,7 @@ function App() {
       return <Homepage setActivePage={setActivePage}/>;
     }
     if (activePage === "map") {
-      return <MapPage dungeon={dungeon} mapSettings={mapSettings} />;
+      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
     }
     if (activePage === "options") {
       return <Options setActivePage={setActivePage} setDungeon={setDungeon} setMapSettings={setMapSettings} />;

@@ -19,16 +19,57 @@ import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import DungeonBuilder from '@cozy-caves/dungeon-generation';
 
 export default function ToolBar(props) {
     const {
         zoom,
-        mapSettings
+        dungeon,
+        mapSettings,
+        setMapSettings,
+        setDungeon,
+        stageRef
     } = props;
 
     const [open, setOpen] = React.useState(true);
+
+    React.useEffect(() => {
+        requestAnimationFrame(() => {
+            let viewport = stageRef.current.mountNode.containerInfo.children[0];
+            if (!viewport) return;
+            viewport.fitHeight(viewport.maxY, true, true, true);
+            viewport.moveCenter(viewport.worldScreenWidth * 2, viewport.maxY/2);
+            viewport.animate({position: { x: viewport.maxX/2, y: viewport.maxY/2}, time: 500});
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dungeon]);
+
+    const regenerateMap = () => {
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+
+        function requestNewMap() {
+            let newSeed = Math.random();
+            let dungeonBuilder = new DungeonBuilder();
+            let dungeon;
+            if(mapSettings.preset !== "Custom") dungeon = dungeonBuilder.setPreset(mapSettings.preset).build();
+            else {
+                dungeon = dungeonBuilder
+                    .setSeed(newSeed)
+                    .setSize(Number(mapSettings.width), Number(mapSettings.height))
+                    .setMinRoomSize(Number(mapSettings.roomSize))
+                    .setTotalCoverage(Number(mapSettings.totalCoverage))
+                    .build();
+            }
+            setDungeon(dungeon);
+
+            setMapSettings(prev => ({...prev, seed: newSeed}));
+        }
+
+        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+    }
+
     const tools = {
-        regenerate: { name: "Regenerate", icon: <LoopIcon />, method: () => { } },
+        regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: () => { } },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
@@ -49,9 +90,7 @@ export default function ToolBar(props) {
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
                             <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple >
-                                    {tool.icon}
-                                </Button>
+                                <Button className="toolbar-button" disableRipple onClick={tool.method}> {tool.icon} </Button>
                             </Tooltip>
                         ))}
                     </Stack>
