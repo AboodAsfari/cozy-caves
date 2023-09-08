@@ -32,3 +32,8 @@ body {
     background-position: center center;
     background-attachment: fixed;
 }
+
+body:has(#app > canvas) {
+    height: 100%;
+    overflow-y: hidden;
+} 

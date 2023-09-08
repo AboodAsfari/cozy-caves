@@ -34,7 +34,7 @@ function App() {
   }
 
   return (
-    <Box>
+    <Box id="app">
       <ThemeProvider theme={defaultTheme}>
         {getPageHeader()}
         {getPage()}
