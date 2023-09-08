@@ -1,9 +1,8 @@
 import React from 'react';
-import { 
-    Menu,
-    MenuItem,
+import {
     Button,
-    ListItemIcon,
+    Collapse,
+    Stack,
 } from "@mui/material";
 import "../style/Toolbar.css"
 
@@ -16,65 +15,30 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
 export default function ToolBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+    const [open, setOpen] = React.useState(false);
+    const tools = {
+        regenerate: { name: "Regenerate", icon: <LoopIcon />, method: () => { } },
+        info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
+        settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: () => { } },
+        share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
+        print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
+    }
 
-  const toggleBar = (e) => {
-    if (anchorEl) setAnchorEl(null);
-    else setAnchorEl(e.currentTarget);
-  }
-
-  // fix the styling later. this is so very bad
-  // onClick={handleClick}
-  return (
-    <div style={{ position: 'absolute', top: '90px', right: '25px' }}> 
-      <Button className="ToolbarToggle" disableRipple onClick={toggleBar}>  
-        <ArrowDropDownOutlinedIcon className={!!anchorEl ? "open" : ""} sx={{ transform: "rotate(180deg)", fontSize: 30 }}  />
-      </Button>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        // open={open}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        
-        <MenuItem>
-          <ListItemIcon>
-              <LoopIcon/>
-          </ListItemIcon>
-        </MenuItem>
-        
-        <MenuItem>
-          <ListItemIcon>
-              <InfoOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <TuneOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <ShareOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <FileDownloadOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <PrintOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-      </Menu>
-    </div>
-  );
+    return (
+        <div style={{ position: 'absolute', top: '90px', right: '25px' }}>
+            <Button className="toolbar-toggle" disableRipple onClick={() => setOpen(!open)}>
+                <ArrowDropDownOutlinedIcon className={open ? "toggle-icon open" : "toggle-icon"} />
+            </Button>
+            <Collapse in={open}>
+                <Stack className="toolbar">
+                    {Object.values(tools).map((tool) => (
+                        <Button className="toolbar-button" disableRipple >
+                            {tool.icon}
+                        </Button>
+                    ))}
+                </Stack>
+            </Collapse>
+        </div>
+    );
 }

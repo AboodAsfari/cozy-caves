@@ -1,16 +1,37 @@
-.ToolbarToggle {
+.toolbar {
+    background-color: black;
+    margin-top: 1rem;
+}
+
+.toolbar-toggle {
     background-color: #000 !important; 
     color: #4C9553 !important;
 }
 
-.ToolbarToggle:hover {
+.toolbar-toggle:hover {
     background-color: #2c2929 !important;
 }
 
-.ToolbarToggle > svg {
-    transition: transform 0.2s;
+.toggle-icon {
+    transition: transform 0.2s !important;
+    transform: rotate(180deg);
+    font-size: 30px;
 }
 
-.ToolbarToggle > svg.open {
+.toggle-icon.open {
     transform: rotate(0deg);
+}
+
+.toolbar-button {
+    color: white;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.toolbar-button:hover {
+    color: #4C9553;
+}
+
+.toolbar-button > svg {
+    font-size: 30px;
 }
