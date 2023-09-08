@@ -4,9 +4,6 @@ import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
 
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-
 const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
@@ -20,6 +17,13 @@ const RendererCanvas = (props) => {
     autoDensity: true,
     backgroundColor: 0xefefef,
   };
+
+  useEffect(() => {
+    if (props.zoomScaleRequest === 1) return;
+    zoom(props.zoomScaleRequest);
+    props.setZoomScaleRequest(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.zoomScaleRequest]);
 
   const useResize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
