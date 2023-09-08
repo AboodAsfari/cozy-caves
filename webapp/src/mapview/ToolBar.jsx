@@ -21,6 +21,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DungeonBuilder from '@cozy-caves/dungeon-generation';
+import MapSettingsPanel from './MapSettingsPanel';
 
 export default function ToolBar(props) {
     const {
@@ -33,6 +34,7 @@ export default function ToolBar(props) {
     } = props;
 
     const [open, setOpen] = React.useState(true);
+    const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
 
     React.useEffect(() => {
@@ -73,10 +75,15 @@ export default function ToolBar(props) {
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
 
+    const toggleSettings = () => {
+        if (currPanel === "settings") setCurrPanel(null);
+        else setCurrPanel("settings");
+    }
+
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
-        settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: () => { } },
+        settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
@@ -90,6 +97,10 @@ export default function ToolBar(props) {
                     <RemoveIcon className="zoom-button" sx={{ right: "60px !important" }} onClick={() => zoom(2/3)} />
                     <AddIcon className="zoom-button" onClick={() => zoom(1.5)} />   
                 </Collapse>
+
+                {currPanel && <Collapse orientation='horizontal'>
+                    {currPanel === "settings" &&  <MapSettingsPanel />}
+                </Collapse>}
 
                 {open && <Collapse orientation='horizontal'>
                     <Stack className="toolbar">

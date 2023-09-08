@@ -27,7 +27,7 @@
 
 .MuiTooltip-tooltip {
     border-radius: 0 !important;
-    background-color: black !important;
+    background-color: #4C9553 !important;
     font-size: 15px !important;
     user-select: none;
 }
@@ -70,4 +70,66 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+.settings-dropdown {
+    color: white !important;
+    text-transform: none !important; 
+    display: flex;
+    justify-content: left !important;
+    padding: 0 !important;
+}
+
+.settings-dropdown:hover, .settings-dropdown:hover > .MuiTypography-root {
+    color: #7da36d !important;
+    transition: none;
+}
+
+.settings-text-field > .MuiTypography-root, .settings-text-field > .MuiTextField-root > .MuiInputBase-root {
+    color: white !important;
+    font-size: 25px !important;
+}
+
+.settings-text-field > .MuiTextField-root > .MuiInputBase-root > .MuiInputBase-input {
+    padding: 0;
+    margin-left: 20px !important;
+} 
+
+.settings-text-field > .MuiTextField-root {
+    width: 40%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.settings-text-field fieldset {
+    border: none !important;
+}
+
+.settings-text-field > .MuiTextField-root > .MuiInputBase-root.Mui-focused {
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.settings-slider {
+    color: white !important;
+    width: 100% !important;
+}
+
+.settings-slider .MuiSlider-thumb {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+.settings-slider .Mui-active, .settings-slider .MuiSlider-thumb:hover {
+    color: #9B55C6 !important;
+}
+
+.settings-button {
+    text-transform: none !important;
+    font-size: 25px !important;
+}
+
+.settings-button:hover {
+    color: white !important;
 }
