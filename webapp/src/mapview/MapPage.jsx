@@ -12,7 +12,7 @@ const MapPage = (props) => {
   return (
     <>
     <RendererCanvas dungeon={props.dungeon} zoomScaleRequest={zoomScaleRequest} setZoomScaleRequest={setZoomScaleRequest} />
-    <ToolBar zoom={setZoomScaleRequest} />
+    <ToolBar zoom={setZoomScaleRequest} mapSettings={props.mapSettings} />
     </>
   );
 };

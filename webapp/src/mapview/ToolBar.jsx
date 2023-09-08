@@ -3,7 +3,6 @@ import {
     Box,
     Button,
     Collapse,
-    Slide,
     Stack,
     Tooltip,
 } from "@mui/material";
@@ -23,7 +22,8 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
 export default function ToolBar(props) {
     const {
-        zoom
+        zoom,
+        mapSettings
     } = props;
 
     const [open, setOpen] = React.useState(false);
