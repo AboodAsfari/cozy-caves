@@ -5,6 +5,7 @@ import {
     Button,
     ListItemIcon,
 } from "@mui/material";
+import "../style/Toolbar.css"
 
 import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -14,34 +15,25 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
-
-export default function TooBar() {
+export default function ToolBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
+  const toggleBar = (e) => {
+    if (anchorEl) setAnchorEl(null);
+    else setAnchorEl(e.currentTarget);
+  }
 
   // fix the styling later. this is so very bad
+  // onClick={handleClick}
   return (
     <div style={{ position: 'absolute', top: '90px', right: '25px' }}> 
-      <Button
-        id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-      >
-        <ArrowDropDownOutlinedIcon/>
+      <Button className="ToolbarToggle" disableRipple onClick={toggleBar}>  
+        <ArrowDropDownOutlinedIcon className={!!anchorEl ? "open" : ""} sx={{ transform: "rotate(180deg)", fontSize: 30 }}  />
       </Button>
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        // open={open}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}

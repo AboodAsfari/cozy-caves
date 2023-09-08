@@ -1,0 +1,16 @@
+.ToolbarToggle {
+    background-color: #000 !important; 
+    color: #4C9553 !important;
+}
+
+.ToolbarToggle:hover {
+    background-color: #2c2929 !important;
+}
+
+.ToolbarToggle > svg {
+    transition: transform 0.2s;
+}
+
+.ToolbarToggle > svg.open {
+    transform: rotate(0deg);
+}
