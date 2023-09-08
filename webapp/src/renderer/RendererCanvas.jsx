@@ -100,9 +100,6 @@ const RendererCanvas = (props) => {
          { dungeon }
         </Viewport>
       </Stage>
-
-      <RemoveIcon className="zoom-button" sx={{ right: 60 }} onClick={() => zoom(2/3)} />
-      <AddIcon className="zoom-button" onClick={() => zoom(1.5)} />
     </>
   );
 };

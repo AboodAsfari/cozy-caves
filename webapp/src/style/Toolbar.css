@@ -1,25 +1,14 @@
 .toolbar {
     background-color: black;
-    margin-top: 1rem;
+    width: 70px; 
+    height: 100vh;
 }
 
-.toolbar-toggle {
-    background-color: #000 !important; 
-    color: #4C9553 !important;
-}
-
-.toolbar-toggle:hover {
-    background-color: #2c2929 !important;
-}
-
-.toggle-icon {
-    transition: transform 0.2s !important;
-    transform: rotate(180deg);
-    font-size: 30px;
-}
-
-.toggle-icon.open {
-    transform: rotate(0deg);
+#toolbar-toggle {
+    position: absolute;
+    top: 10px;
+    right: 11px;
+    z-index: 99999
 }
 
 .toolbar-button {
@@ -46,12 +35,12 @@
 .zoom-button {
     color: black;
     position: absolute;
-    bottom: 10px;
+    bottom: 80px;
     right: 15px;
     font-size: 44px !important;
 }
 
-.zoom-button:hover {
+.zoom-button:hover, #toolbar-toggle:hover {
     color: #4C9553;
     cursor: pointer;
 }

@@ -35,5 +35,5 @@ body {
 
 body:has(#app > canvas) {
     height: 100%;
-    overflow-y: hidden;
+    overflow: hidden;
 } 
