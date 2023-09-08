@@ -7,8 +7,13 @@ some of the boxes can probably
 */
 
 const MapPage = (props) => {
+  const [zoomScaleRequest, setZoomScaleRequest] = React.useState(1);
+
   return (
-    <RendererCanvas dungeon={props.dungeon}/>
+    <>
+    <RendererCanvas dungeon={props.dungeon} zoomScaleRequest={zoomScaleRequest} setZoomScaleRequest={setZoomScaleRequest} />
+    <ToolBar zoom={setZoomScaleRequest} />
+    </>
   );
 };
 

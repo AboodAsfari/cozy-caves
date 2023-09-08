@@ -1,12 +1,19 @@
 import React from 'react';
-import { 
-    Menu,
-    MenuItem,
+import {
+    Box,
     Button,
-    ListItemIcon,
+    Collapse,
+    Slide,
+    Stack,
+    Tooltip,
 } from "@mui/material";
+import "../style/Toolbar.css"
 
-import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import Hamburger from 'hamburger-react'
+import { TransitionGroup } from 'react-transition-group';
+
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import LoopIcon from '@mui/icons-material/Loop';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
@@ -14,75 +21,42 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
+export default function ToolBar(props) {
+    const {
+        zoom
+    } = props;
 
-export default function TooBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+    const [open, setOpen] = React.useState(false);
+    const tools = {
+        regenerate: { name: "Regenerate", icon: <LoopIcon />, method: () => { } },
+        info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
+        settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: () => { } },
+        share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
+        print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
+    }
 
-  // fix the styling later. this is so very bad
-  return (
-    <div style={{ position: 'absolute', top: '90px', right: '25px' }}> 
-      <Button
-        id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-      >
-        <ArrowDropDownOutlinedIcon/>
-      </Button>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        
-        <MenuItem>
-          <ListItemIcon>
-              <LoopIcon/>
-          </ListItemIcon>
-        </MenuItem>
-        
-        <MenuItem>
-          <ListItemIcon>
-              <InfoOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
+    return (<>
+        <Box id="toolbar-toggle"> <Hamburger size={25} toggled={open} toggle={setOpen} direction="right" /> </Box>
+        <Stack direction="row" sx={{ position: 'absolute', top: '70px ', right: '0', height: "100vh" }}>
+            <TransitionGroup component={null} >
+                <Collapse direction="left" sx={{ position: "relative"}}>
+                    <RemoveIcon className="zoom-button" sx={{ right: "60px !important" }} onClick={() => zoom(2/3)} />
+                    <AddIcon className="zoom-button" onClick={() => zoom(1.5)} />   
+                </Collapse>
 
-        <MenuItem>
-          <ListItemIcon>
-              <TuneOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <ShareOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <FileDownloadOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-
-        <MenuItem>
-          <ListItemIcon>
-              <PrintOutlinedIcon/>
-          </ListItemIcon>
-        </MenuItem>
-      </Menu>
-    </div>
-  );
+                {open && <Collapse orientation='horizontal'>
+                    <Stack className="toolbar">
+                        {Object.values(tools).map((tool) => (
+                            <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
+                                <Button className="toolbar-button" disableRipple >
+                                    {tool.icon}
+                                </Button>
+                            </Tooltip>
+                        ))}
+                    </Stack>
+                </Collapse>}
+            </TransitionGroup>
+        </Stack>
+    </>);
 }
