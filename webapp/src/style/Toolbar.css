@@ -42,3 +42,16 @@
     font-size: 15px !important;
     user-select: none;
 }
+
+.zoom-button {
+    color: black;
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 44px !important;
+}
+
+.zoom-button:hover {
+    color: #4C9553;
+    cursor: pointer;
+}
