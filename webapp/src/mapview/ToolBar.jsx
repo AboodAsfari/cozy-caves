@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Collapse,
+    Slide,
     Stack,
     Tooltip,
 } from "@mui/material";
@@ -32,11 +33,14 @@ export default function ToolBar(props) {
     } = props;
 
     const [open, setOpen] = React.useState(true);
+    const [loadingAnimation, setLoadingAnimation] = React.useState(false);
 
     React.useEffect(() => {
         requestAnimationFrame(() => {
             let viewport = stageRef.current.mountNode.containerInfo.children[0];
             if (!viewport) return;
+
+            setLoadingAnimation(false);
             viewport.fitHeight(viewport.maxY, true, true, true);
             viewport.moveCenter(viewport.worldScreenWidth * 2, viewport.maxY/2);
             viewport.animate({position: { x: viewport.maxX/2, y: viewport.maxY/2}, time: 500});
@@ -46,6 +50,7 @@ export default function ToolBar(props) {
 
     const regenerateMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        setLoadingAnimation(true);
 
         function requestNewMap() {
             let newSeed = Math.random();
@@ -97,5 +102,8 @@ export default function ToolBar(props) {
                 </Collapse>}
             </TransitionGroup>
         </Stack>
+        <Slide in={loadingAnimation} direction={loadingAnimation ? "down" : "up"}>
+            <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
+        </Slide>
     </>);
 }
