@@ -63,6 +63,7 @@ class Populate {
             roomArray.push("");
             for (let j = 0; j < dimensions.getX(); j++) {
                 let tile = this.#room.getTile(new Point(j, i));
+                if (tile === null || tile === undefined) continue; 
                 let prop = this.getProp(new Point(j, i));
 
                 if (prop !== null && prop !== undefined) roomArray[i] += "P";
