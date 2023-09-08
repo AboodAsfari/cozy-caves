@@ -8,7 +8,10 @@ some of the boxes can probably
 
 const MapPage = (props) => {
   return (
+    <>
     <RendererCanvas dungeon={props.dungeon}/>
+    <ToolBar />
+    </>
   );
 };
 
