@@ -3,7 +3,7 @@ const Point = require('@cozy-caves/utils').Point;
 const propGenerator = new PropGenerator();
 
 
-class Populate {
+class PropMap {
     #populatedRoom = new Map();
     #room;
 
@@ -80,7 +80,7 @@ class Populate {
 }
 
 function populateRoom(room, maxProp) {
-    return new Populate(room, maxProp);
+    return new PropMap(room, maxProp);
 }
 
 module.exports = populateRoom;

@@ -41,6 +41,20 @@ class PropGenerator {
         }
     }
 
+    getPropByName(name){
+        const categories = metadata.prop_categories;
+        
+        for (const category in categories) {
+            const propList = categories[category];
+            const foundProp = propList.find(prop => prop.name === name);
+            if (foundProp) {
+                return foundProp;
+            }
+        }
+
+        return null;
+    }
+
     getPropByRarity(rarity) { 
         if (!this.rarityList.includes(rarity)) throw new Error("Invalid rarity category: ${rarity}");
 
