@@ -23,15 +23,21 @@
 }
 
 .toolbar-button {
-    color: white;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    color: white !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
 }
 
 .toolbar-button:hover {
-    color: #4C9553;
+    color: #4C9553 !important;
 }
 
 .toolbar-button > svg {
     font-size: 30px;
+}
+
+.MuiTooltip-tooltip {
+    border-radius: 0 !important;
+    background-color: black !important;
+    font-size: 15px !important;
 }

@@ -3,6 +3,7 @@ import {
     Button,
     Collapse,
     Stack,
+    Tooltip,
 } from "@mui/material";
 import "../style/Toolbar.css"
 
@@ -33,9 +34,11 @@ export default function ToolBar() {
             <Collapse in={open}>
                 <Stack className="toolbar">
                     {Object.values(tools).map((tool) => (
-                        <Button className="toolbar-button" disableRipple >
-                            {tool.icon}
-                        </Button>
+                        <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
+                            <Button className="toolbar-button" disableRipple >
+                                {tool.icon}
+                            </Button>
+                        </Tooltip>
                     ))}
                 </Stack>
             </Collapse>
