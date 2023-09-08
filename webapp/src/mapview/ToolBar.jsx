@@ -26,7 +26,7 @@ export default function ToolBar(props) {
         mapSettings
     } = props;
 
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: () => { } },
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
