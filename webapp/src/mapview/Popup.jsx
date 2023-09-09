@@ -22,6 +22,9 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
     ...style,
   };
 
+  // Extract prop attributes from content
+  const { name, desc, rarity, contains_items } = content || {};
+
   return (
     <Modal
       open={isOpen}
@@ -31,10 +34,15 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
     >
       <Box sx={popupStyle}>
         <Typography id="popup-modal-title" variant="h6" component="h2" sx={{ color: 'black' }}>
-          Information Viewer
+        <strong>Information Viewer</strong>
         </Typography>
         <Typography id="popup-modal-description" sx={{ mt: 2, color: 'black' }}>
-          {content}
+        <strong>Name:</strong> {name}
+          <br />
+          <strong>Description:</strong> {desc}
+          <br />
+          <strong>Rarity:</strong> {rarity}
+          <br />
         </Typography>
       </Box>
     </Modal>
