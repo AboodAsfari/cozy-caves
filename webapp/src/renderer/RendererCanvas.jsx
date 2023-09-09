@@ -22,6 +22,19 @@ const RendererCanvas = (props) => {
   const [popupContent, setPopupContent] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  // Pass the mouse click coordinates
+  setClickX(e.clientX);
+  setClickY(e.clientY); 
+
+  const onClick = (e, tileInfo) => {
+    setPopupContent(tileInfo);
+    setIsPopupOpen(true);
+
+    // Pass the mouse click coordinates
+    setClickX(e.clientX);
+    setClickY(e.clientY); 
+  };
+
   const useResize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
     
@@ -51,6 +64,11 @@ const RendererCanvas = (props) => {
   const drawTile = (tile, roomPos) => {
 
     const tileInfo = `Tile at position (${tile.getPosition().getX()}, ${tile.getPosition().getY()}):\nType: ${tile.getTileType()}`
+    
+    const handleClick = (e) => {
+      onClick(e, tileInfo); // Only show popup when a sprite is clicked
+    };
+
     const onClick = () => {
        console.log("This tile is being clicked on: " + tileInfo);
 
@@ -72,7 +90,7 @@ const RendererCanvas = (props) => {
               zIndex={tile.getDepth()}
               eventMode='dynamic'
               cursor='pointer'
-              pointerdown={onClick}
+              pointerdown={handleClick}
             />
   }
 
