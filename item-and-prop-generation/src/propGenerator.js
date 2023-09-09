@@ -19,8 +19,12 @@ class PropGenerator {
             throw new Error("Invalid type. Expecting a Prop object.");
         }
 
-        const rarity = this.getRandomRarity();
-        prop.addItem(ItemGenerator.getItemByRarity(rarity));
+        if (!prop.containsItem) return;
+        const max = Math.floor(Math.random() * 5) + 1; // maximum number of items a prop can have
+        for (let i=0; i<max; i++){
+            const rarity = this.getRandomRarity();
+            prop.addItem(ItemGenerator.getItemByRarity(rarity));
+        }
     }
 
     getRandomRarity() {
@@ -42,12 +46,14 @@ class PropGenerator {
     }
 
     getPropByName(name){
+        
         const categories = metadata.prop_categories;
         
         for (const category in categories) {
             const propList = categories[category];
             const foundProp = propList.find(prop => prop.name === name);
             if (foundProp) {
+                this.storeItem(foundProp);
                 return foundProp;
             }
         }
@@ -74,13 +80,8 @@ class PropGenerator {
         const randomIndex = Math.floor(Math.random() * filteredProps.length);
         const p = filteredProps[randomIndex];
         const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem);
-
-        if (prop.containsItem) {
-            const max = Math.floor(Math.random() * 5) + 1; // maximum number of items a prop can have
-            for (let i=0; i<max; i++){
-                this.storeItem(prop);
-            }
-        }
+        
+        this.storeItem(prop);
         return prop;
     }
 
@@ -91,7 +92,9 @@ class PropGenerator {
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(Math.random() * temp.length); 
         let p = temp[randomIndex];
-        return new Prop(p.name, p.desc, p.rarity, p.containsItem);
+        const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem); 
+        this.storeItem(prop);
+        return prop;
     }
 }
 

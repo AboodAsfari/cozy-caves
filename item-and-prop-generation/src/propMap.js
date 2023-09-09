@@ -31,6 +31,7 @@ class PropMap {
             for (let j=0; j<this.#room.getDimensions().getY(); j++) {
                 let pos = new Point(i, j);
                 let tile = this.#room.getTile(pos);
+                if (tile === null || tile === undefined) continue; 
 
                 // makes sure to generate props only on the floor not wall
                 if (tile.getTileType() === "floor") {
