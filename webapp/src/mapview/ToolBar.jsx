@@ -4,6 +4,7 @@ import {
     Button,
     Collapse,
     Slide,
+    Snackbar,
     Stack,
     Tooltip,
 } from "@mui/material";
@@ -14,6 +15,7 @@ import { TransitionGroup } from 'react-transition-group';
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
@@ -38,6 +40,7 @@ export default function ToolBar(props) {
     const [open, setOpen] = React.useState(true);
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
+    const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
 
     React.useEffect(() => {
         if (intialRender) {
@@ -68,7 +71,7 @@ export default function ToolBar(props) {
 
         function requestNewMap() {
             setDungeon(new DungeonBuilder()
-                .setSeed(newSettings.seed)
+                .setSeed(newSettings.seed.toString())
                 .setSize(Number(newSettings.width), Number(newSettings.height))
                 .setMinRoomSize(Number(newSettings.roomSize))
                 .setTotalCoverage(Number(newSettings.totalCoverage))
@@ -86,6 +89,14 @@ export default function ToolBar(props) {
         else setCurrPanel("settings");
     }
 
+    const copyShareLink = () => {
+        let url = window.location.href;
+        url += "?width=" + mapSettings.width + "&height=" + mapSettings.height + "&roomSize=" + 
+            mapSettings.roomSize + "&totalCoverage=" + mapSettings.totalCoverage + "&seed=" + mapSettings.seed;
+        navigator.clipboard.writeText(url);
+        setCopiedSnackbar(true);
+    }
+
     const getToolbarButtonColors = (name) => {
         if (currPanel === "settings" && name === "Settings") return "#4C9553 !important";
         return "";
@@ -95,7 +106,7 @@ export default function ToolBar(props) {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
-        share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
+        share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
     }
@@ -129,5 +140,13 @@ export default function ToolBar(props) {
         <Slide in={loadingAnimation} direction={loadingAnimation ? "down" : "up"}>
             <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
         </Slide>
+        <Snackbar
+            sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}
+            open={copiedSnackbar}
+            autoHideDuration={3000}
+            onClose={() => setCopiedSnackbar(false)}
+            message="Link Copied to Clipboard!"
+            action={<CloseIcon sx={{ mt: -0.5, "&:hover": { cursor: "pointer", color: "black" } }} onClick={() => setCopiedSnackbar(false)} />}
+        />
     </>);
 }

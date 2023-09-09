@@ -64,7 +64,7 @@ function App() {
       });
 
       setDungeon(new DungeonBuilder()
-          .setSeed(seed)
+          .setSeed(seed.toString())
           .setSize(Number(width), Number(height))
           .setMinRoomSize(Number(roomSize))
           .setTotalCoverage(Number(totalCoverage))
