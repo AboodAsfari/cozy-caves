@@ -83,6 +83,32 @@ export default function ToolBar(props) {
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
+    
+    const printMap = () => {
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        if (!viewport) return;
+        let width = viewport.worldScreenWidth, height = viewport.worldScreenHeight, center = viewport.center;
+        if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
+        else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
+        viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
+        const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
+            
+        setTimeout(function(){
+            let canvasImage = stageRef.current.app.renderer.plugins.extract.image(stageRef.current.app.stage);
+            canvasImage.then((img) => {
+                WinPrint.document.write('<img src="'+img.src+'"/>');
+                WinPrint.document.close();  
+                WinPrint.focus();
+                WinPrint.print();
+                WinPrint.close();
+            });
+            if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(width, true, true, true);
+            else viewport.fitHeight(height, true, true, true);
+            viewport.moveCenter(center.x, center.y);
+        }, 500);
+    }
+
+
 
     const toggleSettings = () => {
         if (currPanel === "settings") setCurrPanel(null);
@@ -108,7 +134,7 @@ export default function ToolBar(props) {
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
-        print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
+        print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
     return (<>
