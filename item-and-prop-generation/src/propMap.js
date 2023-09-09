@@ -99,9 +99,10 @@ class PropMap {
 
         propSet[0].setPosition(anchorPos);
         this.#populatedRoom.set(anchorPos.toString(), propSet[0]);
+        let range = this.#room.getDimensions().getX()-3;
         for (var i=1; i<propSet.length; i++) {
             const prop = propSet[i];
-            const relativePos = this.#calculateRelativePos(anchorPos, 3);
+            const relativePos = this.#calculateRelativePos(anchorPos, range);
 
             if (relativePos === null) continue;
 
@@ -142,23 +143,29 @@ class PropMap {
     toString() {
         let roomArray = [];
         let dimensions = this.#room.getDimensions();
+        let propInfo = "";
 
         for (let i = 0; i < dimensions.getY(); i++) {
             roomArray.push("");
             for (let j = 0; j < dimensions.getX(); j++) {
-                let tile = this.#room.getTile(new Point(j, i));
+                let pos = new Point(j, i);
+                let tile = this.#room.getTile(pos);
                 if (tile === null || tile === undefined) continue; 
-                let prop = this.getProp(new Point(j, i));
+                let prop = this.getProp(pos);
 
-                if (prop !== null && prop !== undefined) roomArray[i] += "P";
+                if (prop !== null && prop !== undefined) {
+                    roomArray[i] += "P";
+                    propInfo  += pos.toString() + ": " + prop.name + "\n";
+                }
                 else if (!tile) roomArray[i] += "X";
                 else if (tile.getTileType() === "floor") roomArray[i] += "O";
                 else roomArray[i] += "I";
                 roomArray[i] += "  ";
             }
         }
-        let finalString = roomArray.join("\n");
-        return finalString.substring(0, finalString.length - 1);
+        let finalRoom = roomArray.join("\n");
+        let finalString = finalRoom.substring(0, finalRoom.length - 1) + "\n\n" + propInfo;
+        return finalString;
     }
 
 }
