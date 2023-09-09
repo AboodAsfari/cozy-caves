@@ -79,6 +79,11 @@ export default function ToolBar(props) {
         else setCurrPanel("settings");
     }
 
+    const getToolbarButtonColors = (name) => {
+        if (currPanel === "settings" && name === "Settings") return "#4C9553 !important";
+        return "";
+    }
+
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
@@ -105,7 +110,9 @@ export default function ToolBar(props) {
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
                             <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple onClick={tool.method}> {tool.icon} </Button>
+                                <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
+                                    {tool.icon} 
+                                </Button>
                             </Tooltip>
                         ))}
                     </Stack>

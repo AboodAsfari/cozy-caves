@@ -22,15 +22,8 @@ function App() {
   }
 
   const getPage = () => {
-    if (activePage === "home") {
-      return <Homepage setActivePage={setActivePage}/>;
-    }
-    if (activePage === "map") {
-      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
-    }
-    if (activePage === "options") {
-      return <Options setActivePage={setActivePage} setDungeon={setDungeon} setMapSettings={setMapSettings} />;
-    }
+    if (activePage === "home" || activePage === "options") return <Homepage setActivePage={setActivePage}/>;
+    if (activePage === "map") return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
     return null;
   }
 
@@ -39,6 +32,7 @@ function App() {
       <ThemeProvider theme={defaultTheme}>
         {getPageHeader()}
         {getPage()}
+        <Options setActivePage={setActivePage} setDungeon={setDungeon} setMapSettings={setMapSettings} open={activePage === "options"} />
       </ThemeProvider>
     </Box>
   );

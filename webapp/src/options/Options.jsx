@@ -1,143 +1,116 @@
 import React from 'react';
-import { Typography,Box, Button, TextField, Grid, Select, MenuItem, FormControl } from "@mui/material";
-import InputSlider from './InputSlider';
+import { Typography,Box, Button, TextField, Dialog, DialogTitle, DialogContent, Stack, Menu } from "@mui/material";
+
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import SettingsDropdownItem from './SettingsDropdownItem';
+import SettingsSlider from './SettingsSlider';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 
 const Options = (props) => {
+    const {
+        open,
+        setActivePage
+    } = props;
 
-    // Store dungeon options
-    const [dungeonWidth, setDungeonWidth] = React.useState(50);
-    const [dungeonHeight, setDungeonHeight] = React.useState(50);
-    const [roomSize, setMinRoomSize] = React.useState(7);
-    const [totalCoverage, setTotalCoverage] = React.useState(50);
-    const [dungeonSeed, setDungeonSeed] = React.useState("Cozy Cave");
-
-    const [presetSelected, setPresetSelected] = React.useState("Small");
+    const [presetAnchor, setPresetAnchor] = React.useState(null);
     
-    // Options validation
-        <Grid item></Grid>
+    const [presetSelected, setPresetSelected] = React.useState("Custom");
+    const [width, setWidth] = React.useState(50);
+    const [height, setHeight] = React.useState(50);
+    const [roomSize, setRoomSize] = React.useState(7);
+    const [totalCoverage, setTotalCoverage] = React.useState(50);
+    const [seed, setSeed] = React.useState("Cozy Cave");
+
     const [widthValid, setWidthValid] = React.useState(true);
     const [heightValid, setHeightValid] = React.useState(true);
     const [roomSizeValid, setRoomSizeValid] = React.useState(true);
     const [coverageValid, setCoverageValid] = React.useState(true);
 
-    const minWidth = 5;
-    const minHeight = 5;
-    const minRoomSize = 6;
+    const declareEdited = () => { if (presetSelected !== "Custom") setPresetSelected("Custom"); }
 
-    const maxWidth = 200;
-    const maxHeight = 200;
-    const maxRoomSize = 15;
+    const setPreset = (preset) => {
+        setPresetSelected(preset);
+        if (preset !== "Custom") {
+            let presetSettings = new DungeonBuilder().getPresets()[preset];
+            setWidth(presetSettings[0]);
+            setHeight(presetSettings[1]);
+            setRoomSize(presetSettings[2]);
+            setTotalCoverage(presetSettings[3]);
+            setSeed(Math.random());
+        }   
+    }
 
-    const inputWidth = 3;
-
-    const presets = [
-        "Small",
-        "Medium",
-        "Large",
-        "Custom"
-    ];
-
-    // Handle option changes
-    const handleInputChange = (event, eventProps) => {
-        let value = Number(event.target.value);
-        eventProps.setValid(value >= eventProps.min && value <= eventProps.max);
-        if(!Number.isNaN(value)) eventProps.setValue(value);
-        setPresetSelected("Custom");
-    };
-
-    const handleSeedChange = (event) => {
-        setDungeonSeed(event.target.value);
-    };
-
-    const handlePresetChange = (event) => {
-        setPresetSelected(event.target.value);
-    };
-
-    // Create dungeon using options and set it in the parent
-    const createDungeon = () => {
+    const generate = () => {
         props.setMapSettings({
             preset: presetSelected,
-            seed: dungeonSeed,
-            width: dungeonWidth,
-            height: dungeonHeight,
+            seed: seed,
+            width: width,
+            height: height,
             roomSize: roomSize,
             totalCoverage: totalCoverage
         });
 
-        let dungeonBuilder = new DungeonBuilder();
-        let dungeon;
-        if(presetSelected !== "Custom") {
-            dungeon = dungeonBuilder.setPreset(presetSelected).build();
-        } else {
-            dungeon = dungeonBuilder
-                                .setSeed(dungeonSeed)
-                                .setSize(Number(dungeonWidth), Number(dungeonHeight))
-                                .setMinRoomSize(Number(roomSize))
-                                .setTotalCoverage(Number(totalCoverage))
-                                .build();
-        }
-        props.setDungeon(dungeon);
+        props.setDungeon(new DungeonBuilder()
+            .setSeed(seed)
+            .setSize(Number(width), Number(height))
+            .setMinRoomSize(Number(roomSize))
+            .setTotalCoverage(Number(totalCoverage))
+            .build()
+        );
+
         props.setActivePage("map");
     }
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ flexGrow: 1}}>
-            <Typography variant="h4" marginY={3} sx={{ textAlign: "center", color: "white" }}> Map Settings </Typography>
-            <Box paddingX={3} paddingY={3} borderRadius={5} bgcolor={"black"}>
-                <Grid container spacing={3}>
-                    <InputSlider name="Height" xs={inputWidth} value={dungeonHeight} min={minHeight} max={maxHeight}
-                        handleChange={(e) => handleInputChange(e, {value: dungeonHeight, setValue: setDungeonHeight, setValid: setHeightValid, min: minHeight, max: maxHeight})}
-                    />
-                    <InputSlider name="Width" xs={inputWidth} value={dungeonWidth} min={minWidth} max={maxWidth}
-                        handleChange={(e) => handleInputChange(e, {value: dungeonWidth, setValue: setDungeonWidth, setValid: setWidthValid, min: minWidth, max: maxWidth})}
-                    />  
-                    <InputSlider name="Room Size" xs={inputWidth} value={roomSize} min={minRoomSize} max={maxRoomSize}
-                        handleChange={(e) => handleInputChange(e, {value: roomSize, setValue: setMinRoomSize, setValid: setRoomSizeValid, min: minRoomSize, max: maxRoomSize})}
-                    />
-                    <InputSlider name="Floor Coverage" xs={inputWidth} value={totalCoverage} 
-                        handleChange={(e) => handleInputChange(e, {value: totalCoverage, setValue: setTotalCoverage, setValid: setCoverageValid, min: 0, max: 100})} min={0} max={100}
-                    />
-                    <Grid item xs={inputWidth}>
-                        <Grid item>
-                            <TextField value={dungeonSeed} label="Dungeon Seed" fullWidth onChange={handleSeedChange}/>
-                        </Grid>
-                        <Grid item color={"white"} textAlign={"left"}>
-                            Seed for random generation <br/> (Leave blank for random seed)
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={inputWidth} textAlign={"left"}>
-                        <Select
-                            fullWidth
-                            labelId="preset-select-label"
-                            id="preset-select"
-                            value={presetSelected}
-                            label="Preset"
-                            onChange={handlePresetChange}
-                        >
-                            {presets.map((preset) => (  
-                                <MenuItem
-                                    key={preset} 
-                                    value={preset}
-                                >
-                                    {preset}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Grid>
-                </Grid>
-            </Box>
+        <>
+        <Dialog fullWidth open={open} onClose={() => setActivePage("home")} sx={{ "& .MuiDialog-paper": { backgroundColor: "black" }, 
+            "& .MuiDialog-container": {
+                "& .MuiPaper-root": {
+                    width: "100%",
+                    maxWidth: "750px",
+                },
+            } }}
+        >
+            <DialogTitle sx={{ fontSize: 50, mb: 1 }}> Map Generation Options </DialogTitle>
+            <DialogContent sx={{ mb: 1.5 }}>
+                <Stack direction="row" spacing={5} sx={{ justifyContent: "center" }}>
+                    <Stack>
+                        <SettingsSlider name="Width" value={width} setValue={setWidth} min={5} max={200} setValid={setWidthValid} declareEdited={declareEdited} />
+                        <SettingsSlider name="Height" value={height} setValue={setHeight} min={5} max={200} setValid={setHeightValid} declareEdited={declareEdited} />
+                        <SettingsSlider name="Room Size" value={roomSize} setValue={setRoomSize} min={6} max={15} setValid={setRoomSizeValid} declareEdited={declareEdited} />
+                        <SettingsSlider name="Room Density" value={totalCoverage} setValue={setTotalCoverage} min={0} max={100} setValid={setCoverageValid} declareEdited={declareEdited} />
+                    </Stack>
 
-            <Box sx={{ display: "flex", justifyItems: "center" }}>
-                    <Button variant="contained" sx={{minWidth:100, minHeight: 20, margin: 2}} disabled={!widthValid || !heightValid} onClick={createDungeon}>
-                        <Typography variant="h4" >Create</Typography>
-                    </Button>
-                    <Button variant="contained" sx={{minWidth:100, minHeight: 50, margin: 2}} onClick={() => props.setActivePage("home")}>
-                        <Typography variant="h4" >Back</Typography>
-                    </Button>
-                </Box>
-        </Box>
+                    <Stack>
+                        <Button className="settings-dropdown" disableRipple onClick={(e) => setPresetAnchor(e.currentTarget)} sx={{ "&:hover": { backgroundColor: "transparent" } }}
+                            endIcon={<KeyboardArrowDownIcon sx={{ transform: presetAnchor ? "rotate(0deg)" : "rotate(-90deg)", transition: "all 0.2s" }} />}>
+                            <Typography sx={{ color: "white", fontSize: 25, userSelect: "none" }}> Preset: {presetSelected} </Typography>
+                        </Button>
+
+                        <Stack direction="row" className="settings-text-field" sx={{ mt: 0 }}>
+                            <Typography> Seed: </Typography>
+                            <TextField size="small" value={seed} onChange={(e) => { setSeed(e.target.value); declareEdited(); } } sx={{ width: "100% !important", mt: "4px" }} inputProps={{ style: { fontSize: 22 } }} />
+                            <ShuffleIcon sx={{ mt: 0.7, "&:hover": { cursor: "pointer", color: "#4C9553" } }} onClick={() => setSeed(Math.random())} />
+                        </Stack>
+
+                        <Box sx={{ flexGrow: 1 }} />
+                        <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }}> Load File </Button>
+                        <Button disableRipple className="settings-button" sx={{ backgroundColor: !widthValid || !heightValid || !roomSizeValid || !coverageValid ? "grey" : "#4C9553", mb: 1.5, color: "white", "&:hover": { backgroundColor: "#9B55C6" } }} 
+                            disabled={!widthValid || !heightValid || !roomSizeValid || !coverageValid} onClick={generate}> Generate </Button>
+                    </Stack>
+                </Stack>
+            </DialogContent>
+        </Dialog>
+        <Menu anchorEl={presetAnchor} open={!!presetAnchor} onClose={() => setPresetAnchor(null)}
+            sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#4C9553" }, mt: 0.7 }}>
+            <SettingsDropdownItem name="Small" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Medium" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Large" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Custom" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+        </Menu>
+        </>
     );
 };
 
