@@ -27,11 +27,6 @@ const Options = (props) => {
     const [roomSizeValid, setRoomSizeValid] = React.useState(true);
     const [coverageValid, setCoverageValid] = React.useState(true);
 
-    React.useEffect(() => {
-        // console.log(widthValid)
-
-    }, [widthValid])
-
     const declareEdited = () => { if (presetSelected !== "Custom") setPresetSelected("Custom"); }
 
     const setPreset = (preset) => {
@@ -46,32 +41,26 @@ const Options = (props) => {
         }   
     }
 
-    // // Create dungeon using options and set it in the parent
-    // const createDungeon = () => {
-    //     props.setMapSettings({
-    //         preset: presetSelected,
-    //         seed: dungeonSeed,
-    //         width: dungeonWidth,
-    //         height: dungeonHeight,
-    //         roomSize: roomSize,
-    //         totalCoverage: totalCoverage
-    //     });
+    const generate = () => {
+        props.setMapSettings({
+            preset: presetSelected,
+            seed: seed,
+            width: width,
+            height: height,
+            roomSize: roomSize,
+            totalCoverage: totalCoverage
+        });
 
-    //     let dungeonBuilder = new DungeonBuilder();
-    //     let dungeon;
-    //     if(presetSelected !== "Custom") {
-    //         dungeon = dungeonBuilder.setPreset(presetSelected).build();
-    //     } else {
-    //         dungeon = dungeonBuilder
-    //                             .setSeed(dungeonSeed)
-    //                             .setSize(Number(dungeonWidth), Number(dungeonHeight))
-    //                             .setMinRoomSize(Number(roomSize))
-    //                             .setTotalCoverage(Number(totalCoverage))
-    //                             .build();
-    //     }
-    //     props.setDungeon(dungeon);
-    //     props.setActivePage("map");
-    // }
+        props.setDungeon(new DungeonBuilder()
+            .setSeed(seed)
+            .setSize(Number(width), Number(height))
+            .setMinRoomSize(Number(roomSize))
+            .setTotalCoverage(Number(totalCoverage))
+            .build()
+        );
+
+        props.setActivePage("map");
+    }
 
     return (
         <>
@@ -108,7 +97,7 @@ const Options = (props) => {
                         <Box sx={{ flexGrow: 1 }} />
                         <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }}> Load File </Button>
                         <Button disableRipple className="settings-button" sx={{ backgroundColor: !widthValid || !heightValid || !roomSizeValid || !coverageValid ? "grey" : "#4C9553", mb: 1.5, color: "white", "&:hover": { backgroundColor: "#9B55C6" } }} 
-                            disabled={!widthValid || !heightValid || !roomSizeValid || !coverageValid} onClick={() => {}}> Generate </Button>
+                            disabled={!widthValid || !heightValid || !roomSizeValid || !coverageValid} onClick={generate}> Generate </Button>
                     </Stack>
                 </Stack>
             </DialogContent>
