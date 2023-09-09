@@ -71,11 +71,14 @@ export default function ToolBar(props) {
     const printMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
         if (!viewport) return;
-        viewport.fitHeight(viewport.maxY, true, true, true);
+        if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
+        else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
+        
         viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
         setTimeout(function(){
             const canvasImg = stageRef.current._canvas.toDataURL("image/png", 1.0);
-            var WinPrint = window.open('', '', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
+            const features = "left=0,top=0,width="+window.innerWidth+",height="+window.innerHeight+",toolbar=0,scrollbars=0,status=0";
+            const WinPrint = window.open('', '', features);
             WinPrint.document.write('<img src="'+canvasImg+'"/>');
             WinPrint.document.close();  
             WinPrint.focus();
