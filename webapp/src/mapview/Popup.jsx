@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Modal, Typography } from '@mui/material';
+import { Box, Modal, Typography, Button } from '@mui/material';
 
 const style = {
   width: 460,
@@ -33,10 +33,26 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
       aria-describedby="popup-modal-description"
     >
       <Box sx={popupStyle}>
-        <Typography id="popup-modal-title" variant="h6" component="h2" sx={{ color: 'black' }}>
+      <Button 
+        variant="contained"
+        size="sm"
+        color="secondary"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          '&:hover': {
+            backgroundColor: '#9b55c7',
+          },
+        }}
+        onClick={onClose}
+      >
+        X
+      </Button>
+        <Typography id="popup-modal-title" variant="h6" component="h2" sx={{ mb: 2, color: 'black' }}>
         <strong>Information Viewer</strong>
         </Typography>
-        <Typography id="popup-modal-description" sx={{ mt: 2, color: 'black' }}>
+        <Typography id="popup-modal-description" sx={{ mt: 2, color: 'black', textAlign: 'left' }}>
         <strong>Name:</strong> {name}
           <br />
           <strong>Description:</strong> {desc}
