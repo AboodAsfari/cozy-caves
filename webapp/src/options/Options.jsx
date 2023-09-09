@@ -11,7 +11,8 @@ const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 const Options = (props) => {
     const {
         open,
-        setActivePage
+        setActivePage,
+        toggleTransitionPanel
     } = props;
 
     const [presetAnchor, setPresetAnchor] = React.useState(null);
@@ -43,28 +44,32 @@ const Options = (props) => {
     }
 
     const generate = () => {
-        props.setMapSettings({
-            preset: presetSelected,
-            seed: seed,
-            width: width,
-            height: height,
-            roomSize: roomSize,
-            totalCoverage: totalCoverage
+        toggleTransitionPanel(() => {
+            props.setMapSettings({
+                preset: presetSelected,
+                seed: seed,
+                width: width,
+                height: height,
+                roomSize: roomSize,
+                totalCoverage: totalCoverage
+            });
+
+            props.setDungeon(new DungeonBuilder()
+                .setSeed(seed)
+                .setSize(Number(width), Number(height))
+                .setMinRoomSize(Number(roomSize))
+                .setTotalCoverage(Number(totalCoverage))
+                .build()
+            );
+
+            props.setActivePage("map");
+            toggleTransitionPanel();
         });
-
-        props.setDungeon(new DungeonBuilder()
-            .setSeed(seed)
-            .setSize(Number(width), Number(height))
-            .setMinRoomSize(Number(roomSize))
-            .setTotalCoverage(Number(totalCoverage))
-            .build()
-        );
-
-        props.setActivePage("map");
     }
 
     return (
         <>
+        
         <Dialog fullWidth open={open} onClose={() => setActivePage("home")} sx={{ "& .MuiDialog-paper": { backgroundColor: "black" }, 
             "& .MuiDialog-container": {
                 "& .MuiPaper-root": {

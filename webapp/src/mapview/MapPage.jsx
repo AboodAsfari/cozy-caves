@@ -14,7 +14,7 @@ const MapPage = (props) => {
     <>
     <RendererCanvas dungeon={props.dungeon} zoomScaleRequest={zoomScaleRequest} setZoomScaleRequest={setZoomScaleRequest} stageRef={stageRef} />
     <ToolBar zoom={setZoomScaleRequest} mapSettings={props.mapSettings} setMapSettings={props.setMapSettings} dungeon={props.dungeon} setDungeon={props.setDungeon} 
-      stageRef={stageRef}/>
+      stageRef={stageRef} intialRender={props.intialRender} setIntialRender={props.setIntialRender} />
     </>
   );
 };
