@@ -3,7 +3,7 @@ import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
-import Popup from './Popup';
+import Popup from '../mapview/Popup';
 
 const { useState, useEffect } = React;
 
