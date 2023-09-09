@@ -1,0 +1,20 @@
+{
+    "Room": {
+        "rarity": "common",
+        "props": [
+            "Table", "Chair", "Bed", "Bookshelf"
+        ]
+    },
+    "Fireplace": {
+        "rarity": "rare",
+        "props": [
+            "Fireplace", "Hearth", "Steam Vents", "Candles"
+        ]
+    },
+    "Abandoned": {
+        "rarity": "uncommon",
+        "props": [
+            "Cobwebs", "Dust", "Runes", "Glyphs"
+        ]
+    }
+}
