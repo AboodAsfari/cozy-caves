@@ -2,6 +2,8 @@ import React from 'react';
 import {
     Box,
     Button,
+    Menu,
+    MenuItem,
     Slider,
     Stack,
     TextField,
@@ -9,10 +11,14 @@ import {
 } from "@mui/material";
 import "../style/Toolbar.css"
 
+import CheckIcon from '@mui/icons-material/Check';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 
 const MapSettingsPanel = () => {
+    const [presetAnchor, setPresetAnchor] = React.useState(null);
+    
+    const [presetSelected, setPresetSelected] = React.useState("Custom");
     const [width, setWidth] = React.useState(50);
     const [height, setHeight] = React.useState(50);
     const [roomSize, setRoomSize] = React.useState(7);
@@ -22,9 +28,9 @@ const MapSettingsPanel = () => {
     return (
         <Stack sx={{ backgroundColor: "rgba(0,0,0,0.9)", width: "250px", height: "calc(100vh - 70px)", pt: 1, px: 2, alignItems: "left" }}>
             <Typography sx={{ fontSize: 35, textAlign: "left", userSelect: "none" }}> Map Settings </Typography> 
-            <Button className="settings-dropdown" disableRipple
-                endIcon={<KeyboardArrowDownIcon />} onClick={(e) => {}}>
-                <Typography sx={{ color: "white", fontSize: 25, userSelect: "none" }}> Preset: Custom </Typography>
+            <Button className="settings-dropdown" disableRipple onClick={(e) => setPresetAnchor(e.currentTarget)}
+                endIcon={<KeyboardArrowDownIcon sx={{ transform: presetAnchor ? "rotate(0deg)" : "rotate(-90deg)", transition: "all 0.2s" }} />}>
+                <Typography sx={{ color: "white", fontSize: 25, userSelect: "none" }}> Preset: {presetSelected} </Typography>
             </Button>
 
             <SettingsSlider name="Width" value={width} setValue={setWidth} min={5} max={200} />
@@ -41,6 +47,14 @@ const MapSettingsPanel = () => {
 
             <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }}> Load File </Button>
             <Button disableRipple className="settings-button" sx={{ backgroundColor: "#4C9553", mb: 2.5, color: "white", "&:hover": { backgroundColor: "#9B55C6" } }}> Generate </Button>
+
+            <Menu anchorEl={presetAnchor} open={!!presetAnchor} onClose={() => setPresetAnchor(null)}
+                sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#4C9553" }, mt: 0.7 }}>
+                <DropdownItem name="Small" setValue={setPresetSelected} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+                <DropdownItem name="Medium" setValue={setPresetSelected} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+                <DropdownItem name="Large" setValue={setPresetSelected} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+                <DropdownItem name="Custom" setValue={setPresetSelected} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            </Menu>
         </Stack>
     );
 }
@@ -71,6 +85,22 @@ const SettingsSlider = (props) => {
             </Stack>
             <Slider className="settings-slider" value={isNaN(parseInt(value)) ? min : parseInt(value)} onChange={(e) => setValue(e.target.value)} name={name} min={min} max={max}/>
         </Stack>
+    );
+}
+
+const DropdownItem = (props) => {
+    const {
+        name,
+        handleClose,
+        setValue,
+        value,
+    } = props;
+
+    return (
+        <MenuItem onClick={() => { setValue(name); handleClose(); }} sx={{ minWidth: 140, py: "3px !important" }} disableRipple>
+            <Typography sx={{ mr: 3, mt: 0.5, fontSize: 18 }}> {name} </Typography>
+            {value === name && <CheckIcon />}
+        </MenuItem>
     );
 }
 
