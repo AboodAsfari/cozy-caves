@@ -25,7 +25,7 @@ const RendererCanvas = (props) => {
   // Pass the mouse click coordinates
   setClickX(e.clientX);
   setClickY(e.clientY); 
-
+  
   const onClick = (e, tileInfo) => {
     setPopupContent(tileInfo);
     setIsPopupOpen(true);
@@ -65,10 +65,6 @@ const RendererCanvas = (props) => {
 
     const tileInfo = `Clicked on (${tile.getPosition().getX()}, ${tile.getPosition().getY()}) || Type: ${tile.getTileType()}`
     
-    const handleClick = (e) => {
-      onClick(e, tileInfo); // Only show popup when a sprite is clicked
-    };
-
     let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
     let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
@@ -80,7 +76,7 @@ const RendererCanvas = (props) => {
               zIndex={tile.getDepth()}
               eventMode='dynamic'
               cursor='pointer'
-              pointerdown={handleClick}
+              pointerdown={(e) => onClick(e, tileInfo)}
             />
   }
 
