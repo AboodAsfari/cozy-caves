@@ -37,3 +37,20 @@ body {
     height: 100%;
     overflow: hidden;
 } 
+
+#transition-panel {
+    position: absolute;
+    bottom: 0;
+    height: calc(100% - 70px);
+    z-index: 9999;
+    background-color: black;
+    transition: all 0.25s;
+}
+
+.hidden-transition-panel {
+    right: 0;
+}
+
+.visible-transition-panel {
+    left: 0;
+}

@@ -27,7 +27,9 @@ export default function ToolBar(props) {
     const {
         zoom,
         dungeon,
+        intialRender,
         mapSettings,
+        setIntialRender,
         setMapSettings,
         setDungeon,
         stageRef
@@ -38,6 +40,11 @@ export default function ToolBar(props) {
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
 
     React.useEffect(() => {
+        if (intialRender) {
+            setIntialRender(false);
+            return;
+        }
+
         requestAnimationFrame(() => {
             let viewport = stageRef.current.mountNode.containerInfo.children[0];
             if (!viewport) return;
