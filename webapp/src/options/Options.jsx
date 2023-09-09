@@ -1,9 +1,10 @@
 import React from 'react';
-import { Typography,Box, Button, TextField, MenuItem, Dialog, DialogTitle, DialogContent, Stack, Slider, Menu } from "@mui/material";
+import { Typography,Box, Button, TextField, Dialog, DialogTitle, DialogContent, Stack, Menu } from "@mui/material";
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import CheckIcon from '@mui/icons-material/Check';
+import SettingsDropdownItem from './SettingsDropdownItem';
+import SettingsSlider from './SettingsSlider';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 
@@ -104,62 +105,13 @@ const Options = (props) => {
         </Dialog>
         <Menu anchorEl={presetAnchor} open={!!presetAnchor} onClose={() => setPresetAnchor(null)}
             sx={{ "& .MuiPaper-root": { borderRadius: 0, backgroundColor: "#4C9553" }, mt: 0.7 }}>
-            <DropdownItem name="Small" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
-            <DropdownItem name="Medium" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
-            <DropdownItem name="Large" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
-            <DropdownItem name="Custom" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Small" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Medium" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Large" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
+            <SettingsDropdownItem name="Custom" setValue={setPreset} value={presetSelected} handleClose={() => setPresetAnchor(null)} />
         </Menu>
         </>
     );
 };
-
-const SettingsSlider = (props) => {
-    const {
-        declareEdited,
-        max,
-        min,
-        name,
-        setValid,
-        setValue,
-        value
-    } = props;
-
-    const handleChange = (e) => {
-        if (e.target.value.length > 0 && (isNaN(e.target.value) || parseInt(e.target.value).toString() !== e.target.value)) return;
-        declareEdited();
-        console.log(value);
-        setValid(isValid(e.target.value));
-        setValue(e.target.value);
-    }
-
-    const isValid = (checkValue = value) => checkValue >= min && checkValue <= max;
-
-    return (
-        <Stack>
-            <Stack direction="row" className="settings-text-field">
-                <Typography sx={{ color: isValid() ? "white" : "#d4242c !important"}}> {name}: </Typography>
-                <TextField size="small" value={value} onChange={handleChange} inputProps={{ style: { color: isValid() ? "" : "#d4242c" } }} />
-            </Stack>
-            <Slider className="settings-slider" value={isNaN(parseInt(value)) ? min : parseInt(value)} 
-                onChange={(e) => { setValue(e.target.value); declareEdited(); } } name={name} min={min} max={max}/>
-        </Stack>
-    );
-}
-
-const DropdownItem = (props) => {
-    const {
-        name,
-        handleClose,
-        setValue,
-        value,
-    } = props;
-
-    return (
-        <MenuItem onClick={() => { setValue(name); handleClose(); }} sx={{ minWidth: 140, py: "3px !important" }} disableRipple>
-            <Typography sx={{ mr: 3, mt: 0.5, fontSize: 18 }}> {name} </Typography>
-            {value === name && <CheckIcon />}
-        </MenuItem>
-    );
-}
 
 export default Options;
