@@ -18,7 +18,7 @@ const RendererCanvas = (props) => {
   const stageOptions = {
     antialias: true,
     autoDensity: true,
-    backgroundColor: 0xefefef,
+    backgroundColor: "#1A1B1D",
   };
 
   const [popupContent, setPopupContent] = useState('');
