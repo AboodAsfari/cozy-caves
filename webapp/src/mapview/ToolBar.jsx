@@ -51,25 +51,24 @@ export default function ToolBar(props) {
     }, [dungeon]);
 
     const regenerateMap = () => {
+        const newSettings = { ...mapSettings, seed: Math.random() };
+        generateMap(newSettings);
+    }
+
+    const generateMap = (newSettings) => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
         setLoadingAnimation(true);
 
         function requestNewMap() {
-            let newSeed = Math.random();
-            let dungeonBuilder = new DungeonBuilder();
-            let dungeon;
-            if(mapSettings.preset !== "Custom") dungeon = dungeonBuilder.setPreset(mapSettings.preset).build();
-            else {
-                dungeon = dungeonBuilder
-                    .setSeed(newSeed)
-                    .setSize(Number(mapSettings.width), Number(mapSettings.height))
-                    .setMinRoomSize(Number(mapSettings.roomSize))
-                    .setTotalCoverage(Number(mapSettings.totalCoverage))
-                    .build();
-            }
-            setDungeon(dungeon);
+            setDungeon(new DungeonBuilder()
+                .setSeed(newSettings.seed)
+                .setSize(Number(newSettings.width), Number(newSettings.height))
+                .setMinRoomSize(Number(newSettings.roomSize))
+                .setTotalCoverage(Number(newSettings.totalCoverage))
+                .build()
+            );
 
-            setMapSettings(prev => ({...prev, seed: newSeed}));
+            setMapSettings(newSettings);
         }
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
@@ -99,7 +98,7 @@ export default function ToolBar(props) {
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
-                    {currPanel === "settings" &&  <MapSettingsPanel />}
+                    {currPanel === "settings" &&  <MapSettingsPanel mapSettings={mapSettings} generateMap={generateMap} />}
                 </Collapse>}
 
                 {open && <Collapse orientation='horizontal'>

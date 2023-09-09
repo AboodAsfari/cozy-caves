@@ -81,7 +81,7 @@
 }
 
 .settings-dropdown:hover, .settings-dropdown:hover > .MuiTypography-root {
-    color: #7da36d !important;
+    color: #4C9553 !important;
     transition: none;
 }
 
@@ -123,7 +123,7 @@
 }
 
 .settings-slider .Mui-active, .settings-slider .MuiSlider-thumb:hover {
-    color: #9B55C6 !important;
+    color: #4C9553 !important;
 }
 
 .settings-button {
