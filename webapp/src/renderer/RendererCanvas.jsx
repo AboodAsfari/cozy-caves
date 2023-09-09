@@ -19,6 +19,9 @@ const RendererCanvas = (props) => {
     backgroundColor: 0xefefef,
   };
 
+  const [popupContent, setPopupContent] = useState('');
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const useResize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
     
