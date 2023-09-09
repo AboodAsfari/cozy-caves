@@ -17,6 +17,7 @@ const RendererCanvas = (props) => {
   const stageOptions = {
     antialias: true,
     autoDensity: true,
+    preserveDrawingBuffer: true,
     backgroundColor: 0xefefef,
   };
 
