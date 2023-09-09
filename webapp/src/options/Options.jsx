@@ -57,6 +57,15 @@ const Options = (props) => {
 
     // Create dungeon using options and set it in the parent
     const createDungeon = () => {
+        props.setMapSettings({
+            preset: presetSelected,
+            seed: dungeonSeed,
+            width: dungeonWidth,
+            height: dungeonHeight,
+            roomSize: roomSize,
+            totalCoverage: totalCoverage
+        });
+
         let dungeonBuilder = new DungeonBuilder();
         let dungeon;
         if(presetSelected !== "Custom") {

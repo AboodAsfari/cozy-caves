@@ -36,12 +36,8 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         });
         
         viewport.moveCenter(x/2, y/2);
-        if(maxX > maxY) {
-            viewport.fitWidth(x, true, true, true);
-        }
-        if(maxY >= maxX) {
-            viewport.fitHeight(y, true, true, true);
-        }
+        viewport.fitHeight(y, true, true, true);
+
         return viewport;
     },
 

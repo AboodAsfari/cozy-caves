@@ -11,7 +11,8 @@ import Options from "./options/Options";
 
 function App() {
   
-  const [ dungeon, setDungeon ] = React.useState([]);
+  const [dungeon, setDungeon ] = React.useState([]);
+  const [mapSettings, setMapSettings] = React.useState({});
   const [activePage, setActivePage] = React.useState("home");
 
   const getPageHeader = () => {
@@ -25,10 +26,10 @@ function App() {
       return <Homepage setActivePage={setActivePage}/>;
     }
     if (activePage === "map") {
-      return <MapPage dungeon={dungeon}/>;
+      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
     }
     if (activePage === "options") {
-      return <Options setActivePage={setActivePage} setDungeon={setDungeon}/>;
+      return <Options setActivePage={setActivePage} setDungeon={setDungeon} setMapSettings={setMapSettings} />;
     }
     return null;
   }

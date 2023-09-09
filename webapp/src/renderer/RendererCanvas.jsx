@@ -8,7 +8,9 @@ import Popup from './Popup';
 const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
-  const stageRef = React.createRef();
+  const {
+    stageRef
+  } = props;
 
   const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/${k}.png` }]));
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
@@ -90,8 +92,21 @@ const RendererCanvas = (props) => {
   const drawDungeon = () => {
     
     return props.dungeon.map((room) => {
-      if(room.getPosition().getX()+room.getDimensions().getX() > maxX) maxX = room.getPosition().getX()+room.getDimensions().getX()
-      if(room.getPosition().getY()+room.getDimensions().getY() > maxY) maxY = room.getPosition().getY()+room.getDimensions().getY()
+      if(room.getPosition().getX()+room.getDimensions().getX() > maxX) {
+        maxX = room.getPosition().getX()+room.getDimensions().getX();
+        if (stageRef.current) {
+          let viewport = stageRef.current.mountNode.containerInfo.children[0];
+          viewport.maxX = maxX;
+        }
+      }
+      if(room.getPosition().getY()+room.getDimensions().getY() > maxY) {
+        maxY = room.getPosition().getY()+room.getDimensions().getY();
+        if (stageRef.current) {
+          let viewport = stageRef.current.mountNode.containerInfo.children[0];
+          viewport.maxY = maxY;
+        }
+      }
+      
       return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
     })
   }
@@ -120,8 +135,6 @@ const RendererCanvas = (props) => {
           maxY={maxY}
           screenWidth={width}
           screenHeight={height}
-          worldWidth={width * 4}
-          worldHeight={height * 4}
         >
          { dungeon }
         </Viewport>
