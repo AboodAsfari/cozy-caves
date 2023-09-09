@@ -3,6 +3,7 @@ import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
+import Popup from './Popup';
 
 const { useState, useEffect } = React;
 
@@ -101,6 +102,15 @@ const RendererCanvas = (props) => {
          { dungeon }
         </Viewport>
       </Stage>
+
+      {/*Add Popup for Tile/Item Information*/}
+      <Popup
+        isOpen={isPopupOpen}
+        content={popupContent}
+        onClose={() => setIsPopupOpen(false)}
+        clickX={clickX}
+        clickY={clickY}
+      />
     </>
   );
 };
