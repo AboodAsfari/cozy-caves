@@ -22,9 +22,8 @@ const RendererCanvas = (props) => {
   const [popupContent, setPopupContent] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // Pass the mouse click coordinates
-  setClickX(e.clientX);
-  setClickY(e.clientY); 
+  const [clickX, setClickX] = useState(0);
+  const [clickY, setClickY] = useState(0);
   
   const onClick = (e, tileInfo) => {
     setPopupContent(tileInfo);
