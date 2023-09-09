@@ -73,19 +73,21 @@ export default function ToolBar(props) {
         if (!viewport) return;
         if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
         else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
-        
         viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
         setTimeout(function(){
-            const canvasImg = stageRef.current._canvas.toDataURL("image/png", 1.0);
-            const features = "left=0,top=0,width="+window.innerWidth+",height="+window.innerHeight+",toolbar=0,scrollbars=0,status=0";
-            const WinPrint = window.open('', '', features);
-            WinPrint.document.write('<img src="'+canvasImg+'"/>');
-            WinPrint.document.close();  
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
+            let canvasImage = stageRef.current.app.renderer.plugins.extract.image(stageRef.current.app.stage);
+            const WinPrint = window.open('', '', "left=0,top=0,width="+window.innerWidth+",height="+window.innerHeight+",toolbar=0,scrollbars=0,status=0");
+            canvasImage.then((img) => {
+                WinPrint.document.write('<img src="'+img.src+'"/>');
+                WinPrint.document.close();  
+                WinPrint.focus();
+                WinPrint.print();
+                WinPrint.close();
+            });
         }, 500);
     }
+
+
 
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
