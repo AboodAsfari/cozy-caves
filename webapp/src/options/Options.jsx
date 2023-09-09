@@ -31,7 +31,7 @@ const Options = (props) => {
 
     React.useEffect(() => {
         if (!open) return;
-        setPresetSelected("Small");
+        setPreset("Small");
         setSeed(Math.random());
     }, [open]);
 
