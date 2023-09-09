@@ -25,9 +25,9 @@ html {
 body {
     margin: 0px;
     text-align: center;
-    background-color: #2c2929;
     color: rgb(255, 255, 255);
     font-family: 'Khand' sans-serif;
+    background-image: url('../../public/resources/home_background.png');
     background-size:  cover;
     background-position: center center;
     background-attachment: fixed;
