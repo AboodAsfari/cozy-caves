@@ -29,6 +29,12 @@ const Options = (props) => {
     const [roomSizeValid, setRoomSizeValid] = React.useState(true);
     const [coverageValid, setCoverageValid] = React.useState(true);
 
+    React.useEffect(() => {
+        if (!open) return;
+        setPresetSelected("Small");
+        setSeed(Math.random());
+    }, [open]);
+
     const declareEdited = () => { if (presetSelected !== "Custom") setPresetSelected("Custom"); }
 
     const setPreset = (preset) => {
