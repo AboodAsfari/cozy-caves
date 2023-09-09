@@ -50,7 +50,6 @@ const MapSettingsPanel = (props) => {
         setPresetSelected(preset);
         if (preset !== "Custom") {
             let presetSettings = new DungeonBuilder().getPresets()[preset];
-            console.log(presetSettings)
             setWidth(presetSettings[0]);
             setHeight(presetSettings[1]);
             setRoomSize(presetSettings[2]);
