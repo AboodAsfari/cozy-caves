@@ -71,12 +71,14 @@ export default function ToolBar(props) {
     const printMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
         if (!viewport) return;
+        let width = viewport.worldScreenWidth, height = viewport.worldScreenHeight, center = viewport.center;
         if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
         else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
         viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
+        const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
+            
         setTimeout(function(){
             let canvasImage = stageRef.current.app.renderer.plugins.extract.image(stageRef.current.app.stage);
-            const WinPrint = window.open('', '', "left=0,top=0,width="+window.innerWidth+",height="+window.innerHeight+",toolbar=0,scrollbars=0,status=0");
             canvasImage.then((img) => {
                 WinPrint.document.write('<img src="'+img.src+'"/>');
                 WinPrint.document.close();  
@@ -84,6 +86,9 @@ export default function ToolBar(props) {
                 WinPrint.print();
                 WinPrint.close();
             });
+            if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(width, true, true, true);
+            else viewport.fitHeight(height, true, true, true);
+            viewport.moveCenter(center.x, center.y);
         }, 500);
     }
 
