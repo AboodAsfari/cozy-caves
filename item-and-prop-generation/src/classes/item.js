@@ -37,6 +37,11 @@ class Item {
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
+    
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getRarity() { return this.rarity; }
+    getProperties() { return this.properties; }
 
     // Setters.
     setPosition(position) { 
