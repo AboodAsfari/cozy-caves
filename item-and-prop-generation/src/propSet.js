@@ -8,7 +8,6 @@ class PropSet {
     #randomGen;
 
     constructor (seed) {
-        if (!(anchorPos instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#seed = seed;
         this.#randomGen = seedrandom(this.#seed);
     }
@@ -22,19 +21,20 @@ class PropSet {
             }
         }
 
-        const index = Math.floor(this.#randomGen() * setMap.size());
-        return this.#getPropSet(setList[index]);
+        const index = Math.floor(this.#randomGen() * setList.length);
+        const propSet = this.#getPropSet(setList[index]); 
+        return propSet;
     }
 
     #getPropSet(setName){
         const set = metadata[setName];
         if (!set) throw new Error(`No set found for ${setName}.`);
-
         const propSet = [];
-        for (const propName in set.props) {
-            var prop = PropGenerator.getPropByName(propName)
+
+        for (const propName of set.props) {
+            var prop = new PropGenerator().getPropByName(propName)
             if (prop == null) throw new Error(`No prop found for ${propName}.`);
-            propSet.push();
+            propSet.push(prop);
         }
         return propSet;
     }

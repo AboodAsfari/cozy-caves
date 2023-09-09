@@ -1,51 +1,134 @@
 const PropGenerator = require('./propGenerator.js');
 const Point = require('@cozy-caves/utils').Point;
-const propGenerator = new PropGenerator();
+const PropSet = require('./propSet.js');
 
 
 class PropMap {
     #populatedRoom = new Map();
     #room;
+    #propGenerator = new PropGenerator();
+    #propSet = new PropSet(Math.random()); // change this later when there is a seed
 
-    constructor (room, maxProp) {
+    constructor (room) {
         this.#room = room;
-        this.#populateMap(maxProp);
+        this.#populatePropMap();
     }
     
     #getRandomRarity() {
         const rand = Math.random() * 100 + 1;
     
         if (rand <= 60) { // common
-            return propGenerator.rarityList[0];
+            return this.#propGenerator.rarityList[0];
         } else if (rand <= 90) { // uncommon
-            return propGenerator.rarityList[1];
+            return this.#propGenerator.rarityList[1];
         } else if (rand <= 100) { // rare
-            return propGenerator.rarityList[2];
+            return this.#propGenerator.rarityList[2];
         } else { // just in case something goes wrong, go with common
-            return propGenerator.rarityList[0];
+            return this.#propGenerator.rarityList[0];
+        }
+    }
+
+    /**
+     * Populates the populatedRoom with a set of props based on rarity.
+     */
+    #populatePropMap() {
+        const propSet = this.#propSet.getSetByRarity(this.#getRandomRarity());
+
+        // Ensure that you have a valid propSet
+        if (!Array.isArray(propSet) || propSet.length === 0) throw new Error("Empty prop set");
+
+        this.#placeProps(propSet);
+        
+    }
+
+
+    /**
+     * Looks for a valid random poisiton in the room so that a prop can be placed.
+     *
+     * @returns Point position.
+     */
+    #getRandomPosition(){
+        const roomDimensions = this.#room.getDimensions();
+        let count = 0;
+
+        // Limiting the number of attempts to avoid an infinite loop. This should not happen in a normal scenerio.
+        while (count < 1000) {
+            const i = Math.floor(Math.random() * roomDimensions.getX()); // USE SEED
+            const j = Math.floor(Math.random() * roomDimensions.getY());
+
+            const pos = new Point(i, j);
+            
+            const tile = this.#room.getTile(pos);
+            const prop = this.getProp(pos);
+
+            // checking if the tile exist in this position and making sure it is a floor tile
+            if (tile === null || tile === undefined) continue;
+            if (!(prop === null || prop === undefined)) continue;
+            if (tile.getTileType() === "floor") return pos;
+
+            count++;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether or not the position provided is a free space to put prop in.
+     * Rules can be added here if when the code is extended.
+     * 
+     * @param {Point} pos - Position to be checked 
+     * @returns boolean
+     */
+    #checkValidPosition(pos){
+        const tile = this.#room.getTile(pos);
+        var noFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
+        var noProp = this.getProp(pos) === null || this.getProp(pos) === undefined;
+        if (noFloor || !noProp) return false;
+        return true;
+    }
+
+    /**
+     * Places the props in the prop set near each other using an anchor point.
+     * 
+     * @param {Array} propSet - the set of props.
+     */
+    #placeProps(propSet) {
+        let anchorPos;
+        do {
+            anchorPos = this.#getRandomPosition();
+        } while (anchorPos === null);
+
+        propSet[0].setPosition(anchorPos);
+        this.#populatedRoom.set(anchorPos.toString(), propSet[0]);
+        for (var i=1; i<propSet.length; i++) {
+            const prop = propSet[i];
+            const relativePos = this.#calculateRelativePos(anchorPos, 3);
+
+            if (relativePos === null) continue;
+
+            prop.setPosition(relativePos);
+            this.#populatedRoom.set(relativePos.toString(), prop);
         }
     }
     
-    #populateMap(maxProp) {
-        outer: for (let i=0; i<this.#room.getDimensions().getX(); i++) {
-            for (let j=0; j<this.#room.getDimensions().getY(); j++) {
-                let pos = new Point(i, j);
-                let tile = this.#room.getTile(pos);
-                if (tile === null || tile === undefined) continue; 
+    /**
+     * This calculates a random position relative to the given anchor position. 
+     * 
+     * @param {Point} anchorPos - Position of the anchor point.
+     * @param {number} range - How far the new position can be from the anchor point.
+     * @returns Position.
+     */
+    #calculateRelativePos(anchorPos, range){
+        let xChange, yChange, x, y, newPos;
 
-                // makes sure to generate props only on the floor not wall
-                if (tile.getTileType() === "floor") {
-                    let rand = Math.random();
-                    // will put props 40% of the time in the room
-                    if (rand < 0.4) { 
-                        const prop = propGenerator.getPropByRarity(this.#getRandomRarity());
-                        prop.setPosition(pos);
-                        this.#populatedRoom.set(pos.toString(), prop);
-                    }
-                }
-                if (this.#populatedRoom.size >= 5) break outer;
-            }
-        }
+        do {
+            xChange = Math.floor(Math.random() * (2 * range + 1)) - range;
+            yChange = Math.floor(Math.random() * (2 * range + 1)) - range;
+            x = anchorPos.getX() + xChange;
+            y = anchorPos.getY() + yChange;
+            newPos = new Point(Math.abs(x), Math.abs(y));
+        } while (!this.#checkValidPosition(newPos));
+
+        return newPos;
     }
 
     getProp(pos) {
@@ -80,8 +163,8 @@ class PropMap {
 
 }
 
-function populateRoom(room, maxProp) {
-    return new PropMap(room, maxProp);
+function populateRoom(room) {
+    return new PropMap(room);
 }
 
 module.exports = populateRoom;

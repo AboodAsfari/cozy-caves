@@ -51,10 +51,11 @@ class PropGenerator {
         
         for (const category in categories) {
             const propList = categories[category];
-            const foundProp = propList.find(prop => prop.name === name);
-            if (foundProp) {
-                this.storeItem(foundProp);
-                return foundProp;
+            const found = propList.find(prop => prop.name === name);
+            if (found) {
+                const prop = new Prop(found.name, found.desc, found.rarity, found.containsItem);
+                this.storeItem(prop);
+                return prop;
             }
         }
 
