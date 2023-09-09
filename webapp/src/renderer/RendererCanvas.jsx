@@ -63,7 +63,7 @@ const RendererCanvas = (props) => {
 
   const drawTile = (tile, roomPos) => {
 
-    const tileInfo = `Tile at position (${tile.getPosition().getX()}, ${tile.getPosition().getY()}):\nType: ${tile.getTileType()}`
+    const tileInfo = `Clicked on (${tile.getPosition().getX()}, ${tile.getPosition().getY()}) || Type: ${tile.getTileType()}`
     
     const handleClick = (e) => {
       onClick(e, tileInfo); // Only show popup when a sprite is clicked
