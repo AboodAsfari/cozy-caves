@@ -33,7 +33,7 @@ body {
     background-attachment: fixed;
 }
 
-body:has(#app > canvas) {
+body {
     height: 100%;
     overflow: hidden;
 } 
