@@ -86,13 +86,14 @@
 }
 
 .settings-text-field > .MuiTypography-root, .settings-text-field > .MuiTextField-root > .MuiInputBase-root {
-    color: white !important;
-    font-size: 25px !important;
+    color: white;
+    font-size: 25px;
+    user-select: none;
 }
 
 .settings-text-field > .MuiTextField-root > .MuiInputBase-root > .MuiInputBase-input {
     padding: 0;
-    margin-left: 20px !important;
+    /* margin-left: 10px; */
 } 
 
 .settings-text-field > .MuiTextField-root {
@@ -100,6 +101,7 @@
     height: 40px;
     border: none !important;
     border-bottom: 2px solid transparent !important;
+    margin-left: 5px;
 }
 
 .settings-text-field fieldset {
