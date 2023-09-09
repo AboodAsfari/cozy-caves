@@ -69,14 +69,19 @@ export default function ToolBar(props) {
     }
     
     const printMap = () => {
-        const canvas = document.getElementById("app").getElementsByTagName("canvas")[0];
-        const canvasImg = canvas.toDataURL("image/png", 1.0);
-        var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-        WinPrint.document.write('<img src="'+canvasImg+'"/>');
-        WinPrint.document.close();  
-        WinPrint.focus();
-        WinPrint.print();
-        WinPrint.close();
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        if (!viewport) return;
+        viewport.fitHeight(viewport.maxY, true, true, true);
+        viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
+        setTimeout(function(){
+            const canvasImg = stageRef.current._canvas.toDataURL("image/png", 1.0);
+            var WinPrint = window.open('', '', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
+            WinPrint.document.write('<img src="'+canvasImg+'"/>');
+            WinPrint.document.close();  
+            WinPrint.focus();
+            WinPrint.print();
+            WinPrint.close();
+        }, 500);
     }
 
     const tools = {
