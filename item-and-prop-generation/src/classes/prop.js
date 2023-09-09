@@ -47,6 +47,13 @@ class Prop {
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
 
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getRarity() { return this.rarity; }
+
+    // Returns a boolean value depending on whether the prop contains an item or not.
+    hasItem() { return this.containsItem; }
+
     // Setters.
     setPosition(position) { 
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
