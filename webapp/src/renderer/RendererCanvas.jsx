@@ -69,16 +69,6 @@ const RendererCanvas = (props) => {
       onClick(e, tileInfo); // Only show popup when a sprite is clicked
     };
 
-    const onClick = () => {
-       console.log("This tile is being clicked on: " + tileInfo);
-
-      if (props.displayTileInfo) {
-          props.displayTileInfo(tileInfo);
-          // console.log(props.displayTileInfo);
-          // console.log("Tile Info: " + tileInfo);
-      }
-    };
-
     let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
     let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
