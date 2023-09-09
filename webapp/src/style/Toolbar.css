@@ -27,13 +27,13 @@
 
 .MuiTooltip-tooltip {
     border-radius: 0 !important;
-    background-color: black !important;
+    background-color: #4C9553 !important;
     font-size: 15px !important;
     user-select: none;
 }
 
 .zoom-button {
-    color: black;
+    color: white;
     position: absolute;
     bottom: 80px;
     right: 15px;
@@ -43,4 +43,94 @@
 .zoom-button:hover, #toolbar-toggle:hover {
     color: #4C9553;
     cursor: pointer;
+}
+
+.lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 200px;
+    height: 200px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 10px solid white;
+    border-color: white transparent white transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.settings-dropdown {
+    color: white !important;
+    text-transform: none !important; 
+    display: flex;
+    justify-content: left !important;
+    padding: 0 !important;
+}
+
+.settings-dropdown:hover, .settings-dropdown:hover > .MuiTypography-root {
+    color: #4C9553 !important;
+    transition: none;
+}
+
+.settings-text-field > .MuiTypography-root, .settings-text-field > .MuiTextField-root > .MuiInputBase-root {
+    color: white;
+    font-size: 25px;
+    user-select: none;
+}
+
+.settings-text-field > .MuiTextField-root > .MuiInputBase-root > .MuiInputBase-input {
+    padding: 0;
+} 
+
+.settings-text-field > .MuiTextField-root {
+    width: 40%;
+    height: 40px;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    margin-left: 5px;
+}
+
+.settings-text-field fieldset {
+    border: none !important;
+}
+
+.settings-text-field > .MuiTextField-root > .MuiInputBase-root.Mui-focused {
+    border-bottom: 2px solid white !important;
+    border-radius: 0;
+}
+
+.settings-slider {
+    color: white !important;
+    width: 100% !important;
+}
+
+.settings-slider .MuiSlider-thumb {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+.settings-slider .Mui-active, .settings-slider .MuiSlider-thumb:hover {
+    color: #4C9553 !important;
+}
+
+.settings-button {
+    text-transform: none !important;
+    font-size: 25px !important;
+}
+
+.settings-button:hover {
+    color: white !important;
 }

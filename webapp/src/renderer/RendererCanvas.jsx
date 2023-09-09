@@ -3,6 +3,7 @@ import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
+import Popup from './Popup';
 
 const { useState, useEffect } = React;
 
@@ -17,8 +18,22 @@ const RendererCanvas = (props) => {
   const stageOptions = {
     antialias: true,
     autoDensity: true,
-    preserveDrawingBuffer: true,
-    backgroundColor: 0xefefef,
+    backgroundColor: "#1A1B1D",
+  };
+
+  const [popupContent, setPopupContent] = useState('');
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const [clickX, setClickX] = useState(0);
+  const [clickY, setClickY] = useState(0);
+  
+  const onClick = (e, tileInfo) => {
+    setPopupContent(tileInfo);
+    setIsPopupOpen(true);
+
+    // Pass the mouse click coordinates
+    setClickX(e.clientX);
+    setClickY(e.clientY); 
   };
 
   useEffect(() => {
@@ -27,6 +42,7 @@ const RendererCanvas = (props) => {
     props.setZoomScaleRequest(1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.zoomScaleRequest]);
+
 
   const useResize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -56,6 +72,8 @@ const RendererCanvas = (props) => {
 
   const drawTile = (tile, roomPos) => {
 
+    const tileInfo = `Clicked on (${tile.getPosition().getX()}, ${tile.getPosition().getY()}) || Type: ${tile.getTileType()}`
+    
     let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
     let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
@@ -65,6 +83,9 @@ const RendererCanvas = (props) => {
               position={{x:xPos, y:yPos}}
               angle={tile.getRotation()}
               zIndex={tile.getDepth()}
+              eventMode='dynamic'
+              cursor='pointer'
+              pointerdown={(e) => onClick(e, tileInfo)}
             />
   }
 
@@ -118,6 +139,15 @@ const RendererCanvas = (props) => {
          { dungeon }
         </Viewport>
       </Stage>
+
+      {/*Add Popup for Tile/Item Information*/}
+      <Popup
+        isOpen={isPopupOpen}
+        content={popupContent}
+        onClose={() => setIsPopupOpen(false)}
+        clickX={clickX}
+        clickY={clickY}
+      />
     </>
   );
 };
