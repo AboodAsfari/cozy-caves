@@ -67,6 +67,17 @@ export default function ToolBar(props) {
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
+    
+    const printMap = () => {
+        const canvas = document.getElementById("app").getElementsByTagName("canvas")[0];
+        const canvasImg = canvas.toDataURL("image/png", 1.0);
+        var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        WinPrint.document.write('<img src="'+canvasImg+'"/>');
+        WinPrint.document.close();  
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+    }
 
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
@@ -74,7 +85,7 @@ export default function ToolBar(props) {
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: () => { } },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => { } },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
-        print: { name: "Print", icon: <PrintOutlinedIcon />, method: () => { } },
+        print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
     return (<>
