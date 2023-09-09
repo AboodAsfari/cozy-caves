@@ -39,10 +39,21 @@ class Partition {
     constructor() {
         this.resetScaling();
 
-        let hue = 360 * Math.random();
-        let saturation = 100 + 70 * Math.random();
-        let lightness = 70 + 10 * Math.random();
-        this.#partitionColor =  "hsl(" + hue + ',' + saturation + '%,' + lightness + '%)';
+        const hslToHex = (h, s, l) => {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+
+        let h = 360 * Math.random();
+        let s = 100;
+        let l = 50 + 10 * Math.random();
+        this.#partitionColor = hslToHex(h, s, l);
     }
 
     /**
@@ -175,7 +186,6 @@ class Partition {
      * @param tile Tile to add.
      */
     addTile(tile) { 
-        if (!(tile instanceof Tile)) throw new Error('Invalid tile provided.');
         this.#tiles.set(tile.getPosition().toString(), tile); 
     }
 
@@ -185,7 +195,6 @@ class Partition {
      * @param pos Pos of tie to remove. 
      */
     removeTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         this.#tiles.delete(pos.toString());
     }
 
@@ -195,7 +204,6 @@ class Partition {
      * @param pos Position of tile to get.
      */
     getTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         return this.#tiles.get(pos.toString());
     }
 
@@ -206,7 +214,6 @@ class Partition {
      * @param pos Position of tile to remove.
      */
     removeScaledTile(pos) {
-        if (!(pos instanceof Point)) throw new Error('Invalid position provided.');
         if (!this.#scaledTiles.delete(pos.toString())) return;
 
         this.#maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
@@ -265,6 +272,29 @@ class Partition {
     getScaleCountY() { return this.#scaleCountY; }
     getTiles() { return this.#tiles; }
     getScaledTiles() { return Array.from(this.#scaledTiles.values()); }
+
+    /**
+     * Creates a new object with information needed to save the partition.
+     * 
+     * @returns Serializable partition object.
+     */
+    getSerializablePartition() {
+        return {
+            name: this.#partitionName,
+            color: this.#partitionColor,
+            icon: this.#partitionIcon,
+            lockRatio: this.#lockRatio,
+            lockX: this.#lockX,
+            lockY: this.#lockY,
+            splitScalingOnX: this.#splitScalingOnX,
+            splitScalingOnY: this.#splitScalingOnY,
+            incrementAmtX: this.#incrementAmtX,
+            incrementAmtY: this.#incrementAmtY,
+            xDir: this.#xDir,
+            yDir: this.#yDir,
+            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
+        };
+    }
 }
 
 module.exports = Partition;

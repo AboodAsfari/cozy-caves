@@ -8,11 +8,11 @@ import Popup from './Popup';
 const { useState, useEffect } = React;
 
 const RendererCanvas = (props) => {
+  const stageRef = React.createRef();
 
   const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/${k}.png` }]));
-
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
-
+  
   const stageOptions = {
     antialias: true,
     autoDensity: true,
@@ -33,6 +33,14 @@ const RendererCanvas = (props) => {
     setClickX(e.clientX);
     setClickY(e.clientY); 
   };
+
+  useEffect(() => {
+    if (props.zoomScaleRequest === 1) return;
+    zoom(props.zoomScaleRequest);
+    props.setZoomScaleRequest(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.zoomScaleRequest]);
+
 
   const useResize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -88,6 +96,16 @@ const RendererCanvas = (props) => {
     })
   }
 
+  const zoom = (factor) => {
+    let viewport = stageRef.current.mountNode.containerInfo.children[0];
+    let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
+    let newScale = viewport.scale._x * factor;
+
+    if (newScale > clampOptions.maxScale) viewport.animate({ scale: clampOptions.maxScale, time: 250 });
+    else if (newScale < clampOptions.minScale) viewport.animate({ scale: clampOptions.minScale, time: 250 });
+    else  viewport.animate({ scale: newScale, time: 250 });  
+  }
+
   // get the current window size
   const [width, height] = useResize();
   let dungeon = drawDungeon()
@@ -96,7 +114,7 @@ const RendererCanvas = (props) => {
   console.log(maxX/2, maxY/2)
   return (
     <>
-      <Stage width={width} height={height} options={stageOptions}>
+      <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
         <Viewport
           maxX={maxX}
           maxY={maxY}

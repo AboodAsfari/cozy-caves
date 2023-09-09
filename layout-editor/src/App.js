@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    AppBar,
     Box,
     Menu,
     MenuItem,
@@ -25,11 +24,12 @@ import "./styles/MenuBar.css";
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
+import HelpDialog from "./HelpDialog";
 
 const Layout = require("@cozy-caves/room-generation").Layout;
 
 const App = () => {
-    const gridSize = new Point(10, 8);
+    const gridSize = new Point(parseInt((window.innerWidth * 0.75 ) / 100), parseInt((window.innerHeight - 50 ) / 100));
     const layout = React.useRef(new Layout()).current;
     const undoStack = React.useRef([]).current;
     const redoStack = React.useRef([]).current;
@@ -50,8 +50,16 @@ const App = () => {
     });
     const [partitionAssigner, setPartitionAssigner, partitionAssignerRef] = useState(null);
     const [currPartition, setCurrPartition] = React.useState(null);
-    const [partitionLocked, setPartitionLocked] = React.useState(false);
+    const [partitionLocked, setPartitionLocked, partitionLockedRef] = useState(false);
+    const [helpOpen, setHelpOpen] = React.useState(false);
+    const [settingsOpen, setSettingsOpen, settingsOpenRef] = useState(false);
     const [updater, setUpdater] = React.useState(false);
+
+    const [directoryHandle, setDirectoryHandle] = React.useState(null);
+    const [directoryFiles ,setDirectoryFiles] = React.useState([]);
+    const [fileHandle, setFileHandle, fileHandleRef] = useState(null);
+    const [fileDisplayName, setFileDisplayName] = React.useState("Untitled Layout.json");
+    const [fileEdited, setFileEdited] = React.useState(true);
 
     React.useEffect(() => {
         document.addEventListener("mousedown", handleMouseDown, []);
@@ -151,15 +159,53 @@ const App = () => {
             }));
         } else if (e.ctrlKey && e.key === "z") {
             if (undoStack.length === 0) return;
+            setFileEdited(true);
             let action = undoStack.pop();
             action.undo(layout, setTileMap, setMouseInfo, changeTool);
             redoStack.push(action);
         } else if (e.ctrlKey && e.key === "y") {
             if (redoStack.length === 0) return;
+            setFileEdited(true);
             let action = redoStack.pop();
             action.redo(layout, setTileMap, setMouseInfo, changeTool);
             undoStack.push(action);
-        }
+        } else if (e.altKey && !isNaN(e.key)) {
+            e.preventDefault();
+            let num = e.key === "0" ? 7 : parseInt(e.key) - 3;
+            if (num > layout.getPartitionDisplayInfo().length - 3 || num < -2) return;
+            setBrushInfo(prev => ({ ...prev, defaultPartition: num }));
+            if (num >= 0) updateActivePartition(num);
+        } else if (e.altKey && e.key === "=") handleNewPartition();
+        else if (e.ctrlKey && e.key === "o") {
+            e.preventDefault();
+            handleFileOpen();
+        } else if (e.ctrlKey && e.shiftKey && e.key === "O") {
+            e.preventDefault();
+            handleFolderOpen();
+        } else if (e.ctrlKey && e.key === "s") {
+            e.preventDefault();
+            handleFileSave();
+        } else if (e.ctrlKey && e.shiftKey && e.key === "S") {
+            e.preventDefault();
+            handleFileSaveAs();
+        } else if (e.shiftKey && e.key === "N") {
+            e.preventDefault();
+            handleNewLayout();
+        } else if (e.ctrlKey && e.key === "/") {
+            e.preventDefault();
+            setHelpOpen(true);
+        } else if (e.key === "x") {
+            setBrushInfo(prev => ({
+                ...prev,
+                primaryBrush: prev.secondaryBrush,
+                secondaryBrush: prev.primaryBrush
+            }));
+        } else if (e.ctrlKey && e.key === "i") setSettingsOpen(!settingsOpenRef.current);
+        else if (e.key === "b") changeTool(Tools.PEN);
+        else if (e.key === "e") changeTool(Tools.ERASER);
+        else if (e.key === "g") changeTool(Tools.FILL);
+        else if (e.key === "v") changeTool(Tools.SELECTOR);
+        else if (e.key === "i") changeTool(Tools.PICKER);
     }
 
     const changeTool = (tool) => {
@@ -214,9 +260,10 @@ const App = () => {
     }
 
     const handlePartitionChange = (partitionNum) => {
+        setFileEdited(true);
+
         let action = new PenAction(false, null);
         undoStack.push(action);
-
         if (isInSelection(partitionAssignerRef.current.pos) && mouseInfoRef.current.selectEnd.toString() !== "-1,-1") {
             for (let key in tileMapRef.current) {
                 if (!tileMapRef.current[key] || !isInSelection(tileMapRef.current[key].getPosition())) continue;
@@ -245,13 +292,14 @@ const App = () => {
     }
 
     const handleNewPartition = () => {
+        setFileEdited(true);
+
         let partition = layout.newPartition();
         let partitionNum = layout.getPartitionDisplayInfo().length;
         partition.setPartitionName("Partition #" + partitionNum);
         setBrushInfo(prev => ({ ...prev, defaultPartition: partitionNum - 3 }));
-        setCurrPartition({partition, num: partitionNum - 3});
+        updateActivePartition(partitionNum - 3);
 
-        setPartitionAssigner(null);
         return partitionNum - 3;
     }
 
@@ -268,13 +316,15 @@ const App = () => {
     }
 
     const updateActivePartition = (partitionNum) => {
-        if (partitionNum < 0 || partitionLocked) return;
+        if (partitionNum < 0 || partitionLockedRef.current) return;
         let partition = layout.getPartition(partitionNum);
         setCurrPartition({partition, num: partitionNum});
     }
 
     const removePartition = () => {
         if (currPartition === null) return;
+
+        setFileEdited(true);
         
         undoStack.splice(0, undoStack.length);
         redoStack.splice(0, redoStack.length);
@@ -305,12 +355,124 @@ const App = () => {
         setUpdater(!updater);
     }
 
+    const handleFileOpen = () => {
+        let options = {
+            types: [
+                {
+                    description: "JSON",
+                    accept: { "application/json": [".json"] }
+                }
+            ]
+        }
+
+        window.showOpenFilePicker(options).then(([fh]) => loadHandle(fh)).catch(() => {});
+    }
+
+    const loadHandle = (fh) => {
+        setFileHandle(fh);
+        
+        fh.getFile().then((file) => {
+            setFileDisplayName(file.name);
+            setFileEdited(false);
+            return file.text();
+        }).then(text => {
+            undoStack.splice(0, undoStack.length);
+            redoStack.splice(0, redoStack.length);
+
+            layout.clearLayout();
+            Layout.fromSerializableLayout(JSON.parse(text), layout);
+
+            if (layout.getPartition(0)) {
+                setBrushInfo(prev => ({ ...prev, defaultPartition: 0 }));
+                setCurrPartition({partition: layout.getPartition(0), pos: 0}); 
+            } else setBrushInfo(prev => ({ ...prev, defaultPartition: -1 }));
+
+            let newTileMap = {};
+            layout.getTiles().forEach(tile => newTileMap[tile.getPosition().toString()] = tile);
+            setTileMap(newTileMap);
+        });
+    }
+
+    const handleFileSave = () => {
+        if (!fileHandleRef.current) handleFileSaveAs();
+        else {
+            fileHandleRef.current.createWritable().then((file) => {
+                file.write(JSON.stringify(layout.getSerializableLayout()));
+                file.close();
+                setFileEdited(false);
+                setFileDisplayName(fileHandleRef.current.name);
+            }).catch(() => {});
+        }
+    }
+
+    const handleFileSaveAs = () => {
+        let options = {
+            suggestedName: fileDisplayName,
+            types: [
+                {
+                    description: "JSON",
+                    accept: { "application/json": [".json"] }
+                }
+            ]
+        };
+
+        window.showSaveFilePicker(options).then(fh => {
+            setFileHandle(fh);
+            fh.createWritable().then((file) => {
+                file.write(JSON.stringify(layout.getSerializableLayout()));
+                file.close();
+                setFileEdited(false);
+                setFileDisplayName(fh.name);
+                updateFileList();
+            })
+        }).catch(() => { });
+    }
+
+    const handleFolderOpen = () => {
+        let options = {
+            id: "layout-folder",
+            mode: "readwrite"
+        }
+
+        window.showDirectoryPicker(options).then(dh => {
+            setDirectoryHandle(dh);
+            updateFileList(dh);
+        }).catch(() => {});
+    }
+
+    const updateFileList = async (dh = directoryHandle) => {
+        if (dh === null) return;
+
+        let files = [];
+        for await (const fileHandle of dh.values()) {
+            if (fileHandle.kind === "file") {
+                const file = await fileHandle.getFile();
+                if (file !== null && file.type === "application/json") files.push(fileHandle);;
+            }
+        }
+        setDirectoryFiles(files);
+    }
+
+    const handleNewLayout = () => {
+        undoStack.splice(0, undoStack.length);
+        redoStack.splice(0, redoStack.length);
+
+        layout.clearLayout();
+        setTileMap({});
+        setCurrPartition(null);
+        setBrushInfo(prev => ({ ...prev, defaultPartition: -1 }));
+        setFileHandle(null);
+        setFileEdited(true);
+        setFileDisplayName("Untitled Layout.json");
+    }
+
     return (
         <Box>
-            <AppBar position="sticky" component="nav">
-                <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
-                    layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} />
-            </AppBar>
+            <MenuBar currTool={currTool} setCurrTool={changeTool} brushInfo={brushInfo} setBrushInfo={setBrushInfo}
+                layout={layout} handleNewPartition={handleNewPartition} updateActivePartition={updateActivePartition} 
+                handleFileOpen={handleFileOpen} fileEdited={fileEdited} fileDisplayName={fileDisplayName} handleFileSaveAs={handleFileSaveAs} 
+                handleFileSave={handleFileSave} handleNewLayout={handleNewLayout} handleFolderOpen={handleFolderOpen} directoryFiles={directoryFiles} 
+                fileHandle={fileHandle} loadHandle={loadHandle} setHelpOpen={setHelpOpen} settingsOpen={settingsOpen} setSettingsOpen={setSettingsOpen} />
 
             <Box sx={{ pt: 2.5 }} id="grid">
                 {[...Array(gridSize.getY())].map((x, i) =>
@@ -320,11 +482,15 @@ const App = () => {
                                 mouseInfo={mouseInfo} setMouseInfo={setMouseInfo} brushInfo={brushInfo} setBrushInfo={setBrushInfo} undoStack={undoStack}
                                 tileMap={tileMap} setTileMap={setTileMap} isInSelection={isInSelection} getOverlayMap={getOverlayMap} redoStack={redoStack}
                                 partitionAssigner={partitionAssigner} setPartitionAssigner={setPartitionAssigner} setCurrPartition={updateActivePartition}
+                                setFileEdited={setFileEdited}
                             />
                         )}
                     </Stack>
                 )}
             </Box>
+
+            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} 
+                locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} setFileEdited={setFileEdited} />
 
             <Menu open={partitionAssigner !== null} onClose={() => setPartitionAssigner(null)} anchorReference="anchorPosition"
                 anchorPosition={partitionAssigner !== null ? { top: partitionAssigner.mouseY, left: partitionAssigner.mouseX } : undefined}
@@ -337,13 +503,13 @@ const App = () => {
                         {isPartitionActiveForTile(i - 2) && <CheckIcon />}
                     </MenuItem>
                 )}
-                <MenuItem onClick={() => handlePartitionChange(handleNewPartition())} className="MenuItem" sx={{ minWidth: 140 }} disableRipple>
+                <MenuItem onClick={() => handlePartitionChange(handleNewPartition())} className="MenuItem" sx={{ minWidth: 140, py: "4px !important" }} disableRipple>
                     <AddIcon />
-                    <Typography sx={{ ml: 1.2, mr: 2, mt: 0.5 }}> Create new partition </Typography>
+                    <Typography sx={{ ml: 1.2, mr: 2, mt: 0.4 }}> Create new partition </Typography>
                 </MenuItem>
             </Menu>
 
-            <PartitionPanel partition={!!currPartition ? currPartition.partition : null} update={() => setUpdater(!updater)} locked={partitionLocked} setLocked={setPartitionLocked} removePartition={removePartition} />
+            <HelpDialog open={helpOpen} setOpen={setHelpOpen} />
         </Box>
     );
 }

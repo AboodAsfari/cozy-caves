@@ -1,6 +1,8 @@
-const Point = require("@cozy-caves/utils").Point;
+const { Point, shuffleArray } = require("@cozy-caves/utils");
 const seedrandom = require('seedrandom');
-const { exampleLayout } = require("../layout/layout");
+const { Layout } = require("../layout/layout");
+const populateRoom = require("@cozy-caves/item-and-prop-generation");
+const layoutList = require("../../layouts/layout-list.json");
 
 class RoomBuilder {
     #builderSeed; // Seed used for randomly generated room decisions.
@@ -39,8 +41,27 @@ class RoomBuilder {
     build() {
         if (!Point.isPositivePoint(this.#size)) throw new Error('Invalid size provided.');
 
-        // Normally, would choose from a pool of layouts based on params.
-        let room = exampleLayout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+        let room = null;
+        let layoutPool = [];
+        for (let layout in layoutList.layouts) for (let i = 0; i < layoutList.layouts[layout]; i++) layoutPool.push(layout);
+        if (this.#allowNonRects) {
+            shuffleArray(layoutPool, this.#numGen);
+            while (room === null && layoutPool.length > 0) {
+                let serializedLayout = require("../../layouts/" + layoutPool[0]);
+                let layout = Layout.fromSerializableLayout(serializedLayout);
+                room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType, this.#numGen);
+                if (!room) layoutPool.shift();
+            }
+        } else {
+            let serializedLayout = require("../../layouts/" + layoutPool[0]);
+            let layout = Layout.fromSerializableLayout(serializedLayout);
+            room = layout.scaleRoom(this.#size, this.#leniency, this.#allowOvergrow, this.#tilerType);
+        }
+
+        if (this.#populateWithItems) {
+            // let propMap = populateRoom(room, 5);
+            // room.setPropMap(propMap);
+        }
 
         if (this.#resetOnBuild) this.#resetParameters();
         return room;
@@ -48,15 +69,13 @@ class RoomBuilder {
 
     // Setters (That return the object as well).
     setResetOnBuild(resetOnBuild) { this.#resetOnBuild = !!resetOnBuild; return this; }
-    setSize(size) { 
-        if (!Point.isPositivePoint(size)) throw new Error('Invalid size provided.');
-        this.#size = size; 
-        return this; 
+    setSize(size) {
+        this.#size = size;
+        return this;
     }
-    setLeniency(leniency) { 
-        if (!(leniency instanceof Point)) throw new Error('Invalid leniency provided.');
-        this.#leniency = leniency; 
-        return this; 
+    setLeniency(leniency) {
+        this.#leniency = leniency;
+        return this;
     }
     setAllowOvergrow(allowOvergrow) { this.#allowOvergrow = allowOvergrow; return this; }
     setAllowNonRects(allowNonRects) { this.#allowNonRects = allowNonRects; return this; }
@@ -73,7 +92,7 @@ class RoomBuilder {
         this.#leniency = new Point(0, 0);
         this.#allowOvergrow = false;
         this.#allowNonRects = true;
-        this.#populateWithItems = false;
+        this.#populateWithItems = true;
         this.#tilerType = "default";
         this.#layoutBlacklist = [];
     }

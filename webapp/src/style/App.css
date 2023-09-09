@@ -1,8 +1,39 @@
+@font-face {
+    font-family: 'Khand';
+    src: url('../fonts/Khand/Khand-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Khand';
+    src: url('../fonts/Khand/Khand-Medium.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KhandBold';
+    src: url('../fonts/Khand/Khand-Bold.ttf') format('truetype');
+    font-weight: bolder;
+    font-style: normal;
+}
+
 html {
     height: 100%;
 }
 body {
     margin: 0px;
     text-align: center;
-    background-color: #635f5d;
+    background-color: #2c2929;
+    color: rgb(255, 255, 255);
+    font-family: 'Khand' sans-serif;
+    background-size:  cover;
+    background-position: center center;
+    background-attachment: fixed;
 }
+
+body:has(#app > canvas) {
+    height: 100%;
+    overflow: hidden;
+} 

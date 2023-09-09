@@ -1,5 +1,8 @@
 import React from 'react';
 import { Typography, Box, Button, Modal } from "@mui/material";
+import "../style/Homepage.css";
+import CloseIcon from '@mui/icons-material/Close';
+
 /* 
 This needs to be split into multiple components
 some of the boxes can probably 
@@ -18,28 +21,27 @@ const style = {
     p: 4,
   };
 
+
 const Homepage = (props) => {
     const [open, setOpen] = React.useState(false);
     const handleOpenJoin = () => setOpen(true);
     const handleJoinClose = () => setOpen(false);
     return (
-        <Box>
+        <Box sx={{width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                <Typography variant="h1" >WELCOME  </Typography>
-                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, marginTop: 10, marginBottom: 0 }} color="primary.main">
-                    <Box>
-                        <Typography variant="h5" sx={{ marginLeft: 20, marginRight:2}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
-                    </Box>
-                    <Box>
-                        <Typography variant="h5" sx={{ marginLeft: 2, marginRight:20}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
-                    </Box>
+                <Box id="titleContainer">
+                    <Typography variant="h1" id="welcomeShadow">WELCOME!</Typography>
+                    <Typography variant="h1" id="welcomeOutline">WELCOME!</Typography>
                 </Box>
-                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, marginTop: 10, marginBottom: 0 }} color="primary.main">
-                    <Button variant="contained" sx={{minWidth:400, minHeight: 120, margin: 2}} onClick={() => props.setActivePage("options")}>
-                        <Typography variant="h2" >GENERATE</Typography>
+                <Box>
+                    <Typography sx={{ fontSize: 20, mt: -1 }}> Click GENERATE to start, or JOIN if you think we implemented that feature. </Typography>
+                </Box>
+                <Box display="flex" flexDirection="row" sx={{ flexGrow: 1, mt: 10}}>
+                    <Button variant="contained" className="HomeButton" sx={{bgcolor: "#4C9553", "&:hover": {bgcolor: "#9B55C6"}, mr: "40px !important"}} onClick={() => props.setActivePage("options")} disableRipple>
+                        <Typography variant="h2">GENERATE</Typography>
                     </Button>
-                    <Button variant="contained" sx={{minWidth:400, minHeight: 120, margin: 2}} onClick={handleOpenJoin}>
-                        <Typography variant="h2" >JOIN</Typography>
+                    <Button variant="contained" className="HomeButton" sx={{color: "black", bgcolor: "white", "&:hover": {bgcolor: "#9B55C6", color: "white"}, ml: "40px !important"}} onClick={handleOpenJoin} disableRipple>
+                        <Typography variant="h2">JOIN</Typography>
                     </Button>
                     <Modal
                         open={open}
@@ -47,12 +49,10 @@ const Homepage = (props) => {
                         aria-labelledby="join-modal-title"
                         aria-describedby="join-modal-description"
                     >
-                        <Box sx={style}>
+                        <Box sx={style} color="primary.main">
+                            <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={handleJoinClose}/>
                             <Typography id="join-modal-title" variant="h6" component="h2">
-                                This Feature is not yet implemented
-                            </Typography>
-                            <Typography id="join-modal-description" sx={{ mt: 2 }}>
-                                The join feature hasn't been implemented yet, check back later.
+                                You had too much faith in us.
                             </Typography>
                         </Box>
                     </Modal>

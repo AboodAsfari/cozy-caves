@@ -1,0 +1,46 @@
+.toolbar {
+    background-color: black;
+    width: 70px; 
+    height: 100vh;
+}
+
+#toolbar-toggle {
+    position: absolute;
+    top: 10px;
+    right: 11px;
+    z-index: 99999
+}
+
+.toolbar-button {
+    color: white !important;
+    padding-top: 1.2rem !important;
+    padding-bottom: 1.2rem !important;
+}
+
+.toolbar-button:hover {
+    color: #4C9553 !important;
+}
+
+.toolbar-button > svg {
+    font-size: 30px;
+}
+
+.MuiTooltip-tooltip {
+    border-radius: 0 !important;
+    background-color: black !important;
+    font-size: 15px !important;
+    user-select: none;
+}
+
+.zoom-button {
+    color: black;
+    position: absolute;
+    bottom: 80px;
+    right: 15px;
+    font-size: 44px !important;
+}
+
+.zoom-button:hover, #toolbar-toggle:hover {
+    color: #4C9553;
+    cursor: pointer;
+}

@@ -23,7 +23,7 @@ class Tile {
      * @param position Position of the tile in the room.
      */
     constructor(tileType, position, partitionNum = -1) {
-        if (!tileType || !(position instanceof Point)) throw new Error('Invalid tile provided.');
+        if (!tileType) throw new Error('Invalid tile provided.');
         if (!Number.isInteger(partitionNum) || partitionNum < -2) throw new Error('Invalid partition number provided.');
         this.#tileType = tileType.toString();
         this.#position = position;
@@ -48,6 +48,30 @@ class Tile {
     getRotation() { return this.#rotation; }
     getDepth() { return this.#depth; }
     
+    /**
+     * Creates a new object with information needed to save the tile.
+     * 
+     * @returns Serializable tile object.
+     */
+    getSerializableTile() {
+        return {
+            tileType: this.#tileType,
+            position: this.#position.toString(),
+            partitionNum: this.#partitionNum
+        };
+    }
+
+    /**
+     * Reads a stringified serializable tile and converts it 
+     * to a full tile object.
+     * 
+     * @returns Tile.
+     */
+    static fromSerializableTile(serializedTile) {
+        let posArray = serializedTile.position.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        return new Tile(serializedTile.tileType, pos, serializedTile.partitionNum);
+    }
 
     /**
      * Creates a clone of the tile, optionally

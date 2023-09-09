@@ -32,6 +32,7 @@ const PartitionPanel = (props) => {
         locked,
         partition,
         removePartition,
+        setFileEdited,
         setLocked,
         update
     } = props;
@@ -52,6 +53,7 @@ const PartitionPanel = (props) => {
     }, [partition]);
 
     const handleLockScaling = (e) => {
+        setFileEdited(true);
         partition.setLockRatio(e.target.checked);
         if (e.target.checked) {
             partition.setLockX(false);
@@ -61,21 +63,25 @@ const PartitionPanel = (props) => {
     };
 
     const handleLockXScaling = (e) => {
+        setFileEdited(true);
         partition.setLockX(e.target.checked);
         setUpdater(!updater);
     };
 
     const handleLockYScaling = (e) => {
+        setFileEdited(true);
         partition.setLockY(e.target.checked);
         setUpdater(!updater);
     };
 
     const handleSplitScalingX = (e) => {
+        setFileEdited(true);
         partition.setSplitScalingOnX(e.target.checked);
         setUpdater(!updater);
     };
 
     const handleSplitScalingY = (e) => {
+        setFileEdited(true);
         partition.setSplitScalingOnY(e.target.checked);
         setUpdater(!updater);
     }
@@ -98,6 +104,7 @@ const PartitionPanel = (props) => {
             setTempIncrementX(partition.getIncrementAmtX());
             return;
         }
+        setFileEdited(true);
         partition.setIncrementAmtX(parseInt(tempIncrementX));
     };
 
@@ -107,11 +114,13 @@ const PartitionPanel = (props) => {
             setTempIncrementY(partition.getIncrementAmtY());
             return;
         }
+        setFileEdited(true);
         partition.setIncrementAmtY(parseInt(tempIncrementY));
     }
 
     const handleXDir = (e, val) => {
         if (val === null) return;
+        setFileEdited(true);
         let currIncrementAmt = partition.getIncrementAmtX();
         if (val === 0 && currIncrementAmt % 2 === 1) {
             setTempIncrementX(currIncrementAmt + 1);
@@ -123,6 +132,7 @@ const PartitionPanel = (props) => {
 
     const handleYDir = (e, val) => {
         if (val === null) return;
+        setFileEdited(true);
         let currIncrementAmt = partition.getIncrementAmtY();
         if (val === 0 && currIncrementAmt % 2 === 1) {
             setTempIncrementY(currIncrementAmt + 1);
@@ -178,8 +188,8 @@ const PartitionPanel = (props) => {
                             tempIncrement={tempIncrementY} accordionOpen={yAccordionOpen} setAccordionOpen={setYAccordionOpen} />
 
 
-                        <Button disableRipple variant="contained" sx={{ position: "absolute", bottom: "15px", right: "20px", width: "150px", textTransform: "none",
-                            backgroundColor: "gray", "&:hover": { backgroundColor: "red" } }} onClick={removePartition}> Delete Partition </Button>
+                        <Button disableRipple variant="contained" sx={{ color: "white", position: "absolute", bottom: "15px", right: "20px", width: "150px", textTransform: "none",
+                            backgroundColor: "gray", "&:hover": { backgroundColor: "red" }, borderRadius: 0 }} onClick={removePartition}> Delete Partition </Button>
                     </Stack>
 
                     <PartitionIconPopover partition={partition} iconAnchor={iconAnchor} setIconAnchor={setIconAnchor} update={update} />

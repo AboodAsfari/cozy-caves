@@ -29,6 +29,7 @@ const GridTile = (props) => {
         setBrushInfo,
         setCurrPartition,
         setCurrTool,
+        setFileEdited,
         setMouseInfo,
         setPartitionAssigner,
         setTileMap,
@@ -63,7 +64,8 @@ const GridTile = (props) => {
         let tileType;
         if (overlayValue !== undefined) tileType = overlayValue.getTileType();
         else tileType = tileMap[pos.toString()].getTileType();
-        return tileType === "wall" ? "W" : "F";
+        // return tileType === "wall" ? "W" : "F";
+        return ""
     }
 
     const getPartitionIcon = () => {
@@ -74,10 +76,76 @@ const GridTile = (props) => {
         if (overlayValue !== undefined) tile = overlayValue;
         else tile = tileMap[pos.toString()];
 
-        // console.log(tile.getPartitionNum())
         let partitionInfo = layout.getPartitionDisplayInfo()[tile.getPartitionNum() + 2];
-        return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 1, right: 1 }}> {iconMap[partitionInfo.icon]} </Box>
+        return <Box sx={{ position: "absolute", fontSize: 20, color: partitionInfo.color, top: 5, right: 5 }}> {iconMap[partitionInfo.icon]} </Box>
     }
+
+    const getTileImage = () => {
+        let overlayValue = getOverlayMap()[pos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return null;
+        let tile = overlayValue === undefined ? tileMap[pos.toString()] : overlayValue;
+        if (tile.getTileType() === "wall") {
+            let rightNeighbor = getNeighbor(pos.add(new Point(1, 0)));
+            let leftNeighbor = getNeighbor(pos.add(new Point(-1, 0)));
+            let topNeighbor = getNeighbor(pos.add(new Point(0, -1)));
+            let bottomNeighbor = getNeighbor(pos.add(new Point(0, 1)));
+            let topRightNeighbor = getNeighbor(pos.add(new Point(1, -1)));
+            let topLeftNeighbor = getNeighbor(pos.add(new Point(-1, -1)));
+            let bottomRightNeighbor = getNeighbor(pos.add(new Point(1, 1)));
+            let bottomLeftNeighbor = getNeighbor(pos.add(new Point(-1, 1)));
+
+            if ((isWall(rightNeighbor) && isWall(topNeighbor) && isFloor(bottomLeftNeighbor)) || (isWall(rightNeighbor) && isWall(bottomNeighbor) && isFloor(topLeftNeighbor)) || 
+                (isWall(leftNeighbor) && isWall(topNeighbor) && isFloor(bottomRightNeighbor)) || (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor))) return "./resources/tileSprites/OUTER_CORNER_WALL.png";
+            if ((isWall(rightNeighbor) && isWall(topNeighbor)) || (isWall(rightNeighbor) && isWall(bottomNeighbor)) || 
+                (isWall(leftNeighbor) && isWall(topNeighbor)) || (isWall(leftNeighbor) && isWall(bottomNeighbor))) return "./resources/tileSprites/CORNER_WALL.png";
+            return "./resources/tileSprites/EDGE_WALL.png";
+        }
+        if (tile.getTileType() === "floor") return "./resources/tileSprites/FLOOR.png";
+        return null;
+    }
+
+    const getImageTransform = () => {
+        let overlayValue = getOverlayMap()[pos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[pos.toString()])) return "";
+        let tile = overlayValue === undefined ? tileMap[pos.toString()] : overlayValue;
+        if (tile.getTileType() === "floor") return "";
+
+        if (tile.getTileType() === "wall") {
+            let rightNeighbor = getNeighbor(pos.add(new Point(1, 0)));
+            let leftNeighbor = getNeighbor(pos.add(new Point(-1, 0)));
+            let topNeighbor = getNeighbor(pos.add(new Point(0, -1)));
+            let bottomNeighbor = getNeighbor(pos.add(new Point(0, 1)));
+            let topRightNeighbor = getNeighbor(pos.add(new Point(1, -1)));
+
+            // if (isWall(rightNeighbor) && isWall(topNeighbor)) return "rotate(270deg)";
+            // if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return "";
+            // if (isWall(leftNeighbor) && isWall(topNeighbor)) return "rotate(180deg)";
+            if (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor)) return "rotate(90deg)";
+
+            if (isWall(rightNeighbor) && isWall(topNeighbor)) return "rotate(270deg)";
+            if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return "";
+            if (isWall(leftNeighbor) && isWall(topNeighbor)) return "rotate(180deg)";
+            if (isWall(leftNeighbor) && isWall(bottomNeighbor)) return "rotate(90deg)";
+
+            // EDGES HERE
+            if (!rightNeighbor && !isWall(leftNeighbor)) return "rotate(180deg)";
+            if (!leftNeighbor && !isWall(rightNeighbor)) return "";
+            if (!topNeighbor && !isWall(bottomNeighbor)) return "rotate(90deg)";
+            if (!isWall(topNeighbor)) return "rotate(-90deg)";
+
+        }
+        
+        return "";
+    }
+
+    const getNeighbor = (neighborPos) => {
+        let overlayValue = getOverlayMap()[neighborPos.toString()];
+        if (overlayValue === null || (overlayValue === undefined && !tileMap[neighborPos.toString()])) return null;
+        return overlayValue === undefined ? tileMap[neighborPos.toString()] : overlayValue;
+    }
+
+    const isWall = (tile) => tile && tile.getTileType() === "wall";
+    const isFloor = (tile) => tile && tile.getTileType() === "floor";
 
     const handleMouseOver = (e) => {
         let syntheticEvent = { ...e, button: mouseInfo.dragButton, synthetic: true };
@@ -87,31 +155,34 @@ const GridTile = (props) => {
     const handlePen = (e) => {
         if (e.button !== 0) return;
 
-        let lastAction = undoStack[undoStack.length - 1];
-        let swappedBrushes = !lastAction ? false : (lastAction.isPrimary && e.altKey) || (!lastAction.isPrimary && !e.altKey);
-        if (mouseInfo.dragButton === -1 || swappedBrushes) {
+        setFileEdited(true);
+
+        if (mouseInfo.dragButton === -1) {
             undoStack.push(new PenAction(!e.altKey, Tools.PEN));
             redoStack.splice(0, redoStack.length);
         } else if (undoStack[undoStack.length - 1].encounteredPos.includes(pos.toString())) return;
 
-        undoStack[undoStack.length - 1].oldTiles.push({ pos, tile: tileMap[pos.toString()] });
-        undoStack[undoStack.length - 1].encounteredPos.push(pos.toString());
+        let action = undoStack[undoStack.length - 1];
+        action.oldTiles.push({ pos, tile: tileMap[pos.toString()] });
+        action.encounteredPos.push(pos.toString());
 
-        if ((!e.altKey && brushInfo.primaryBrush === "none") || (e.altKey && brushInfo.secondaryBrush === "none")) {
-            layout.removeTile(pos);
+        layout.removeTile(pos);
+        if ((action.isPrimary && brushInfo.primaryBrush === "none") || (!action.isPrimary && brushInfo.secondaryBrush === "none")) {
             setTileMap(prev => ({ ...prev, [pos.toString()]: undefined }));
-            undoStack[undoStack.length - 1].newTiles.push({ pos, tile: undefined });
+            action.newTiles.push({ pos, tile: undefined });
             setMouseInfo(prev => ({ ...prev, dragButton: e.button }));
             return;
         };
-        let newTileType = !e.altKey ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
+        let newTileType = action.isPrimary ? brushInfo.primaryBrush : brushInfo.secondaryBrush;
         let newTile = new Tile(newTileType, pos, brushInfo.defaultPartition);
         layout.addTile(newTile);
         setTileMap(prev => ({ ...prev, [pos.toString()]: newTile }));
-        undoStack[undoStack.length - 1].newTiles.push({ pos, tile: newTile });
+        action.newTiles.push({ pos, tile: newTile });
     }
 
     const handleEraser = (e) => {
+        setFileEdited(true);
+        
         if (mouseInfo.dragButton === -1) {
             undoStack.push(new PenAction(false, Tools.ERASER));
             redoStack.splice(0, redoStack.length);
@@ -173,6 +244,8 @@ const GridTile = (props) => {
     const handleFill = (e) => {
         if (e.synthetic) return;
 
+        setFileEdited(true);
+
         undoStack.push(new PenAction(false, Tools.FILL));
         redoStack.splice(0, redoStack.length);
 
@@ -188,8 +261,8 @@ const GridTile = (props) => {
             undoStack[undoStack.length - 1].oldTiles.push({ pos: curr, tile: oldTile });
 
             let newTile = new Tile(brushInfo.fillBrush, curr, brushInfo.defaultPartition);
+            layout.removeTile(curr);
             if (brushInfo.fillBrush === "none") {
-                layout.removeTile(curr);
                 setTileMap(prev => ({ ...prev, [curr.toString()]: undefined }));
                 undoStack[undoStack.length - 1].newTiles.push({ pos: curr, tile: undefined });
             } else {
@@ -253,6 +326,7 @@ const GridTile = (props) => {
                 <Typography sx={{ fontSize: 40, textAlign: "center", pointerEvents: "none", position: "absolute", zIndex: 1 }} >
                     {getLabel()}
                 </Typography>
+                {getTileImage() && <img src={getTileImage()} alt="tile source" style={{ transform: getImageTransform(), pointerEvents: "none" }} />}
                 {getPartitionIcon()}
             </Box>
         </Box>
