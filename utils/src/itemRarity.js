@@ -6,4 +6,4 @@ const itemRarity = {
     "legendary": 3
 }
 
-module.exports = ItemRarity;
+module.exports = itemRarity;

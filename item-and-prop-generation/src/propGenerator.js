@@ -1,6 +1,7 @@
 const Ajv = require("ajv");
 const metadata = require("./metadata/prop_metadata.json");
 const Prop = require("./classes/prop");
+const Rarity = require('../../utils/src/itemRarity');
 const schema = require("./metadata/prop_schema.json");
 const ItemGenerator = require("./itemGenerator");
 
@@ -14,7 +15,7 @@ class PropGenerator {
         }
     }
 
-    storeItem(prop) {
+    #storeItem(prop) {
         if (!(prop instanceof Prop)) {
             throw new Error("Invalid type. Expecting a Prop object.");
         }
@@ -22,27 +23,21 @@ class PropGenerator {
         if (!prop.containsItem) return;
         const max = Math.floor(Math.random() * 5) + 1; // maximum number of items a prop can have
         for (let i=0; i<max; i++){
-            const rarity = this.getRandomRarity();
+            const rarity = this.#getRandomRarity();
             prop.addItem(ItemGenerator.getItemByRarity(rarity));
         }
     }
 
-    getRandomRarity() {
-        const rand = Math.random() * 100 + 1;
+    
+    #getRandomRarity() {
+        const rand = Math.random() * 100 + 1; //SEED
+        let percentage = 0;
+        for (const rarity in Rarity) {
+            percentage += Rarity[rarity];
 
-        if (rand <= 50) {
-            return ItemGenerator.rarityList[0];
-        } else if (rand <= 75) {
-            return ItemGenerator.rarityList[1];
-        } else if (rand <= 90) {
-            return ItemGenerator.rarityList[2];
-        } else if (rand <= 97) {
-            return ItemGenerator.rarityList[3];
-        } else if (rand <= 100) {
-            return ItemGenerator.rarityList[4];
-        } else {
-            return ItemGenerator.rarityList[0];
+            if (rand <= percentage) return rarity;
         }
+        return "common";
     }
 
     getPropByName(name){
@@ -54,7 +49,7 @@ class PropGenerator {
             const found = propList.find(prop => prop.name === name);
             if (found) {
                 const prop = new Prop(found.name, found.desc, found.rarity, found.containsItem);
-                this.storeItem(prop);
+                this.#storeItem(prop);
                 return prop;
             }
         }
@@ -63,7 +58,7 @@ class PropGenerator {
     }
 
     getPropByRarity(rarity) { 
-        if (!this.rarityList.includes(rarity)) throw new Error("Invalid rarity category: ${rarity}");
+        if (!this.rarityList.includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
 
         const categories = metadata.prop_categories;
         const filteredProps = [];
@@ -82,7 +77,7 @@ class PropGenerator {
         const p = filteredProps[randomIndex];
         const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem);
         
-        this.storeItem(prop);
+        this.#storeItem(prop);
         return prop;
     }
 
@@ -94,7 +89,7 @@ class PropGenerator {
         let randomIndex = Math.floor(Math.random() * temp.length); 
         let p = temp[randomIndex];
         const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem); 
-        this.storeItem(prop);
+        this.#storeItem(prop);
         return prop;
     }
 }
