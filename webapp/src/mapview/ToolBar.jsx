@@ -106,6 +106,10 @@ export default function ToolBar(props) {
             if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(width, true, true, true);
             else viewport.fitHeight(height, true, true, true);
             viewport.moveCenter(center.x, center.y);
+            // Check if window was closed
+            if(!WinPrint) {
+                return;
+            }
             // Print image
             WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
             WinPrint.document.close();  
