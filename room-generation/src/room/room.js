@@ -49,6 +49,14 @@ class Room {
     getDimensions() { return this.#dimensions; }
     getPropMap() { return this.#propMap; }
 
+    getSerializableRoom() {
+        return {
+            dimensions: this.#dimensions.toString(),
+            position: this.#position.toString(),
+            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
+        };
+    }
+
     toString() {
         let tileArray = [];
         for (let i = 0; i < this.#dimensions.getY(); i++) {

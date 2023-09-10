@@ -41,8 +41,12 @@ export default function ToolBar(props) {
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
+    
+    const [downloadContents, setDownloadContents] = React.useState(null);
 
     React.useEffect(() => {
+        setDownloadContents(getFileContents());
+
         if (intialRender) {
             setIntialRender(false);
             return;
@@ -108,9 +112,12 @@ export default function ToolBar(props) {
         }, 500);
     }
 
-
-
     const toggleSettings = () => {
+        let button = document.getElementById("download");
+        console.log(button.parentElement);
+        let serializedDungeon = "hello";
+        button.parentElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(serializedDungeon));
+        button.parentElement.setAttribute("download", "cozy-map.json");
         if (currPanel === "settings") setCurrPanel(null);
         else setCurrPanel("settings");
     }
@@ -123,6 +130,12 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
+    const getFileContents = () => {
+        let serializableDungeon = dungeon.map((room) => room.getSerializableRoom());
+        let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
+        return "data:text/plain;charset=utf-8," + serializedDungeon;
+    }
+
     const getToolbarButtonColors = (name) => {
         if (currPanel === "settings" && name === "Settings") return "#4C9553 !important";
         return "";
@@ -133,7 +146,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -154,8 +167,9 @@ export default function ToolBar(props) {
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
                             <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
-                                    {tool.icon} 
+                                <Button className="toolbar-button" disableRipple onClick={tool.method} href={tool.name === "Download" ? downloadContents : null}
+                                    sx={{ color: getToolbarButtonColors(tool.name) }} download={tool.name === "Download" ? "cozy-map.json" : null}> 
+                                    {tool.icon}
                                 </Button>
                             </Tooltip>
                         ))}
