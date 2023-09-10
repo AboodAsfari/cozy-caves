@@ -22,21 +22,27 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         sortableChildren: true,
         ...viewportProps
         });
+        // Check if the image is taller than it is wide
+        const fitYAxis = maxY/maxX > viewportProps.screenHeight/viewportProps.screenWidth;
 
-
-        let x = viewport.toWorld(maxX,maxY).x;
-        let y = viewport.toWorld(maxX,maxY).y;
         viewport.drag().pinch().wheel()
         .decelerate({
             friction: 0.90,
         })
         .clampZoom({
-            minScale: (maxY >= maxX ? viewportProps.screenHeight/y : viewportProps.screenWidth/x) * 0.75,
+            // Clamps the amount the user can zoom out by
+            // Dependent on the aspect ratio of the image
+            minScale: (fitYAxis ? (viewportProps.screenHeight-70)/maxY : viewportProps.screenWidth/maxX) / 1.5,
+            // Clamps the amount the user can zoom in by
             maxScale: 8,
         });
         
-        viewport.moveCenter(x/2, y/2);
-        viewport.fitHeight(y, true, true, true);
+        viewport.moveCenter(maxX/2, (viewportProps.screenHeight/((viewportProps.screenHeight+70)/maxY))/2);
+        if(fitYAxis){
+            viewport.setZoom(((viewportProps.screenHeight-70)/maxY)/1.1, true, true, true);
+        } else {
+            viewport.fitWidth(maxX*1.1, true, true, true);
+        }
 
         return viewport;
     },
