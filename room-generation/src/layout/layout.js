@@ -53,7 +53,7 @@ class Layout {
         addTiles(this.#unscaledEditableTiles.values());
         this.#scalePartitions.forEach((partition) => addTiles(partition.getScaledTiles()));
         addTiles(this.#excludedEditableTiles.values());
-        room.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler(tilerType).getID(tile, room)));
+        room.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler(tilerType).getID(tile, room, numGen)));
 
         return room;
     }

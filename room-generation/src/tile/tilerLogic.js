@@ -23,10 +23,10 @@ class TilerLogic {
     }
 
     // Getters.
-    getID(tile, room) {
+    getID(tile, room, numGen) {
         let tileType = tile.getTileType();
         if (!this.#tileGetters.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
-        return this.#tileGetters[tileType.toString()](tile, room); 
+        return this.#tileGetters[tileType.toString()](tile, room, numGen); 
     }
 }
 
@@ -41,8 +41,11 @@ const isFloor = (tile) => tile && tile.getTileType() === "floor";
 
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
-    () => TileID.FLOOR,
-    (tile, room) => {
+    (tile, room, numGen) => {
+        let random = 0;
+        return TileID.FLOOR;
+    },
+    (tile, room, numGen) => {
         let pos = tile.getPosition();
         let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0));
         let rightNeighbor = getNeighbor(pos, room, new Point(1, 0));
