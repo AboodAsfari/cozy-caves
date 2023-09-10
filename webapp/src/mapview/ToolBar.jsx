@@ -87,6 +87,18 @@ export default function ToolBar(props) {
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
+
+    const loadMap = (dungeonData) => {
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        setLoadingAnimation(true);
+
+        function requestNewMap() {
+            setDungeon(dungeonData);
+            // setMapSettings(newSettings);
+        }
+
+        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+    }
     
     const printMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
@@ -114,7 +126,6 @@ export default function ToolBar(props) {
 
     const toggleSettings = () => {
         let button = document.getElementById("download");
-        console.log(button.parentElement);
         let serializedDungeon = "hello";
         button.parentElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(serializedDungeon));
         button.parentElement.setAttribute("download", "cozy-map.json");
@@ -160,7 +171,7 @@ export default function ToolBar(props) {
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
-                    {currPanel === "settings" &&  <MapSettingsPanel mapSettings={mapSettings} generateMap={generateMap} />}
+                    {currPanel === "settings" &&  <MapSettingsPanel mapSettings={mapSettings} generateMap={generateMap} loadMap={loadMap} />}
                 </Collapse>}
 
                 {open && <Collapse orientation='horizontal'>
