@@ -65,9 +65,25 @@ export default function ToolBar(props) {
             if (!viewport) return;
 
             setLoadingAnimation(false);
-            viewport.fitHeight(viewport.maxY, true, true, true);
-            viewport.moveCenter(viewport.worldScreenWidth * 2, viewport.maxY/2);
-            viewport.animate({position: { x: viewport.maxX/2, y: viewport.maxY/2}, time: 500});
+            // Check if the image is taller than it is wide
+            let fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
+            // Update the amount the user can zoom out by
+            viewport.plugins.plugins["clamp-zoom"].options.minScale =  (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
+            // Fit the image to the screen
+            if(fitYAxis){
+                // Account for Navbar
+                viewport.setZoom(((viewport.screenHeight-70)/viewport.maxY)/1.1, true, true, true);
+            } else {
+                viewport.fitWidth(viewport.maxX*1.1, true, true, true);
+            }
+            // Find the height of the image after fitting
+            // This is used to center the image
+            // Account for Navbar
+            let fitHeight = viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY);
+            // Move into correct position before animation
+            viewport.moveCenter(viewport.worldScreenWidth * 2, fitHeight/2);
+            // Move to center of screen
+            viewport.animate({position: { x: viewport.maxX/2, y: fitHeight/2}, time: 500});
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dungeon]);
