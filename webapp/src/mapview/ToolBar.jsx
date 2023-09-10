@@ -94,12 +94,13 @@ export default function ToolBar(props) {
         if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
         else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
         viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
-        // Open new window for printing
-        const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
-
+        
         // Wait for canvas to render with new position
         setTimeout(async function(){
-            // Extract image from canvas   
+            if (!stageRef.current) return;
+            // Open new window for printing
+             const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
+            // Extract image from canvas
             let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
             // Reset viewport to original position
             if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(width, true, true, true);
