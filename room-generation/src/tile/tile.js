@@ -56,8 +56,13 @@ class Tile {
     getSerializableTile() {
         return {
             tileType: this.#tileType,
+            tileID: this.#tileID,
             position: this.#position.toString(),
-            partitionNum: this.#partitionNum
+            partitionNum: this.#partitionNum,
+            offset: this.#offset.toString(),
+            scale: this.#scale.toString(),
+            rotation: this.#rotation,
+            depth: this.#depth
         };
     }
 
@@ -70,7 +75,19 @@ class Tile {
     static fromSerializableTile(serializedTile) {
         let posArray = serializedTile.position.split(',');
         let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
-        return new Tile(serializedTile.tileType, pos, serializedTile.partitionNum);
+        let tile = new Tile(serializedTile.tileType, pos, serializedTile.partitionNum);
+
+        if (serializedTile.tileID !== 0 && !serializedTile.tileID) return tile;
+
+        tile.setTileID(serializedTile.tileID);
+        let offsetArray = serializedTile.offset.split(',');
+        tile.setOffset(new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1])));
+        let scaleArray = serializedTile.scale.split(',');
+        tile.setScale(new Point(parseInt(scaleArray[0]), parseInt(scaleArray[1])));
+        tile.setRotation(serializedTile.rotation);
+        tile.setDepth(serializedTile.depth);
+
+        return tile;
     }
 
     /**
