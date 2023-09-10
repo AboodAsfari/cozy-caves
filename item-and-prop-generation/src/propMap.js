@@ -1,6 +1,6 @@
 const PropGenerator = require('./propGenerator.js');
 const Point = require('@cozy-caves/utils').Point;
-const Rarity = require('../../utils/src/propRarity.js'); //require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
+const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropSet = require('./propSet.js');
 
 class PropMap {
