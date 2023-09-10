@@ -92,15 +92,17 @@ const RendererCanvas = (props) => {
   const drawDungeon = () => {
     
     return props.dungeon.map((room) => {
-      if(room.getPosition().getX()+room.getDimensions().getX() > maxX) {
-        maxX = room.getPosition().getX()+room.getDimensions().getX();
+      let roomMaxX =(room.getPosition().getX()+room.getDimensions().getX()) * size * scaleX;
+      let roomMaxY = (room.getPosition().getY()+room.getDimensions().getY()) * size * scaleY;
+      if(roomMaxX > maxX) {
+        maxX = roomMaxX;
         if (stageRef.current) {
           let viewport = stageRef.current.mountNode.containerInfo.children[0];
           viewport.maxX = maxX;
         }
       }
-      if(room.getPosition().getY()+room.getDimensions().getY() > maxY) {
-        maxY = room.getPosition().getY()+room.getDimensions().getY();
+      if(roomMaxY > maxY) {
+        maxY = roomMaxY;
         if (stageRef.current) {
           let viewport = stageRef.current.mountNode.containerInfo.children[0];
           viewport.maxY = maxY;
@@ -124,9 +126,6 @@ const RendererCanvas = (props) => {
   // get the current window size
   const [width, height] = useResize();
   let dungeon = drawDungeon()
-  maxX = maxX * size * scaleX
-  maxY = maxY * size * scaleY
-  console.log(maxX/2, maxY/2)
   return (
     <>
       <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
