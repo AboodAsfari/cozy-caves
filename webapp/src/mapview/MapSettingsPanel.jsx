@@ -14,10 +14,12 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import DungeonBuilder from '@cozy-caves/dungeon-generation';
 import SettingsDropdownItem from '../options/SettingsDropdownItem';
 import SettingsSlider from '../options/SettingsSlider';
+import { Room } from '@cozy-caves/room-generation';
 
 const MapSettingsPanel = (props) => {
     const {
         generateMap,
+        loadMap,
         mapSettings
     } = props;
 
@@ -59,6 +61,28 @@ const MapSettingsPanel = (props) => {
 
     const declareEdited = () => { if (presetSelected !== "Custom") setPresetSelected("Custom"); }
 
+    const loadFile = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.click();
+
+        input.addEventListener("change", () => {
+            let file = input.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+                reader.onload = e => {
+                    let fileContents = e.target.result;
+                    let mapInfo = JSON.parse(fileContents);
+
+                    let newMap = mapInfo.dungeon.map(room => Room.fromSerializableRoom(room));
+                    loadMap(newMap, mapInfo.mapSettings);
+                }
+            }
+        });
+    }
+
     const generate = () => {
         if (!widthValid || !heightValid || !roomSizeValid || !coverageValid) return;
         const newSettings = {
@@ -92,7 +116,7 @@ const MapSettingsPanel = (props) => {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }}> Load File </Button>
+            <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }} onClick={loadFile}> Load File </Button>
             <Button disableRipple className="settings-button" sx={{ backgroundColor: !widthValid || !heightValid || !roomSizeValid || !coverageValid ? "grey" : "#4C9553", mb: 2.5, color: "white", "&:hover": { backgroundColor: "#9B55C6" } }} 
                 disabled={!widthValid || !heightValid || !roomSizeValid || !coverageValid} onClick={generate}> Generate </Button>
 

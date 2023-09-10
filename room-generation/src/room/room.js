@@ -1,3 +1,5 @@
+const Tile = require("../tile/tile");
+
 const Point = require("@cozy-caves/utils").Point;
 
 class Room {
@@ -48,6 +50,23 @@ class Room {
     getPosition() { return this.#position; }
     getDimensions() { return this.#dimensions; }
     getPropMap() { return this.#propMap; }
+
+    getSerializableRoom() {
+        return {
+            dimensions: this.#dimensions.toString(),
+            position: this.#position.toString(),
+            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
+        };
+    }
+
+    static fromSerializableRoom(serializableRoom) {
+        let dimensionsArray = serializableRoom.dimensions.split(',');
+        let room = new Room(new Point(parseInt(dimensionsArray[0]), parseInt(dimensionsArray[1])));
+        let posArray = serializableRoom.position.split(',');
+        room.#position = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        serializableRoom.tiles.forEach(tile => room.addTile(Tile.fromSerializableTile(tile)));
+        return room;
+    }
 
     toString() {
         let tileArray = [];

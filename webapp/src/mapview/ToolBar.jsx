@@ -3,10 +3,13 @@ import {
     Box,
     Button,
     Collapse,
+    Dialog,
+    DialogTitle,
     Slide,
     Snackbar,
     Stack,
     Tooltip,
+    Typography,
 } from "@mui/material";
 import "../style/Toolbar.css"
 
@@ -24,6 +27,8 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DungeonBuilder from '@cozy-caves/dungeon-generation';
 import MapSettingsPanel from './MapSettingsPanel';
+import FilePresentIcon from '@mui/icons-material/FilePresent';
+import ImageIcon from '@mui/icons-material/Image';
 
 export default function ToolBar(props) {
     const {
@@ -41,8 +46,15 @@ export default function ToolBar(props) {
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
+    const [downloadDialog, setDownloadDialog] = React.useState(false);
+    const [downloadLabel, setDownloadLabel] = React.useState("...");
+    
+    const [downloadFileContents, setDownloadFileContents] = React.useState(null);
+    const [downloadImageContents, setDownloadImageContents] = React.useState(null);
 
     React.useEffect(() => {
+        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
+
         if (intialRender) {
             setIntialRender(false);
             return;
@@ -83,6 +95,18 @@ export default function ToolBar(props) {
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
+
+    const loadMap = (dungeonData, newSettings) => {
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        setLoadingAnimation(true);
+
+        function requestNewMap() {
+            setDungeon(dungeonData);
+            setMapSettings(newSettings);
+        }
+
+        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+    }
     
     const printMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
@@ -108,8 +132,6 @@ export default function ToolBar(props) {
         }, 500);
     }
 
-
-
     const toggleSettings = () => {
         if (currPanel === "settings") setCurrPanel(null);
         else setCurrPanel("settings");
@@ -123,6 +145,24 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
+    const openDownloadDialog = () => {
+        getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
+        setDownloadDialog(true);
+    }
+
+    const getFileContents = async (isImage = false) => {
+        if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
+        else {
+            let serializableDungeon = { 
+                mapSettings: mapSettings,
+                dungeon: dungeon.map((room) => room.getSerializableRoom())
+            };
+
+            let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
+            return "data:text/plain;charset=utf-8," + serializedDungeon;
+        }
+    }
+
     const getToolbarButtonColors = (name) => {
         if (currPanel === "settings" && name === "Settings") return "#4C9553 !important";
         return "";
@@ -133,7 +173,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon />, method: () => { } },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: openDownloadDialog },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -147,7 +187,7 @@ export default function ToolBar(props) {
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
-                    {currPanel === "settings" &&  <MapSettingsPanel mapSettings={mapSettings} generateMap={generateMap} />}
+                    {currPanel === "settings" &&  <MapSettingsPanel mapSettings={mapSettings} generateMap={generateMap} loadMap={loadMap} />}
                 </Collapse>}
 
                 {open && <Collapse orientation='horizontal'>
@@ -155,7 +195,7 @@ export default function ToolBar(props) {
                         {Object.values(tools).map((tool) => (
                             <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
                                 <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
-                                    {tool.icon} 
+                                    {tool.icon}
                                 </Button>
                             </Tooltip>
                         ))}
@@ -163,9 +203,26 @@ export default function ToolBar(props) {
                 </Collapse>}
             </TransitionGroup>
         </Stack>
+
         <Slide in={loadingAnimation} direction={loadingAnimation ? "down" : "up"}>
             <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
         </Slide>
+
+        <Dialog open={downloadDialog} onClose={() => setDownloadDialog(false)}>
+            <DialogTitle sx={{ fontSize: 50, px: 10, userSelect: "none" }}> Download Map </DialogTitle>
+            <Stack direction="row" sx={{ alignSelf: "center" }} spacing={5} onMouseOut={() => setDownloadLabel("...")}>
+                <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Download as Image")}> 
+                    <ImageIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
+                </a>
+
+                <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Download as Loadable File")}> 
+                    <FilePresentIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
+                </a>
+            </Stack>
+            <Typography sx={{ fontSize: 30, pb: 2, visibility: downloadLabel !== "..." ? "visible" : "hidden" }}>{downloadLabel} </Typography>
+            <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={() => setDownloadDialog(false)}/>
+        </Dialog>
+
         <Snackbar
             sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}
             open={copiedSnackbar}
