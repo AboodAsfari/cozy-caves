@@ -31,7 +31,7 @@ class Tile {
     }
 
     // Setters.
-    setTileID(tileID) { this.#tileID = tileID; }
+    setTileID(tileID) { this.#tileID = tileID; return this;}
     setPartitionNum(partitionNum) { this.#partitionNum = partitionNum; }
     setOffset(offset) { this.#offset = offset; }
     setScale(scale) { this.#scale = scale; }

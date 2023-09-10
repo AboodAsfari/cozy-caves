@@ -1,6 +1,7 @@
 const seedrandom = require('seedrandom');
 const RoomBuilder = require("@cozy-caves/room-generation").RoomBuilder;
 const Point = require("@cozy-caves/utils").Point;
+const generateHallways = require("../room-generation/src/hallway/hallwayGenerator");
 
 class DungeonBuilder {
 
@@ -201,7 +202,7 @@ class DungeonBuilder {
         this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
-
+        generateHallways(map);
         return map;
     }
 
