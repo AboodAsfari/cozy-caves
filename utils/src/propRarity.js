@@ -4,4 +4,4 @@ const propRarity = {
     "rare": 10
 }
 
-module.exports = PropRarity;
+module.exports = propRarity;

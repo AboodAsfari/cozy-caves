@@ -1,7 +1,7 @@
 const PropGenerator = require('./propGenerator.js');
 const Point = require('@cozy-caves/utils').Point;
+const Rarity = require('../../utils/src/propRarity.js'); //require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropSet = require('./propSet.js');
-
 
 class PropMap {
     #populatedRoom = new Map();
@@ -15,17 +15,14 @@ class PropMap {
     }
     
     #getRandomRarity() {
-        const rand = Math.random() * 100 + 1;
-    
-        if (rand <= 60) { // common
-            return this.#propGenerator.rarityList[0];
-        } else if (rand <= 90) { // uncommon
-            return this.#propGenerator.rarityList[1];
-        } else if (rand <= 100) { // rare
-            return this.#propGenerator.rarityList[2];
-        } else { // just in case something goes wrong, go with common
-            return this.#propGenerator.rarityList[0];
+        const rand = Math.random() * 100 + 1; //SEED
+        let percentage = 0;
+        for (const rarity in Rarity) {
+            percentage += Rarity[rarity];
+
+            if (rand <= percentage) return rarity;
         }
+        return "common";
     }
 
     /**
