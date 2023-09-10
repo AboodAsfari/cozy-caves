@@ -74,8 +74,10 @@ const MapSettingsPanel = (props) => {
                 reader.readAsText(file, "UTF-8");
                 reader.onload = e => {
                     let fileContents = e.target.result;
-                    let newMap = JSON.parse(fileContents).map(room => Room.fromSerializableRoom(room));
-                    loadMap(newMap);
+                    let mapInfo = JSON.parse(fileContents);
+
+                    let newMap = mapInfo.dungeon.map(room => Room.fromSerializableRoom(room));
+                    loadMap(newMap, mapInfo.mapSettings);
                 }
             }
         });

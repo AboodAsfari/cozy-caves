@@ -88,13 +88,13 @@ export default function ToolBar(props) {
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
 
-    const loadMap = (dungeonData) => {
+    const loadMap = (dungeonData, newSettings) => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
         setLoadingAnimation(true);
 
         function requestNewMap() {
             setDungeon(dungeonData);
-            // setMapSettings(newSettings);
+            setMapSettings(newSettings);
         }
 
         viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
@@ -125,10 +125,6 @@ export default function ToolBar(props) {
     }
 
     const toggleSettings = () => {
-        let button = document.getElementById("download");
-        let serializedDungeon = "hello";
-        button.parentElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(serializedDungeon));
-        button.parentElement.setAttribute("download", "cozy-map.json");
         if (currPanel === "settings") setCurrPanel(null);
         else setCurrPanel("settings");
     }
@@ -142,7 +138,10 @@ export default function ToolBar(props) {
     }
 
     const getFileContents = () => {
-        let serializableDungeon = dungeon.map((room) => room.getSerializableRoom());
+        let serializableDungeon = { 
+            mapSettings: mapSettings,
+            dungeon: dungeon.map((room) => room.getSerializableRoom())
+        };
         let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
         return "data:text/plain;charset=utf-8," + serializedDungeon;
     }
