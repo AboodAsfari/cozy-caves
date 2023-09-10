@@ -1,7 +1,7 @@
 const Ajv = require("ajv");
 const metadata = require("./metadata/prop_metadata.json");
 const Prop = require("./classes/prop");
-const Rarity = require('../../utils/src/itemRarity'); ////require('@cozy-caves/utils').ItemRarity;
+const Rarity = require('@cozy-caves/utils').ItemRarity;
 const schema = require("./metadata/prop_schema.json");
 const ItemGenerator = require("./itemGenerator");
 
