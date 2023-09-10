@@ -5,6 +5,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import SettingsDropdownItem from './SettingsDropdownItem';
 import SettingsSlider from './SettingsSlider';
+import { Room } from '@cozy-caves/room-generation';
 
 const DungeonBuilder = require('@cozy-caves/dungeon-generation');
 
@@ -47,6 +48,34 @@ const Options = (props) => {
             setTotalCoverage(presetSettings[3]);
             setSeed(Math.random());
         }   
+    }
+    
+    const loadFile = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.click();
+
+        input.addEventListener("change", () => {
+            let file = input.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+                reader.onload = e => {
+                    let fileContents = e.target.result;
+                    let mapInfo = JSON.parse(fileContents);
+
+                    let newMap = mapInfo.dungeon.map(room => Room.fromSerializableRoom(room));
+                    toggleTransitionPanel(() => {
+                        props.setMapSettings(mapInfo.mapSettings);
+                        props.setDungeon(newMap);
+            
+                        props.setActivePage("map");
+                        toggleTransitionPanel();
+                    });
+                }
+            }
+        });
     }
 
     const generate = () => {
@@ -107,7 +136,7 @@ const Options = (props) => {
                         </Stack>
 
                         <Box sx={{ flexGrow: 1 }} />
-                        <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }}> Load File </Button>
+                        <Button disableRipple className="settings-button" sx={{ backgroundColor: "white", mb: 1, "&:hover": { backgroundColor: "#9B55C6" } }} onClick={loadFile}> Load File </Button>
                         <Button disableRipple className="settings-button" sx={{ backgroundColor: !widthValid || !heightValid || !roomSizeValid || !coverageValid ? "grey" : "#4C9553", mb: 1.5, color: "white", "&:hover": { backgroundColor: "#9B55C6" } }} 
                             disabled={!widthValid || !heightValid || !roomSizeValid || !coverageValid} onClick={generate}> Generate </Button>
                     </Stack>
