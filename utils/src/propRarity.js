@@ -1,7 +1,7 @@
 const propRarity = {
-    COMMON: 60,
-    UNCOMMON: 30,
-    RARE: 10
+    "common": 60,
+    "uncommon": 30,
+    "rare": 10
 }
 
 module.exports = PropRarity;

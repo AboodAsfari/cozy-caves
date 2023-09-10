@@ -1,9 +1,9 @@
 const itemRarity = {
-    COMMON: 50,
-    UNCOMMON: 25,
-    RARE: 15,
-    EPIC: 7,
-    LEGENDARY: 3
+    "common": 50,
+    "uncommon": 25,
+    "rare": 15,
+    "epic": 7,
+    "legendary": 3
 }
 
 module.exports = ItemRarity;
