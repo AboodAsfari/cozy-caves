@@ -3,10 +3,13 @@ import {
     Box,
     Button,
     Collapse,
+    Dialog,
+    DialogTitle,
     Slide,
     Snackbar,
     Stack,
     Tooltip,
+    Typography,
 } from "@mui/material";
 import "../style/Toolbar.css"
 
@@ -24,6 +27,8 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DungeonBuilder from '@cozy-caves/dungeon-generation';
 import MapSettingsPanel from './MapSettingsPanel';
+import FilePresentIcon from '@mui/icons-material/FilePresent';
+import ImageIcon from '@mui/icons-material/Image';
 
 export default function ToolBar(props) {
     const {
@@ -41,11 +46,13 @@ export default function ToolBar(props) {
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
+    const [downloadDialog, setDownloadDialog] = React.useState(false);
+    const [downloadLabel, setDownloadLabel] = React.useState("...");
     
     const [downloadContents, setDownloadContents] = React.useState(null);
 
     React.useEffect(() => {
-        setDownloadContents(getFileContents());
+        getFileContents().then(fileContents => setDownloadContents(fileContents));
 
         if (intialRender) {
             setIntialRender(false);
@@ -137,13 +144,17 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
-    const getFileContents = () => {
+    const getFileContents = async () => {
         let serializableDungeon = { 
             mapSettings: mapSettings,
             dungeon: dungeon.map((room) => room.getSerializableRoom())
         };
+        let image = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
+        console.log(image)
+        
         let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
-        return "data:text/plain;charset=utf-8," + serializedDungeon;
+        // return "data:text/plain;charset=utf-8," + serializedDungeon;
+        return image.src;
     }
 
     const getToolbarButtonColors = (name) => {
@@ -156,7 +167,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: () => setDownloadDialog(true) },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -177,8 +188,7 @@ export default function ToolBar(props) {
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
                             <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple onClick={tool.method} href={tool.name === "Download" ? downloadContents : null}
-                                    sx={{ color: getToolbarButtonColors(tool.name) }} download={tool.name === "Download" ? "cozy-map.json" : null}> 
+                                <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
                                     {tool.icon}
                                 </Button>
                             </Tooltip>
@@ -187,9 +197,21 @@ export default function ToolBar(props) {
                 </Collapse>}
             </TransitionGroup>
         </Stack>
+
         <Slide in={loadingAnimation} direction={loadingAnimation ? "down" : "up"}>
             <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
         </Slide>
+
+        <Dialog open={downloadDialog} onClose={() => setDownloadDialog(false)}>
+            <DialogTitle sx={{ fontSize: 50, px: 10, userSelect: "none" }}> Download Map </DialogTitle>
+            <Stack direction="row" sx={{ alignSelf: "center" }} spacing={5} onMouseOut={() => setDownloadLabel("...")}>
+                <ImageIcon sx={{ fontSize: 100, "&:hover": { cursor: "pointer", color: "#4C9553" } }} onMouseOver={() => setDownloadLabel("Download as Image")} />
+                <FilePresentIcon sx={{ fontSize: 100, "&:hover": { cursor: "pointer", color: "#4C9553" } }} onMouseOver={() => setDownloadLabel("Download as Loadable File")} />
+            </Stack>
+            <Typography sx={{ fontSize: 30, pb: 2, visibility: downloadLabel !== "..." ? "visible" : "hidden" }}>{downloadLabel} </Typography>
+            <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={() => setDownloadDialog(false)}/>
+        </Dialog>
+
         <Snackbar
             sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}
             open={copiedSnackbar}
