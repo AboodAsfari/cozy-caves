@@ -49,10 +49,11 @@ export default function ToolBar(props) {
     const [downloadDialog, setDownloadDialog] = React.useState(false);
     const [downloadLabel, setDownloadLabel] = React.useState("...");
     
-    const [downloadContents, setDownloadContents] = React.useState(null);
+    const [downloadFileContents, setDownloadFileContents] = React.useState(null);
+    const [downloadImageContents, setDownloadImageContents] = React.useState(null);
 
     React.useEffect(() => {
-        getFileContents().then(fileContents => setDownloadContents(fileContents));
+        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
 
         if (intialRender) {
             setIntialRender(false);
@@ -144,17 +145,22 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
-    const getFileContents = async () => {
-        let serializableDungeon = { 
-            mapSettings: mapSettings,
-            dungeon: dungeon.map((room) => room.getSerializableRoom())
-        };
-        let image = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
-        console.log(image)
-        
-        let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
-        // return "data:text/plain;charset=utf-8," + serializedDungeon;
-        return image.src;
+    const openDownloadDialog = () => {
+        getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
+        setDownloadDialog(true);
+    }
+
+    const getFileContents = async (isImage = false) => {
+        if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
+        else {
+            let serializableDungeon = { 
+                mapSettings: mapSettings,
+                dungeon: dungeon.map((room) => room.getSerializableRoom())
+            };
+
+            let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
+            return "data:text/plain;charset=utf-8," + serializedDungeon;
+        }
     }
 
     const getToolbarButtonColors = (name) => {
@@ -167,7 +173,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: () => setDownloadDialog(true) },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: openDownloadDialog },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -205,8 +211,13 @@ export default function ToolBar(props) {
         <Dialog open={downloadDialog} onClose={() => setDownloadDialog(false)}>
             <DialogTitle sx={{ fontSize: 50, px: 10, userSelect: "none" }}> Download Map </DialogTitle>
             <Stack direction="row" sx={{ alignSelf: "center" }} spacing={5} onMouseOut={() => setDownloadLabel("...")}>
-                <ImageIcon sx={{ fontSize: 100, "&:hover": { cursor: "pointer", color: "#4C9553" } }} onMouseOver={() => setDownloadLabel("Download as Image")} />
-                <FilePresentIcon sx={{ fontSize: 100, "&:hover": { cursor: "pointer", color: "#4C9553" } }} onMouseOver={() => setDownloadLabel("Download as Loadable File")} />
+                <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Download as Image")}> 
+                    <ImageIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
+                </a>
+
+                <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Download as Loadable File")}> 
+                    <FilePresentIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
+                </a>
             </Stack>
             <Typography sx={{ fontSize: 30, pb: 2, visibility: downloadLabel !== "..." ? "visible" : "hidden" }}>{downloadLabel} </Typography>
             <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={() => setDownloadDialog(false)}/>
