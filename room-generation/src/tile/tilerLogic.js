@@ -42,7 +42,16 @@ const isFloor = (tile) => tile && tile.getTileType() === "floor";
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
     (tile, room, numGen) => {
-        let random = 0;
+        let random = numGen();
+        let altOneChance = 0.1;
+        let altTwoChance = 0.1;
+        let altThreeChance = 0.1;
+        let altFourChance = 0.1;
+
+        if (random < altOneChance) return TileID.FLOOR;
+        if (random < altOneChance + altTwoChance) return TileID.FLOOR_2;
+        if (random < altOneChance + altTwoChance + altThreeChance) return TileID.FLOOR_3;
+        if (random < altOneChance + altTwoChance + altThreeChance + altFourChance) return TileID.FLOOR_4;
         return TileID.FLOOR;
     },
     (tile, room, numGen) => {
