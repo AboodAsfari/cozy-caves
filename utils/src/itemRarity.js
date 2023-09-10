@@ -1,4 +1,4 @@
-const itemRarity = {
+const ItemRarity = {
     "common": 50,
     "uncommon": 25,
     "rare": 15,
@@ -6,4 +6,4 @@ const itemRarity = {
     "legendary": 3
 }
 
-module.exports = itemRarity;
+module.exports = ItemRarity;
