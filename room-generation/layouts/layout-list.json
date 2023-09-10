@@ -1,6 +1,8 @@
 {
     "layouts": {
         "rectangular-room.json": 3,
-        "3-width-L.json": 2
+        "3-width-L.json": 2,
+        "2-width-donut.json": 2,
+        "weird-heart.json": 1
     }
 }

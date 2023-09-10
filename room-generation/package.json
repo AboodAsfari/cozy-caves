@@ -1,6 +1,6 @@
 {
     "name": "@cozy-caves/room-generation",
-    "version": "1.1.14",
+    "version": "1.1.15",
     "description": "Generates rooms from a pool of scalable layouts.",
     "main": "index.js",
     "directories": {
