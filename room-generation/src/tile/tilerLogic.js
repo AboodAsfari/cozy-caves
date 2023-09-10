@@ -42,16 +42,20 @@ const isFloor = (tile) => tile && tile.getTileType() === "floor";
 // Default tileset, will be moved once a proper tileset system is implemented.
 const defaultTiler = new TilerLogic(
     (tile, room, numGen) => {
-        let random = numGen();
+        let rotationChooser = numGen();
+        if (rotationChooser < 0.25) tile.setRotation(0);
+        else if (rotationChooser < 0.5) tile.setRotation(90);
+        else if (rotationChooser < 0.75) tile.setRotation(180);
+        else tile.setRotation(270);
+
+        let floorChooser = numGen();
         let altOneChance = 0.1;
         let altTwoChance = 0.1;
         let altThreeChance = 0.1;
-        let altFourChance = 0.1;
 
-        if (random < altOneChance) return TileID.FLOOR;
-        if (random < altOneChance + altTwoChance) return TileID.FLOOR_2;
-        if (random < altOneChance + altTwoChance + altThreeChance) return TileID.FLOOR_3;
-        if (random < altOneChance + altTwoChance + altThreeChance + altFourChance) return TileID.FLOOR_4;
+        if (floorChooser < altOneChance) return TileID.FLOOR_2;
+        if (floorChooser < altOneChance + altTwoChance) return TileID.FLOOR_3;
+        if (floorChooser < altOneChance + altTwoChance + altThreeChance) return TileID.FLOOR_4;
         return TileID.FLOOR;
     },
     (tile, room, numGen) => {
@@ -65,46 +69,83 @@ const defaultTiler = new TilerLogic(
         let bottomRightNeighbor = getNeighbor(pos, room, new Point(1, 1));
         let bottomLeftNeighbor = getNeighbor(pos, room, new Point(-1, 1));
 
+        function getInnerWall() {
+            let wallChooser = numGen();
+            let altOneChance = 0.1;
+            let altTwoChance = 0.1;
+            let altThreeChance = 0.1;
+
+            if (wallChooser < altOneChance) return TileID.INNER_WALL_2;
+            if (wallChooser < altOneChance + altTwoChance) return TileID.INNER_WALL_3;
+            if (wallChooser < altOneChance + altTwoChance + altThreeChance) return TileID.INNER_WALL_4;
+            return TileID.INNER_WALL;
+        } 
+
         if (isWall(rightNeighbor) && isWall(topNeighbor) && isFloor(bottomLeftNeighbor)) {
             tile.setScale(new Point(-1, -1));
-            return TileID.INNER_WALL;
+            return getInnerWall();
         } else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && isFloor(topLeftNeighbor)) {
             tile.setScale(new Point(-1, 1));
-            return TileID.INNER_WALL;
+            return getInnerWall();
         } else if (isWall(leftNeighbor) && isWall(topNeighbor) && isFloor(bottomRightNeighbor)) {
             tile.setScale(new Point(1, -1));
-            return TileID.INNER_WALL;
+            return getInnerWall();
         } else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor)) {
             tile.setScale(new Point(1, 1));
-            return TileID.INNER_WALL;
+            return getInnerWall();
         }
+
+
+        function getCornerWall() {
+            let wallChooser = numGen();
+            let altOneChance = 0.1;
+            let altTwoChance = 0.1;
+            let altThreeChance = 0.1;
+
+            if (wallChooser < altOneChance) return TileID.CORNER_WALL_2;
+            if (wallChooser < altOneChance + altTwoChance) return TileID.CORNER_WALL_3;
+            if (wallChooser < altOneChance + altTwoChance + altThreeChance) return TileID.CORNER_WALL_4;
+            return TileID.CORNER_WALL;
+        } 
 
         if (isWall(rightNeighbor) && isWall(bottomNeighbor)) {
             tile.setScale(new Point(1, 1));
-            return TileID.CORNER_WALL;
+            return getCornerWall();
         } else if (isWall(leftNeighbor) && isWall(bottomNeighbor)) {
             tile.setScale(new Point(-1, 1));
-            return TileID.CORNER_WALL;
+            return getCornerWall();
         } else if (isWall(leftNeighbor) && isWall(topNeighbor)) {
             tile.setScale(new Point(-1, -1));
-            return TileID.CORNER_WALL;
+            return getCornerWall();
         } else if (isWall(rightNeighbor) && isWall(topNeighbor)) {
             tile.setScale(new Point(1, -1));
-            return TileID.CORNER_WALL;
+            return getCornerWall();
         } 
         
+        function getEdgeWall() {
+            let wallChooser = numGen();
+            let altOneChance = 0.1;
+            let altTwoChance = 0.1;
+            let altThreeChance = 0.1;
+
+            if (wallChooser < altOneChance) return TileID.EDGE_WALL_2;
+            if (wallChooser < altOneChance + altTwoChance) return TileID.EDGE_WALL_3;
+            if (wallChooser < altOneChance + altTwoChance + altThreeChance) return TileID.EDGE_WALL_4;
+            return TileID.EDGE_WALL;
+        } 
+
         if (!rightNeighbor) {
             tile.setScale(new Point(-1, 1));
-            return TileID.EDGE_WALL;
+            return getEdgeWall();
         } else if (!topNeighbor) {
             tile.setRotation(90);
-            return TileID.EDGE_WALL;
+            return getEdgeWall();
         } else if (!bottomNeighbor) {
             tile.setRotation(-90);
-            return TileID.EDGE_WALL;
+            return getEdgeWall();
         }
         
-        return TileID.EDGE_WALL;
+        return getEdgeWall();
     }
 );
 
