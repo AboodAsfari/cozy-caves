@@ -1,12 +1,12 @@
 const Ajv = require("ajv");
 const metadata = require("./metadata/prop_metadata.json");
 const Prop = require("./classes/prop");
-const Rarity = require('@cozy-caves/utils').ItemRarity;
+const ItemRarity = require('@cozy-caves/utils').ItemRarity;
+const PropRarity = require('@cozy-caves/utils').PropRarity;
 const schema = require("./metadata/prop_schema.json");
 const ItemGenerator = require("./itemGenerator");
 
 class PropGenerator {
-    rarityList = ["common", "uncommon", "rare"];
     constructor () {
         const validate = new Ajv().compile(schema);
         // checking whether or not the metadata is valid
@@ -32,8 +32,8 @@ class PropGenerator {
     #getRandomRarity() {
         const rand = Math.random() * 100 + 1; //SEED
         let percentage = 0;
-        for (const rarity in Rarity) {
-            percentage += Rarity[rarity];
+        for (const rarity in ItemRarity) {
+            percentage += ItemRarity[rarity];
 
             if (rand <= percentage) return rarity;
         }
@@ -41,14 +41,13 @@ class PropGenerator {
     }
 
     getPropByName(name){
-        
         const categories = metadata.prop_categories;
         
         for (const category in categories) {
             const propList = categories[category];
             const found = propList.find(prop => prop.name === name);
             if (found) {
-                const prop = new Prop(found.name, found.desc, found.rarity, found.containsItem);
+                const prop = new Prop(found.name, found.desc, category, found.rarity, found.containsItem);
                 this.#storeItem(prop);
                 return prop;
             }
@@ -58,15 +57,25 @@ class PropGenerator {
     }
 
     getPropByRarity(rarity) { 
-        if (!this.rarityList.includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
+        console.log("calling get prop by rarity: "+ rarity);
+        if (!Object.keys(PropRarity).includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
 
         const categories = metadata.prop_categories;
         const filteredProps = [];
 
-        for (const category in categories) {
-            if (categories.hasOwnProperty(category) && Array.isArray(categories[category])) {
-                const categoryItems = categories[category];
-                filteredProps.push(...categoryItems.filter(p => p.rarity === rarity));
+        for (const category in metadata.prop_categories) {
+            const categoryProps = metadata.prop_categories[category];
+            for (const propData of categoryProps) {
+                if (propData.rarity === rarity) {
+                    const prop = new Prop(
+                        propData.name,
+                        propData.desc,
+                        category,
+                        propData.rarity,
+                        propData.contains_items
+                    );
+                    filteredProps.push(prop);
+                }
             }
         }
 
@@ -75,7 +84,7 @@ class PropGenerator {
         // Generate a random index based on the length of the filtered props
         const randomIndex = Math.floor(Math.random() * filteredProps.length);
         const p = filteredProps[randomIndex];
-        const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem);
+        const prop = new Prop(p.name, p.desc, p.category, p.rarity, p.containsItem);
         
         this.#storeItem(prop);
         return prop;
@@ -88,7 +97,7 @@ class PropGenerator {
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(Math.random() * temp.length); 
         let p = temp[randomIndex];
-        const prop = new Prop(p.name, p.desc, p.rarity, p.containsItem); 
+        const prop = new Prop(p.name, p.desc, category, p.rarity, p.containsItem); 
         this.#storeItem(prop);
         return prop;
     }

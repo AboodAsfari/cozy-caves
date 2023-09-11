@@ -12,3 +12,15 @@ test('Testing toString', () => {
     log(populatedRoom.toString());
 
 });
+
+test('Testing PathName', () => {
+    const room = new RoomBuilder().setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
+    
+    const populatedRoom = populateRoom(room);
+    log("-------------------------------");
+    const propList = populatedRoom.getPropList();
+
+    for (var prop of propList) {
+        log(prop.getPathName());
+    }
+});

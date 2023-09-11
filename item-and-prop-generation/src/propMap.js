@@ -1,4 +1,3 @@
-const PropGenerator = require('./propGenerator.js');
 const Point = require('@cozy-caves/utils').Point;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropSet = require('./propSet.js');
@@ -6,7 +5,6 @@ const PropSet = require('./propSet.js');
 class PropMap {
     #populatedRoom = new Map();
     #room;
-    #propGenerator = new PropGenerator();
     #propSet = new PropSet(Math.random()); // change this later when there is a seed
 
     constructor (room) {
@@ -37,7 +35,6 @@ class PropMap {
         this.#placeProps(propSet);
         
     }
-
 
     /**
      * Looks for a valid random poisiton in the room so that a prop can be placed.
@@ -129,6 +126,7 @@ class PropMap {
         return newPos;
     }
 
+    // Getters
     getProp(pos) {
         return this.#populatedRoom.get(pos.toString());
     }
