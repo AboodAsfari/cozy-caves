@@ -1,15 +1,15 @@
 const Point = require("@cozy-caves/utils").Point;
 const metadata = require("./metadata/propset_metadata.json");
-const seedrandom = require('seedrandom');
 const PropGenerator = require("./propGenerator");
+const seedrandom = require('seedrandom');
 
 class PropSet { 
-    #seed;
     #randomGen;
 
     constructor (seed) {
-        this.#seed = seed;
-        this.#randomGen = seedrandom(this.#seed);
+        if (seed) this.seed = seed;
+        else this.seed = Math.random();
+        this.#randomGen = seedrandom(this.seed);
     }
 
     getSetByRarity(rarity) {
@@ -32,7 +32,7 @@ class PropSet {
         const propSet = [];
 
         for (const propName of set.props) {
-            var prop = new PropGenerator().getPropByName(propName)
+            var prop = new PropGenerator(this.#randomGen()).getPropByName(propName)
             if (prop == null) throw new Error(`No prop found for ${propName}.`);
             propSet.push(prop);
         }

@@ -2,16 +2,21 @@ const Ajv = require("ajv");
 const metadata = require("./metadata/item_metadata.json");
 const Item = require("./classes/item");
 const schema = require("./metadata/item_schema.json");
-const ItemRarity = require("../../utils/src/itemRarity"); //require("@cozy-caves/utils").ItemRarity;
+const ItemRarity = require("@cozy-caves/utils").ItemRarity;
+const seedrandom = require('seedrandom');
 
 class ItemGenerator {
-    
-    constructor () {
+    #randomGen;
+
+    constructor (seed) {
         const validate = new Ajv().compile(schema);
         // does not match the format
         if (!validate(metadata)) {
             throw new Error("Invalid JSON data");
         }
+        if (seed) this.seed = seed;
+        else this.seed = Math.random();
+        this.#randomGen = seedrandom(this.seed);
     }
 
     getItemByRarity(rarity) { 
@@ -39,7 +44,7 @@ class ItemGenerator {
         if (filteredItems.length === 0) throw new Error(`No props found for rarity: ${rarity}`);
 
         // Generate a random index based on the length of the filtered props
-        const randomIndex = Math.floor(Math.random() * filteredItems.length);
+        const randomIndex = Math.floor(this.#randomGen() * filteredItems.length);
         
         return filteredItems[randomIndex];
     }

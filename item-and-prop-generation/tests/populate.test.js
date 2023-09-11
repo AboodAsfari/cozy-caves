@@ -7,8 +7,8 @@ const populateRoom = require("../src/propMap");
 test('Testing Prop Generation', () => {
     log("TESTING PROP GENERATION\n");
 
-    const room = new RoomBuilder().setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
-    const populatedRoom = populateRoom(room);
+    const room = new RoomBuilder("abo").setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
+    const populatedRoom = populateRoom(room, "abo");
     log(populatedRoom.toString());
     log("-------------------------------");
 
@@ -32,7 +32,7 @@ test('Testing PathName', () => {
 test('Testing Props that can store items', () => {
     log("TESTING PROPS THAT CAN STORE ITEMS\n");
 
-    const generator = new PropGenerator();
+    const generator = new PropGenerator(Math.random());
     
     for (let i=0; i<5; i++) {
         const prop = generator.getPropByCategory("Storages");

@@ -1,19 +1,28 @@
 const Point = require('@cozy-caves/utils').Point;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropSet = require('./propSet.js');
+const seedrandom = require('seedrandom');
 
 class PropMap {
     #populatedRoom = new Map();
     #room;
-    #propSet = new PropSet(Math.random()); // change this later when there is a seed
+    #propSet;
+    #seed;
+    #randomGen;
 
-    constructor (room) {
+    constructor (room, seed) {
+        if (seed) this.#seed = seed;
+        else this.#seed = Math.random();
+
         this.#room = room;
+        this.#randomGen = seedrandom(this.#seed);
+        this.#propSet = new PropSet(this.#randomGen());
+
         this.#populatePropMap();
     }
     
     #getRandomRarity() {
-        const rand = Math.random() * 100 + 1; //SEED
+        const rand = this.#randomGen() * 100 + 1;
         let percentage = 0;
         for (const rarity in Rarity) {
             percentage += Rarity[rarity];
@@ -47,8 +56,8 @@ class PropMap {
 
         // Limiting the number of attempts to avoid an infinite loop. This should not happen in a normal scenerio.
         while (count < 1000) {
-            const i = Math.floor(Math.random() * roomDimensions.getX()); // USE SEED
-            const j = Math.floor(Math.random() * roomDimensions.getY());
+            const i = Math.floor(this.#randomGen() * roomDimensions.getX());
+            const j = Math.floor(this.#randomGen() * roomDimensions.getY());
 
             const pos = new Point(i, j);
             
@@ -116,8 +125,8 @@ class PropMap {
         let xChange, yChange, x, y, newPos;
 
         do {
-            xChange = Math.floor(Math.random() * (2 * range + 1)) - range;
-            yChange = Math.floor(Math.random() * (2 * range + 1)) - range;
+            xChange = Math.floor(this.#randomGen() * (2 * range + 1)) - range;
+            yChange = Math.floor(this.#randomGen() * (2 * range + 1)) - range;
             x = anchorPos.getX() + xChange;
             y = anchorPos.getY() + yChange;
             newPos = new Point(Math.abs(x), Math.abs(y));
@@ -165,8 +174,8 @@ class PropMap {
 
 }
 
-function populateRoom(room) {
-    return new PropMap(room);
+function populateRoom(room, seed) {
+    return new PropMap(room, seed);
 }
 
 module.exports = populateRoom;
