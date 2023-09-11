@@ -24,13 +24,15 @@ class Prop {
      * @param name The name of the prop.
      * @param desc A brief narrative description of the prop's appearance
      *             and functionality.
+     * @param category The category that the prop is in.
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
      * @param containsItem t/f on whether or not the prop has hidden items.
      */
-    constructor(name, desc, rarity, containsItem) {
+    constructor(name, desc, category, rarity, containsItem) {
         this.name = name;
         this.desc = desc;
+        this.category = category;
         this.rarity = rarity;
         this.containsItem = containsItem;
     }
@@ -46,6 +48,18 @@ class Prop {
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
+
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getRarity() { return this.rarity; }
+    getContainsItem() { return this.containsItem; }
+
+    getPathName() { 
+        var snakeCaseName = this.name.split(" ").join("_").toLowerCase();
+        var snakeCaseCategory = this.category.split(" ").join("_").toLowerCase();
+
+        return snakeCaseCategory + "/" + snakeCaseName;
+    }
 
     // Setters.
     setPosition(position) { 
@@ -63,7 +77,16 @@ class Prop {
         let result = "";
         result += "name: " + this.name + "\n";
         result += "desc: " + this.desc + "\n";
-        result += "rarity: " + this.rarity + "\n"; //todo: items list
+        result += "category: " + this.category + "\n";
+        result += "rarity: " + this.rarity + "\n";
+        result += "items: ["
+        if (this.#items.length !== 0) {
+            for (var item of this.#items) {
+                result += " " + item.getName() + ",";
+            }            
+        }
+        result += "]";
+        
         return result;
     }
 }

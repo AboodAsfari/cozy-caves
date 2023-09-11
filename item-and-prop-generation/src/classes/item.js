@@ -22,13 +22,15 @@ class Item {
      * @param name The name of the item.
      * @param desc A brief narrative description of the item's appearance
      *             and functionality.
+     * @param category The category the item belongs to.
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
      * @param properties Any special properties or effects associated with the item
      */
-    constructor(name, desc, rarity, properties) {
+    constructor(name, desc, category, rarity, properties) {
         this.name = name;
         this.desc = desc;
+        this.category = category;
         this.rarity = rarity;
         this.properties = properties;
     }
@@ -37,6 +39,12 @@ class Item {
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
+
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getCategory() { return this.category; }
+    getRarity() { return this.rarity; }
+    getProperties() { return this.Properties; }
 
     // Setters.
     setPosition(position) { 
@@ -48,6 +56,16 @@ class Item {
         this.#offset = offset; 
     }
     setRotation(rotation) { this.#rotation = rotation; }
+
+    toString(){
+        let result = "";
+        result += "name: " + this.name + "\n";
+        result += "desc: " + this.desc + "\n";
+        result += "category: " + this.category + "\n";
+        result += "rarity: " + this.rarity + "\n";
+        result += "properties: " + this.properties + "\n";
+        return result;
+    }
 }
 
 module.exports = Item;
