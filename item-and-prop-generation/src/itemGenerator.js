@@ -2,9 +2,9 @@ const Ajv = require("ajv");
 const metadata = require("./metadata/item_metadata.json");
 const Item = require("./classes/item");
 const schema = require("./metadata/item_schema.json");
+const ItemRarity = require("../../utils/src/itemRarity"); //require("@cozy-caves/utils").ItemRarity;
 
 class ItemGenerator {
-    rarityList = ["common", "uncommon", "rare", "epic", "legendary"];
     
     constructor () {
         const validate = new Ajv().compile(schema);
@@ -15,19 +15,33 @@ class ItemGenerator {
     }
 
     getItemByRarity(rarity) { 
-        if (!this.rarityList.includes(rarity)) throw new Error('Invalid rarity category: ${rarity}.');
-        
-        const categories = metadata.item_categories;
-        // groups all items by rarity regardless of their category
-        const filteredItems = categories.reduce((items, category) => {
-            return items.concat(category.filter(i => i.rarity === rarity));
-        }, []);
-        if (filteredItems.length === 0) throw new Error("No items found for rarity: ${rarity}");
+        if (!Object.keys(ItemRarity).includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
 
-        // Generate a random index based on the length of the filtered items
+        const categories = metadata.item_categories;
+        const filteredItems = [];
+
+        for (const category in categories) {
+            const categoryItems = categories[category];
+            for (const itemData of categoryItems) {
+                if (itemData.rarity === rarity) {
+                    const item = new Item(
+                        itemData.name,
+                        itemData.desc,
+                        category,
+                        itemData.rarity,
+                        itemData.properties
+                    );
+                    filteredItems.push(item);
+                }
+            }
+        }
+
+        if (filteredItems.length === 0) throw new Error(`No props found for rarity: ${rarity}`);
+
+        // Generate a random index based on the length of the filtered props
         const randomIndex = Math.floor(Math.random() * filteredItems.length);
-        const i = filteredItems[randomIndex];
-        return Item(i.name, i.desc, i.rarity, i.properties);
+        
+        return filteredItems[randomIndex];
     }
 
     getItemByCategory(category){

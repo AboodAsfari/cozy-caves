@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@cozy-caves/room-generation": "^1.0.7",
-    "@cozy-caves/utils": "^1.0.4"
+    "@cozy-caves/utils": "^1.1.0"
   },
   "dependencies": {
     "ajv": "^8.12.0",

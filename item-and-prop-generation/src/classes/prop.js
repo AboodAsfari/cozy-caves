@@ -79,6 +79,14 @@ class Prop {
         result += "desc: " + this.desc + "\n";
         result += "category: " + this.category + "\n";
         result += "rarity: " + this.rarity + "\n";
+        result += "items: ["
+        if (this.#items.length !== 0) {
+            for (var item of this.#items) {
+                result += " " + item.getName() + ",";
+            }            
+        }
+        result += "]";
+        
         return result;
     }
 }

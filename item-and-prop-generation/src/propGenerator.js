@@ -19,12 +19,12 @@ class PropGenerator {
         if (!(prop instanceof Prop)) {
             throw new Error("Invalid type. Expecting a Prop object.");
         }
-
-        if (!prop.containsItem) return;
+        if (!prop.getContainsItem()) return;
         const max = Math.floor(Math.random() * 5) + 1; // maximum number of items a prop can have
+        const itemGenerator = new ItemGenerator();
         for (let i=0; i<max; i++){
             const rarity = this.#getRandomRarity();
-            prop.addItem(ItemGenerator.getItemByRarity(rarity));
+            prop.addItem(itemGenerator.getItemByRarity(rarity));
         }
     }
 
@@ -47,7 +47,7 @@ class PropGenerator {
             const propList = categories[category];
             const found = propList.find(prop => prop.name === name);
             if (found) {
-                const prop = new Prop(found.name, found.desc, category, found.rarity, found.containsItem);
+                const prop = new Prop(found.name, found.desc, category, found.rarity, found.contains_items);
                 this.#storeItem(prop);
                 return prop;
             }
@@ -63,8 +63,8 @@ class PropGenerator {
         const categories = metadata.prop_categories;
         const filteredProps = [];
 
-        for (const category in metadata.prop_categories) {
-            const categoryProps = metadata.prop_categories[category];
+        for (const category in categories) {
+            const categoryProps = categories[category];
             for (const propData of categoryProps) {
                 if (propData.rarity === rarity) {
                     const prop = new Prop(
@@ -84,20 +84,20 @@ class PropGenerator {
         // Generate a random index based on the length of the filtered props
         const randomIndex = Math.floor(Math.random() * filteredProps.length);
         const p = filteredProps[randomIndex];
-        const prop = new Prop(p.name, p.desc, p.category, p.rarity, p.containsItem);
+        const prop = new Prop(p.name, p.desc, p.category, p.rarity, p.contains_items);
         
         this.#storeItem(prop);
         return prop;
     }
 
     getPropByCategory(category){
-        const temp = metadata[category];
-        if (temp.length === 0) throw new Error(`No props found for category: ${category}`);
+        const temp = metadata.prop_categories[category];
+        if (temp === undefined || temp.length === 0) throw new Error(`No props found for category: ${category}`);
 
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(Math.random() * temp.length); 
         let p = temp[randomIndex];
-        const prop = new Prop(p.name, p.desc, category, p.rarity, p.containsItem); 
+        const prop = new Prop(p.name, p.desc, category, p.rarity, p.contains_items); 
         this.#storeItem(prop);
         return prop;
     }
