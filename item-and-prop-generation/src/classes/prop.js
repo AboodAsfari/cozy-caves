@@ -47,6 +47,11 @@ class Prop {
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
 
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getRarity() { return this.rarity; }
+    getContainsItem() { return this.containsItem; }
+
     // Setters.
     setPosition(position) { 
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
@@ -63,7 +68,7 @@ class Prop {
         let result = "";
         result += "name: " + this.name + "\n";
         result += "desc: " + this.desc + "\n";
-        result += "rarity: " + this.rarity + "\n"; //todo: items list
+        result += "rarity: " + this.rarity + "\n";
         return result;
     }
 }
