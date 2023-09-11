@@ -38,6 +38,11 @@ class Item {
     getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
 
+    getName() { return this.name; }
+    getDesc() { return this.desc; }
+    getRarity() { return this.rarity; }
+    getProperties() { return this.Properties; }
+
     // Setters.
     setPosition(position) { 
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
