@@ -45,12 +45,6 @@ class Item {
     getRarity() { return this.rarity; }
     getProperties() { return this.properties; }
 
-    getName() { return this.name; }
-    getDesc() { return this.desc; }
-    getCategory() { return this.category; }
-    getRarity() { return this.rarity; }
-    getProperties() { return this.Properties; }
-
     // Setters.
     setPosition(position) { 
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
