@@ -67,15 +67,10 @@ const RendererCanvas = (props) => {
   const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
-  let maxX = 0
-  let maxY = 0
 
   const drawTile = (tile, roomPos) => {
-
-    const tileInfo = `Clicked on (${tile.getPosition().getX()}, ${tile.getPosition().getY()}) || Type: ${tile.getTileType()}`
-    
-    let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
-    let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
+    const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
+    const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
               image={tileIDImageMap.get(tile.getTileID()).img}
               anchor={0.5}
@@ -83,14 +78,31 @@ const RendererCanvas = (props) => {
               position={{x:xPos, y:yPos}}
               angle={tile.getRotation()}
               zIndex={tile.getDepth()}
+            />
+  }
+  
+  const drawProp = (prop, roomPos) => {
+    const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
+    const xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
+    const yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
+    return <Sprite
+              image={"resources/props/"+prop.getPathName()+".png"}
+              anchor={0.5}
+              scale={{x:scaleX, y:scaleY}} 
+              position={{x:xPos, y:yPos}}
+              angle={prop.getRotation()}
+              zIndex={1000}
               eventMode='dynamic'
               cursor='pointer'
-              pointerdown={(e) => onClick(e, tileInfo)}
+              pointerdown={(e) => onClick(e, prop)}
             />
   }
 
+  // Keep track of the max X and Y values
+  let maxX = 0
+  let maxY = 0
+
   const drawDungeon = () => {
-    
     return props.dungeon.map((room) => {
       let roomMaxX =(room.getPosition().getX()+room.getDimensions().getX()) * size * scaleX;
       let roomMaxY = (room.getPosition().getY()+room.getDimensions().getY()) * size * scaleY;
@@ -109,7 +121,15 @@ const RendererCanvas = (props) => {
         }
       }
       
+      // Get the sprites for each tile in this room
       return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
+    })
+  }
+
+  const drawProps = () => {
+    return props.dungeon.map((room) => {
+      if(room.getPropMap() === undefined) return null;
+      return room.getPropMap().getPropList().map((prop) => drawProp(prop, room.getPosition()));
     })
   }
 
@@ -123,9 +143,11 @@ const RendererCanvas = (props) => {
     else  viewport.animate({ scale: newScale, time: 250 });  
   }
 
-  // get the current window size
+  // Get the current window size
   const [width, height] = useResize();
+  // Get the dungeon and prop sprites
   let dungeon = drawDungeon()
+  let propsList = drawProps()
   return (
     <>
       <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
@@ -136,6 +158,7 @@ const RendererCanvas = (props) => {
           screenHeight={height}
         >
          { dungeon }
+         { propsList }
         </Viewport>
       </Stage>
 

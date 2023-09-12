@@ -59,8 +59,8 @@ class RoomBuilder {
         }
 
         if (this.#populateWithItems) {
-            // let propMap = populateRoom(room, 5);
-            // room.setPropMap(propMap);
+            let propMap = populateRoom(room, this.#numGen());
+            room.setPropMap(propMap);
         }
 
         if (this.#resetOnBuild) this.#resetParameters();
