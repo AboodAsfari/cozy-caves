@@ -1,8 +1,8 @@
 {
   "name": "@cozy-caves/item-and-prop-generation",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Populates room with items and props",
-  "main": "src/populate.js",
+  "main": "src/propMap.js",
   "directories": {
     "test": "tests"
   },
