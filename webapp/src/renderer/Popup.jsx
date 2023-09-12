@@ -34,7 +34,7 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
           Information Viewer
         </Typography>
         <Typography id="popup-modal-description" sx={{ mt: 2, color: 'black' }}>
-          {content}
+          {content.toString()}
         </Typography>
       </Box>
     </Modal>

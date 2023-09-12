@@ -1,5 +1,5 @@
 import  React from 'react';
-import { Stage, Sprite, Text } from '@pixi/react';
+import { Stage, Sprite } from '@pixi/react';
 import { BaseTexture, SCALE_MODES } from 'pixi.js';
 import { TileID } from '@cozy-caves/utils';
 import  Viewport from './Viewport';
@@ -69,11 +69,8 @@ const RendererCanvas = (props) => {
   const scaleY = 0.5
 
   const drawTile = (tile, roomPos) => {
-
-    const tileInfo = `Clicked on (${tile.getPosition().getX()}, ${tile.getPosition().getY()}) || Type: ${tile.getTileType()}`
-    
-    let xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
-    let yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
+    const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
+    const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
     return <Sprite 
               image={tileIDImageMap.get(tile.getTileID()).img}
               anchor={0.5}
@@ -81,22 +78,23 @@ const RendererCanvas = (props) => {
               position={{x:xPos, y:yPos}}
               angle={tile.getRotation()}
               zIndex={tile.getDepth()}
-              eventMode='dynamic'
-              cursor='pointer'
-              pointerdown={(e) => onClick(e, tileInfo)}
             />
   }
   
   const drawProp = (prop, roomPos) => {
-    let xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
-    let yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
-    return <Text
-              text={prop.toString()}
+    const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
+    const xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
+    const yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
+    return <Sprite
+              image={"resources/props/"+prop.getPathName()+".png"}
               anchor={0.5}
               scale={{x:scaleX, y:scaleY}} 
               position={{x:xPos, y:yPos}}
               angle={prop.getRotation()}
               zIndex={1000}
+              eventMode='dynamic'
+              cursor='pointer'
+              pointerdown={(e) => onClick(e, prop)}
             />
   }
 
@@ -130,8 +128,8 @@ const RendererCanvas = (props) => {
 
   const drawProps = () => {
     return props.dungeon.map((room) => {
-      if(room.getPropMap() === undefined) return null
-      return room.getPropMap().entries().map((prop) => drawProp(prop, room.getPosition()))
+      if(room.getPropMap() === undefined) return null;
+      return room.getPropMap().getPropList().map((prop) => drawProp(prop, room.getPosition()));
     })
   }
 
