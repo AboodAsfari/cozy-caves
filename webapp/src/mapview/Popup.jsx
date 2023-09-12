@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Modal, Typography, Button } from '@mui/material';
 
 const style = {
@@ -23,7 +23,25 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
   };
 
   // Extract prop attributes from content
-  const { name, desc, rarity, contains_items } = content || {};
+  const { name, desc, category, rarity } = content || {};
+  
+  // State variable to hold items
+  const [items, setItems] = useState([]);
+
+  // useEffect to parse items from content.toString()
+  useEffect(() => {
+    if (content) {
+      const contentString = content.toString();
+      const itemsMatch = contentString.match(/items: \[([^\]]+)\]/);
+      if (itemsMatch) {
+        const itemsString = itemsMatch[1];
+        const itemsArray = itemsString.split(',').map(item => item.trim());
+        setItems(itemsArray);
+      } else {
+        setItems([]);
+      }
+    }
+  }, [content]);
 
   return (
     <Modal
@@ -57,8 +75,20 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
           <br />
           <strong>Description:</strong> {desc}
           <br />
+          <strong>Category:</strong> {category}
+          <br />
           <strong>Rarity:</strong> {rarity}
           <br />
+          <strong>Contains Items:</strong>
+          <ul>
+            {items.length > 0 ? (
+              items.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))
+            ) : (
+              <li>None</li>
+            )}
+          </ul>
         </Typography>
       </Box>
     </Modal>
