@@ -26,7 +26,7 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
   const { name, desc, category, rarity } = content || {};
   
   // State variable to hold items
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState('');
 
   // Parse items from content.toString()
   useEffect(() => {
@@ -38,11 +38,10 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
         const itemsString = itemsMatch[1];
         const itemsArray = itemsString.split(',').map(item => item.trim());
         
-        // Remove trailing comma from the last item
-        setItems(itemsArray.filter(item => item !== '')); 
-        //setItems(itemsArray);
+        // Filter out empty items and join with a comma and space
+        setItems(itemsArray.filter(item => item !== '').join(', ')); 
       } else {
-        setItems([]);
+        setItems('');
       }
     }
   }, [content]);
@@ -84,15 +83,7 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
           <strong>Rarity:</strong> {rarity}
           <br />
           <strong>Contains Items:</strong>
-          <ul>
-            {items.length > 0 ? (
-              items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))
-            ) : (
-              <li>None</li>
-            )}
-          </ul>
+          {items ? items : 'None'}
         </Typography>
       </Box>
     </Modal>
