@@ -28,15 +28,19 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
   // State variable to hold items
   const [items, setItems] = useState([]);
 
-  // useEffect to parse items from content.toString()
+  // Parse items from content.toString()
   useEffect(() => {
     if (content) {
       const contentString = content.toString();
+      // Retrieve items from contentString
       const itemsMatch = contentString.match(/items: \[([^\]]+)\]/);
       if (itemsMatch) {
         const itemsString = itemsMatch[1];
         const itemsArray = itemsString.split(',').map(item => item.trim());
-        setItems(itemsArray);
+        
+        // Remove trailing comma from the last item
+        setItems(itemsArray.filter(item => item !== '')); 
+        //setItems(itemsArray);
       } else {
         setItems([]);
       }
@@ -96,3 +100,4 @@ const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
 };
 
 export default Popup;
+
