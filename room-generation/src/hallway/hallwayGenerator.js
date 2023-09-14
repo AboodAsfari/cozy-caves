@@ -40,6 +40,8 @@ const midPoints = {};
 
 const hallways = [];
 
+var map;
+
 function getmidPoint(room) {
     let point = room.getPosition();
     let x = point.getX();
@@ -51,8 +53,30 @@ function getmidPoint(room) {
     return midpoint;
 }
 
-function generateHallways(rooms) {
+function generateCurrentMap(rooms) {
+    for (room of rooms) {
+        let roomWidth = room.getDimensions().getX();
+        let roomHeight = room.getDimensions().getY();
+        let roomPos = room.getPosition();
+        let roomX = roomPos.getX();
+        let roomY = roomPos.getY();
+
+        for (let i = 0; i < roomWidth; i++) {
+            for (let j = 0; j < roomHeight; j++) {
+                console.log(roomX + i);
+                map[roomX + i][roomY + j] = room.getTile(new Point(i, j));
+            }
+        }
+    }
+
+    console.log(map);
+}
+
+function generateHallways(rooms, w, h) {
     const midpoints = [];
+    map = [...Array(w)].map(e => Array(h).fill(TileID.EDGE_WALL));
+    console.log(map);
+    generateCurrentMap(rooms);
     for (let key in rooms) {
         if(rooms[key] instanceof Room) {
             point = getmidPoint(rooms[key]);
@@ -180,14 +204,15 @@ function determineShape(relativeX, relativeY, fromKey, toRoom) {
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.UP) {
         console.log("UP");
         //requires more calculation
-        let fromPos = midPoints[fromKey];
-        if (fromPos.getX() < toRoom.getPosition().getX()) {
-             return HallwayShapes.DOWN_LEFT;
-        } else if (fromPos.getX() > toRoom.getPosition().getX()) {
-            return HallwayShapes.DOWN_RIGHT;
-        } else {
-            return HallwayShapes.DOWN_TOP;
-        }
+        // let fromPos = midPoints[fromKey];
+        // if (fromPos.getX() < toRoom.getPosition().getX()) {
+        //      return HallwayShapes.DOWN_LEFT;
+        // } else if (fromPos.getX() > toRoom.getPosition().getX()) {
+        //     return HallwayShapes.DOWN_RIGHT;
+        // } else {
+        //     return HallwayShapes.DOWN_TOP;
+        // }
+        return HallwayShapes.DOWN_TOP;
     } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.DOWN) {
         return HallwayShapes.RIGHT_DOWN;
         //other options can be randomly done later
@@ -195,47 +220,16 @@ function determineShape(relativeX, relativeY, fromKey, toRoom) {
         return HallwayShapes.LEFT_DOWN;
         //other options can be randomly done later
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.DOWN) {
-        console.log("DOWN");
-        //requires more calculation
-        let fromPos = midPoints[fromKey];
-        if (fromPos.getX() < toRoom.getPosition().getX()) {
-             return HallwayShapes.TOP_LEFT;
-        } else if (fromPos.getX() > toRoom.getPosition().getX()) {
-            return HallwayShapes.TOP_RIGHT;
-        } else {
-            return HallwayShapes.TOP_DOWN;
-        }
+        return HallwayShapes.TOP_DOWN;
     } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.OVERLAP) {
-        //requires more calculation
-        console.log("LEFT");
-        let fromPos = midPoints[fromKey];
-        if (fromPos.getY() < toRoom.getPosition().getY()) {
-             return HallwayShapes.DOWN_LEFT;
-        } else if (fromPos.getY() > toRoom.getPosition().getY()) {
-            return HallwayShapes.TOP_LEFT;
-        } else {
-            return HallwayShapes.RIGHT_LEFT;
-        }
+        return HallwayShapes.RIGHT_LEFT;
     } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.OVERLAP) {
-        console.log("RIGHT");
-        let fromPos = midPoints[fromKey];
-        if (fromPos.getY() < toRoom.getPosition().getY()) {
-             return HallwayShapes.DOWN_RIGHT;
-        } else if (fromPos.getX() > toRoom.getPosition().getX()) {
-            return HallwayShapes.TOP_RIGHT;
-        } else {
-            return HallwayShapes.LEFT_RIGHT;
-        }
+        return HallwayShapes.LEFT_RIGHT;
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.OVERLAP) {
-        //might throw error instead - rooms should not be inside each other
-        console.log("???");
-        //throw new Error();
+        //rooms are touching
+        console.log("touching");
         return HallwayShapes.null;
     } 
-
-    console.log("x: " + relativeX);
-    console.log("y: " + relativeY);
-
 }
 
 function createHallwayFromShape(shape, from, to) {
@@ -247,7 +241,6 @@ function createHallwayFromShape(shape, from, to) {
     let swapped = false;
 
     //can definitely optimise this code
-    //can flip from/to as they are the same (eg RT is same as TR)
     if (shape == HallwayShapes.RIGHT_TOP) {
         fromEdges = from.getRightEdges();
         toEdges = to.getTopEdges();
@@ -299,13 +292,24 @@ function createHallwayFromShape(shape, from, to) {
     } else {
         return;
     }
-    middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
-    middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    
+    if (shape != HallwayShapes.LEFT_RIGHT && shape != HallwayShapes.TOP_DOWN) {
+        middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
+        middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
+    } else if (shape == HallwayShapes.TOP_DOWN) {
+        for (fromEdge of fromEdges) {
+            for (toEdge of toEdges) {
+                if (fromEdge.getPosition().getX() == toEdge.getPosition().getX()) {
+                    middleFromTile = fromEdge;
+                    middleToTile = toEdge;
+                }
+            }
+        }
+    }
 
     if (!swapped) {
         createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()), shape);
     } else {
-        //createFromEntryExit(to.getPosition().add(middleToTile.getPosition()), from.getPosition().add(middleFromTile.getPosition()), shape);
         console.log(middleToTile.getPosition());
         for (edge of toEdges) {
             console.log(edge.getPosition());
@@ -324,6 +328,10 @@ function createFromEntryExit(fromPos, toPos, shape) {
 
     let diffX = Math.abs(toX - startingX);
     let diffY = Math.abs(toY - startingY);
+
+    if (diffX < 3) {
+
+    }
 
     let hallway = new Room(new Point(diffX + 3, diffY + 3));
 
@@ -404,7 +412,9 @@ function createFromEntryExit(fromPos, toPos, shape) {
             hallway.addTile(new Tile("floor", new Point(1 + i, 1)).setTileID(TileID.FLOOR));
         }
         hallway.setPosition(new Point(startingX-1, toY-1));
-    } else if (shape == HallwayShapes.LEFT_RIGHT) {
+    } 
+    
+    else if (shape == HallwayShapes.LEFT_RIGHT) {
         for (let i = 0; i < diffX; i++) {
             hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
             hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
@@ -412,13 +422,15 @@ function createFromEntryExit(fromPos, toPos, shape) {
             hallway.addTile(new Tile("floor", new Point(0 + i, 1)).setTileID(TileID.FLOOR));
             hallway.setPosition(new Point(startingX-3, startingY-3));
         }
-    } else if (shape == HallwayShapes.TOP_DOWN) {
-        for (let i = 0; i < diffY; i++) {
-            hallway.addTile(new Tile("wall", new Point(0, 0 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(2, 0 + i)).setTileID(TileID.EDGE_WALL));
+    } 
+    
+    else if (shape == HallwayShapes.TOP_DOWN) {
+        for (let i = 0; i < diffY-1; i++) {
+            hallway.addTile(new Tile("wall", new Point(0, 1 + i)).setTileID(TileID.EDGE_WALL));
+            hallway.addTile(new Tile("wall", new Point(2, 1 + i)).setTileID(TileID.EDGE_WALL));
 
             hallway.addTile(new Tile("floor", new Point(1, 1 + i)).setTileID(TileID.FLOOR));
-            hallway.setPosition(new Point(startingX-3, startingY-3));
+            hallway.setPosition(new Point(startingX-3, toY));
         }
     } else {
         return;
