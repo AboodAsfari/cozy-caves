@@ -18,6 +18,7 @@ import { TransitionGroup } from 'react-transition-group';
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CenterFocusStrongSharpIcon from '@mui/icons-material/CenterFocusStrongSharp';
 import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -45,6 +46,7 @@ export default function ToolBar(props) {
     const [open, setOpen] = React.useState(true);
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
+    const [centeringAnimation, setCenteringAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
     const [downloadDialog, setDownloadDialog] = React.useState(false);
     const [downloadLabel, setDownloadLabel] = React.useState("...");
@@ -83,7 +85,7 @@ export default function ToolBar(props) {
             // Move into correct position before animation
             viewport.moveCenter(viewport.worldScreenWidth * 2, fitHeight/2);
             // Move to center of screen
-            viewport.animate({position: { x: viewport.maxX/2, y: fitHeight/2}, time: 500});
+            viewport.animate({position: { x: viewport.maxX/2, y: fitHeight/2}, time: 500, ease: "easeOutCubic"});
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dungeon]);
@@ -95,7 +97,7 @@ export default function ToolBar(props) {
 
     const generateMap = (newSettings) => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        setLoadingAnimation(true);
+        setTimeout(() => setLoadingAnimation(true), 150);
 
         function requestNewMap() {
             setDungeon(new DungeonBuilder()
@@ -109,7 +111,7 @@ export default function ToolBar(props) {
             setMapSettings(newSettings);
         }
 
-        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, ease: "easeInCubic", callbackOnComplete: requestNewMap});
     }
 
     const loadMap = (dungeonData, newSettings) => {
@@ -125,38 +127,36 @@ export default function ToolBar(props) {
     }
     
     const printMap = () => {
-        // Get current viewport
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
         if (!viewport) return;
-        // Save current viewport positions
         let width = viewport.worldScreenWidth, height = viewport.worldScreenHeight, center = viewport.center;
-        // Fit viewport to canvas (change position and zoom)
-        if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(viewport.maxX*1.01, true, true, true);
-        else viewport.fitHeight(viewport.maxY*1.02, true, true, true);
-        viewport.moveCenter(viewport.maxX/2, viewport.maxY/2);
-        
-        // Wait for canvas to render with new position
+        centerMap();    
         setTimeout(async function(){
             if (!stageRef.current) return;
-            // Open new window for printing
-             const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
-            // Extract image from canvas
+            const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
             let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
-            // Reset viewport to original position
-            if(viewport.maxX >= viewport.worldScreenWidth) viewport.fitWidth(width, true, true, true);
-            else viewport.fitHeight(height, true, true, true);
             viewport.moveCenter(center.x, center.y);
-            // Check if window was closed
+            viewport.fit(true, width, height);
             if(!WinPrint) {
                 return;
             }
-            // Print image
             WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
             WinPrint.document.close();  
             WinPrint.focus();
             WinPrint.print();
             WinPrint.close();
         }, 500);   
+    }
+
+    const centerMap = () => {
+        let viewport = stageRef.current.mountNode.containerInfo.children[0];
+        if (!viewport || loadingAnimation || centeringAnimation) return;
+        setCenteringAnimation(true);
+        const fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
+        let position= { x: viewport.maxX/2, y: (viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY))/2};
+        let scale = (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
+        viewport.animate({position: position, scale: scale, time: 500, ease: "easeInOutCubic"});
+        setTimeout(() => setCenteringAnimation(false), 500);
     }
 
     const toggleSettings = () => {
@@ -209,8 +209,9 @@ export default function ToolBar(props) {
         <Stack direction="row" sx={{ position: 'absolute', top: '70px ', right: '0', height: "100vh" }}>
             <TransitionGroup component={null} >
                 <Collapse direction="left" sx={{ position: "relative"}}>
-                    <RemoveIcon className="zoom-button" sx={{ right: "60px !important" }} onClick={() => zoom(2/3)} />
-                    <AddIcon className="zoom-button" onClick={() => zoom(1.5)} />   
+                    <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => zoom(2/3)} />
+                    <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => zoom(1.5)} />   
+                    <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => centerMap()} /> 
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
