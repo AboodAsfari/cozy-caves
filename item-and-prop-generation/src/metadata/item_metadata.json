@@ -131,6 +131,22 @@
                 "desc": "Elegantly crafted paintings, sculptures, and artistic creations that showcase opulence and artistic prowess, often sought after by collectors.",
                 "rarity": "rare",
                 "properties": "Exquisite art pieces that demonstrate craftsmanship and luxury, sought after by collectors."
+            },
+            {
+                "name": "Pouch of Gems",
+                "desc": "A tiny sack containing scattered gems throughout the map, valuable as trade items or components for magical rituals.",
+                "rarity": "uncommon",
+                "contains_items": true,
+                "item_category": [],
+                "size": {"w": 0, "h":0} 
+            },
+            {
+                "name": "Gem of Seeing",
+                "desc": "A gem that allows truesight out to 120 feet when you peer through the gem.",
+                "rarity": "rare",
+                "contains_items": true,
+                "item_category": [],
+                "size": {"w": 0, "h":0} 
             }
         ],
         "Key Items": [
