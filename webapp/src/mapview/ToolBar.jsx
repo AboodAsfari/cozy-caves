@@ -97,7 +97,7 @@ export default function ToolBar(props) {
 
     const generateMap = (newSettings) => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        setLoadingAnimation(true);
+        setTimeout(() => setLoadingAnimation(true), 150);
 
         function requestNewMap() {
             setDungeon(new DungeonBuilder()
