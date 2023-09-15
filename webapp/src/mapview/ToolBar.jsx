@@ -46,6 +46,7 @@ export default function ToolBar(props) {
     const [open, setOpen] = React.useState(true);
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
+    const [centeringAnimation, setCenteringAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
     const [downloadDialog, setDownloadDialog] = React.useState(false);
     const [downloadLabel, setDownloadLabel] = React.useState("...");
@@ -149,11 +150,13 @@ export default function ToolBar(props) {
 
     const centerMap = () => {
         let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        if (!viewport || loadingAnimation) return;
+        if (!viewport || loadingAnimation || centeringAnimation) return;
+        setCenteringAnimation(true);
         const fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
         let position= { x: viewport.maxX/2, y: (viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY))/2};
         let scale = (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
         viewport.animate({position: position, scale: scale, time: 500, ease: "easeInOutCubic"});
+        setTimeout(() => setCenteringAnimation(false), 500);
     }
 
     const toggleSettings = () => {
