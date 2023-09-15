@@ -18,6 +18,7 @@ import { TransitionGroup } from 'react-transition-group';
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CenterFocusStrongSharpIcon from '@mui/icons-material/CenterFocusStrongSharp';
 import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -159,6 +160,9 @@ export default function ToolBar(props) {
         }, 500);   
     }
 
+    const centerMap = () => {
+    }
+
     const toggleSettings = () => {
         if (currPanel === "settings") setCurrPanel(null);
         else setCurrPanel("settings");
@@ -209,8 +213,9 @@ export default function ToolBar(props) {
         <Stack direction="row" sx={{ position: 'absolute', top: '70px ', right: '0', height: "100vh" }}>
             <TransitionGroup component={null} >
                 <Collapse direction="left" sx={{ position: "relative"}}>
-                    <RemoveIcon className="zoom-button" sx={{ right: "60px !important" }} onClick={() => zoom(2/3)} />
-                    <AddIcon className="zoom-button" onClick={() => zoom(1.5)} />   
+                    <RemoveIcon className="zoom-button" sx={{ right: "100px !important" }} onClick={() => zoom(2/3)} />
+                    <AddIcon className="zoom-button"sx={{ right: "60px !important" }} onClick={() => zoom(1.5)} />   
+                    <CenterFocusStrongSharpIcon className="zoom-button" onClick={() => centerMap()} /> 
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
