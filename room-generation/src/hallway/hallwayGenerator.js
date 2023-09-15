@@ -34,11 +34,11 @@ const HallwayShapes = Object.freeze({
     DOWN_LEFT : 'DL',
 })
 
-const roomToRoomConnections = [];
+var roomToRoomConnections = [];
 
-const midPoints = {};
+var midPoints = {};
 
-const hallways = [];
+var hallways = [];
 
 var map;
 
@@ -73,6 +73,9 @@ function generateCurrentMap(rooms) {
 }
 
 function generateHallways(rooms, w, h) {
+    midPoints = { };
+    roomToRoomConnections = [];
+    hallways = [];
     const midpoints = [];
     map = [...Array(w)].map(e => Array(h).fill(TileID.EDGE_WALL));
     console.log(map);
@@ -176,18 +179,18 @@ function createHallway(conn, rooms) {
 }
 
 function checkXPlane(fromX, fromWidth, toX, toWidth) {
-    if (fromX + fromWidth < toX) {
+    if (fromX + fromWidth-1 < toX) {
         return RelativePosX.LEFT;
-    } else if (fromX > toX + toWidth) {
+    } else if (fromX > toX + toWidth-1) {
         return RelativePosX.RIGHT;
     }
     return RelativePosX.OVERLAP;
 }
 
 function checkYPlane (fromY, fromHeight, toY, toHeight) {
-    if (fromY + fromHeight < toY) {
+    if (fromY + fromHeight-1 < toY) {
         return RelativePosY.UP;
-    } else if(fromY > toY + toHeight) {
+    } else if(fromY > toY + toHeight-1) {
         return RelativePosY.DOWN;
     }
     return RelativePosY.OVERLAP;
@@ -293,6 +296,11 @@ function createHallwayFromShape(shape, from, to) {
         return;
     }
     
+    fromEdges.splice(0, 1);
+    fromEdges.splice(fromEdges.length-1, 1);
+    toEdges.splice(0, 1);
+    toEdges.splice(toEdges.length-1, 1)
+
     if (shape != HallwayShapes.LEFT_RIGHT && shape != HallwayShapes.TOP_DOWN) {
         middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
         middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
@@ -305,15 +313,22 @@ function createHallwayFromShape(shape, from, to) {
                 }
             }
         }
+    } else {
+        //LEFT_RIGHT
+        for (fromEdge of fromEdges) {
+            for (toEdge of toEdges) {
+                if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
+                    middleFromTile = fromEdge;
+                    middleToTile = toEdge;
+                }
+            }
+        }
     }
 
     if (!swapped) {
         createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()), shape);
     } else {
         console.log(middleToTile.getPosition());
-        for (edge of toEdges) {
-            console.log(edge.getPosition());
-        }
         createFromEntryExit(to.getPosition().add(middleFromTile.getPosition()), from.getPosition().add(middleToTile.getPosition()), shape);
     }
 }
@@ -329,11 +344,19 @@ function createFromEntryExit(fromPos, toPos, shape) {
     let diffX = Math.abs(toX - startingX);
     let diffY = Math.abs(toY - startingY);
 
-    if (diffX < 3) {
+    let xCompensation = 0;
+    let yCompensation = 0;
 
+    if (diffX < 3) {
+        xCompensation = 3;
     }
 
-    let hallway = new Room(new Point(diffX + 3, diffY + 3));
+    if (diffY < 3) {
+        yCompensation = 3;
+    }
+
+
+    let hallway = new Room(new Point(diffX+xCompensation, diffY+yCompensation));
 
     if (shape == HallwayShapes.RIGHT_TOP) {
         for (let i = 0; i < diffX; i++) {
@@ -420,7 +443,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
             hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
 
             hallway.addTile(new Tile("floor", new Point(0 + i, 1)).setTileID(TileID.FLOOR));
-            hallway.setPosition(new Point(startingX-3, startingY-3));
+            hallway.setPosition(new Point(toX+1, startingY-1));
         }
     } 
     
@@ -430,7 +453,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
             hallway.addTile(new Tile("wall", new Point(2, 1 + i)).setTileID(TileID.EDGE_WALL));
 
             hallway.addTile(new Tile("floor", new Point(1, 1 + i)).setTileID(TileID.FLOOR));
-            hallway.setPosition(new Point(startingX-3, toY));
+            hallway.setPosition(new Point(startingX, toY));
         }
     } else {
         return;
