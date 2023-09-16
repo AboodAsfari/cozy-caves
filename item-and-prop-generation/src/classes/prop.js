@@ -22,17 +22,15 @@ class Prop {
      * @param name The name of the prop.
      * @param desc A brief narrative description of the prop's appearance
      *             and functionality.
-     * @param category The category that the prop is in.
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
      * @param containsItem t/f on whether or not the prop has hidden items.
      * @param possibleItems A category of items that the prop can contain.
      * @param placementRules A set of rules dictating how the prop will be placed.
      */
-    constructor(name, desc, category, rarity, containsItem, possibleItems, placementRules, size) {
+    constructor(name, desc, rarity, containsItem, possibleItems, placementRules, size) {
         this.name = name;
         this.desc = desc;
-        this.category = category;
         this.rarity = rarity;
         this.containsItem = containsItem;
         this.possibleItems = possibleItems;
@@ -61,10 +59,7 @@ class Prop {
     getSize() { return this.size;}
 
     getPathName() { 
-        var snakeCaseName = this.name.split(" ").join("_").toLowerCase();
-        var snakeCaseCategory = this.category.split(" ").join("_").toLowerCase();
-
-        return snakeCaseCategory + "/" + snakeCaseName;
+        return this.name.split(" ").join("_").toLowerCase();
     }
 
     // Setters.
@@ -78,7 +73,6 @@ class Prop {
         let result = "";
         result += "name: " + this.name + "\n";
         result += "desc: " + this.desc + "\n";
-        result += "category: " + this.category + "\n";
         result += "rarity: " + this.rarity + "\n";
         result += "items: ["
         if (this.#items.length !== 0) {
@@ -88,6 +82,15 @@ class Prop {
         }
         result += "]";
         
+        return result;
+    }
+
+    rendererInfo() {
+        let result = "";
+        result += "containsItem: " + this.containsItem + "\n";
+        result += "possibleItems: " + this.possibleItems + "\n";
+        result += "placementRules: " + JSON.stringify(this.placementRules) + "\n";
+        result += "size:" + JSON.stringify(this.size) + "\n";
         return result;
     }
 }

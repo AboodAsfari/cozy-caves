@@ -1,7 +1,6 @@
 const Ajv = require("ajv");
 const metadata = require("./metadata/prop_metadata.json");
 const Prop = require("./classes/prop");
-const ItemRarity = require('@cozy-caves/utils').ItemRarity;
 const PropRarity = require('@cozy-caves/utils').PropRarity;
 const schema = require("./metadata/prop_schema.json");
 const ItemGenerator = require("./itemGenerator");
@@ -37,8 +36,8 @@ class PropGenerator {
     #getRandomRarity() {
         const rand = this.#randomGen() * 100 + 1; //SEED
         let percentage = 0;
-        for (const rarity in ItemRarity) {
-            percentage += ItemRarity[rarity];
+        for (const rarity in PropRarity) {
+            percentage += PropRarity[rarity];
 
             if (rand <= percentage) return rarity;
         }
@@ -46,53 +45,54 @@ class PropGenerator {
     }
 
     getPropByName(name){
-        const categories = metadata.prop_categories;
-        
-        for (const category in categories) {
-            const propList = categories[category];
-            const found = propList.find(prop => prop.name === name);
-            if (found) {
-                const prop = new Prop(found.name, found.desc, category, found.rarity, found.contains_items);
-                this.#storeItem(prop);
-                return prop;
-            }
+        if (metadata.hasOwnProperty(name)) {
+            const p = metadata[name];
+            return new Prop(
+                    name, 
+                    p.information.desc, 
+                    p.information.rarity, 
+                    p.render_rules.contains_item, 
+                    p.render_rules.item_categories, 
+                    p.render_rules.placement_rules, 
+                    p.render_rules.size
+                );
+        } else {
+            throw new Error(`Prop with name '${name}' not found in metadata.`);
         }
-
-        return null;
     }
 
-    getPropByRarity(rarity) { 
-        console.log("calling get prop by rarity: "+ rarity);
-        if (!Object.keys(PropRarity).includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
+    getProp(propList) { 
+        if (!propList) throw new Error("Prop list is empty!");
+        // possible props
+        const allProps = [];
+        propList.forEach((name) => {
+            var propData = metadata[name];
+            propData.name = name;
+            allProps.push(propData);
+        });
 
-        const categories = metadata.prop_categories;
-        const filteredProps = [];
-
-        for (const category in categories) {
-            const categoryProps = categories[category];
-            for (const propData of categoryProps) {
-                if (propData.rarity === rarity) {
+        const groupedProps = []; // grouped by rarity
+        do {
+            const rarity = this.#getRandomRarity();
+            for (const p of allProps) {
+                if (p.information.rarity === rarity) {
                     const prop = new Prop(
-                        propData.name,
-                        propData.desc,
-                        category,
-                        propData.rarity,
-                        propData.contains_items
+                        p.name, 
+                        p.information.desc, 
+                        p.information.rarity, 
+                        p.render_rules.contains_item, 
+                        p.render_rules.item_categories, 
+                        p.render_rules.placement_rules, 
+                        p.render_rules.size
                     );
-                    filteredProps.push(prop);
+                    groupedProps.push(prop);
                 }
             }
         }
+        while (groupedProps.length === 0);
 
-        if (filteredProps.length === 0) throw new Error(`No props found for rarity: ${rarity}`);
-
-        // Generate a random index based on the length of the filtered props
-        const randomIndex = Math.floor(this.#randomGen() * filteredProps.length);
-        const p = filteredProps[randomIndex];
-        const prop = new Prop(p.name, p.desc, p.category, p.rarity, p.contains_items);
-        
-        this.#storeItem(prop);
-        return prop;
+        const randomIndex = Math.floor(this.#randomGen() * groupedProps.length);
+        return groupedProps[randomIndex];
     }
 
     getPropByCategory(category){

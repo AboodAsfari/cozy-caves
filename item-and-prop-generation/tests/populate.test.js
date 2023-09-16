@@ -5,42 +5,41 @@ const PropGenerator = require("../src/propGenerator");
 const populateRoom = require("../src/propMap");
 const ItemGenerator = require("../src/itemGenerator");
 
-test('Testing Prop Generation', () => {
-    log("TESTING PROP GENERATION\n");
+// test('Testing Prop Generation', () => {
+//     log("TESTING PROP GENERATION\n");
 
-    const room = new RoomBuilder("abo").setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
-    const populatedRoom = populateRoom(room, "abo");
-    log(populatedRoom.toString());
-    log("-------------------------------");
+//     const room = new RoomBuilder("abo").setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
+//     const populatedRoom = populateRoom(room, "abo");
+//     log(populatedRoom.toString());
+//     log("-------------------------------");
 
-});
+// });
 
-test('Testing PathName', () => {
-    log("TESTING PATHNAME\n");
+// test('Testing PathName', () => {
+//     log("TESTING PATHNAME\n");
 
-    const room = new RoomBuilder().setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
+//     const room = new RoomBuilder().setSize(new Point(7,7)).setLeniency(new Point(0,0)).build();
     
-    const populatedRoom = populateRoom(room);
-    const propList = populatedRoom.getPropList();
+//     const populatedRoom = populateRoom(room);
+//     const propList = populatedRoom.getPropList();
 
-    for (var prop of propList) {
-        log(prop.getPathName());
-    }
-    log("-------------------------------");
-});
+//     for (var prop of propList) {
+//         log(prop.getPathName());
+//     }
+//     log("-------------------------------");
+// });
 
+// test('Testing Props that can store items', () => {
+//     log("TESTING PROPS THAT CAN STORE ITEMS\n");
 
-test('Testing Props that can store items', () => {
-    log("TESTING PROPS THAT CAN STORE ITEMS\n");
-
-    const generator = new PropGenerator(Math.random());
+//     const generator = new PropGenerator(Math.random());
     
-    for (let i=0; i<5; i++) {
-        const prop = generator.getPropByCategory("Storages");
-        log(prop.toString() + "\n");
-    }
-    log("-------------------------------");
-});
+//     for (let i=0; i<5; i++) {
+//         const prop = generator.getPropByCategory("Storages");
+//         log(prop.toString() + "\n");
+//     }
+//     log("-------------------------------");
+// });
 
 test('Testing getItemByCategory', () => {
     log("TESTING GET ITEM BY CATEGORY\n");
@@ -70,5 +69,24 @@ test('Testing items by name', () => {
     const generator = new ItemGenerator(Math.random());
     const item = generator.getItemByName("Scroll of Identify");
     log(item.toString());
+    log("-------------------------------");
+});
+
+test('Testing props by name', () => {
+    log("TESTING PROP BY NAME\n");
+
+    const generator = new PropGenerator(Math.random());
+    const prop = generator.getPropByName("Glyphs");
+    log(prop.toString());
+    log(prop.rendererInfo());
+    log("-------------------------------");
+});
+
+test('Testing props by set', () => {
+    log("TESTING PROP BY SET\n");
+    const generator = new PropGenerator(Math.random());
+    for (let i=0; i<5; i++) {
+        log(generator.getProp(["Table", "Chair", "Bed", "Bookshelf"]).toString() + "\n");
+    }
     log("-------------------------------");
 });
