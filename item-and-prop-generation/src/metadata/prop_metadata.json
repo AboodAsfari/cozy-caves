@@ -6,7 +6,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": ["Scrolls", "Magical Items"],
             "placement_rules": {
                 "nearWall": "edgeWall",
                 "nearProp": "none",
@@ -23,12 +22,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [
-                "Potions and Elixirs",
-                "Weapons and Armor",
-                "Magical Items",
-                "Traps and Tools"
-            ],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -45,13 +38,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [
-                "Potions and Elixirs",
-                "Weapons and Armor",
-                "Magical Items",
-                "Treasure and Valuables",
-                "Quest-related Items"
-            ],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -68,7 +54,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": ["Quest-related Items"],
             "placement_rules": {
                 "nearWall": "edgeWall",
                 "nearProp": "none",
@@ -177,7 +162,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -194,7 +178,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -211,7 +194,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": ["Quest-related Items", "Epic and Legendary Items"],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -260,7 +242,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": ["Treasure and Valuables", "Quest-related Items"],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -277,7 +258,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -294,7 +274,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": ["Quest-related Items", "Epic and Legendary Items"],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
@@ -311,11 +290,6 @@
         },
         "render_rules": {
             "contains_item": false,
-            "item_categories": [
-                "Treasure and Valuables",
-                "Quest-related Items",
-                "Epic and Legendary Items"
-            ],
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
