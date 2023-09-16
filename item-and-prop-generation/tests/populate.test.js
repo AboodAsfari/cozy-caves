@@ -3,6 +3,7 @@ const Point = require("@cozy-caves/utils").Point;
 const RoomBuilder = require("@cozy-caves/room-generation").RoomBuilder;
 const PropGenerator = require("../src/propGenerator");
 const populateRoom = require("../src/propMap");
+const ItemGenerator = require("../src/itemGenerator");
 
 test('Testing Prop Generation', () => {
     log("TESTING PROP GENERATION\n");
@@ -38,5 +39,36 @@ test('Testing Props that can store items', () => {
         const prop = generator.getPropByCategory("Storages");
         log(prop.toString() + "\n");
     }
+    log("-------------------------------");
+});
+
+test('Testing getItemByCategory', () => {
+    log("TESTING GET ITEM BY CATEGORY\n");
+
+    const generator = new ItemGenerator(Math.random());
+    
+    
+    for (let i=0; i<5; i++) {
+        log(generator.getItemByCategory("Potions and Elixirs").toString() + "\n");
+    }
+    log("-------------------------------");
+});
+
+
+test('Testing items by category', () => {
+    log("TESTING ITEM BY CATEGORY\n");
+    const generator = new ItemGenerator(Math.random());
+    for (let i=0; i<5; i++) {
+        log(generator.getItem(["Scrolls", "Magical Items"]).toString() + "\n");
+    }
+    log("-------------------------------");
+});
+
+test('Testing items by name', () => {
+    log("TESTING ITEM BY NAME\n");
+
+    const generator = new ItemGenerator(Math.random());
+    const item = generator.getItemByName("Scroll of Identify");
+    log(item.toString());
     log("-------------------------------");
 });

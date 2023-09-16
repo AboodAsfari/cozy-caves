@@ -22,7 +22,7 @@ class ItemGenerator {
     getItemByRarity(rarity) { 
         if (!Object.keys(ItemRarity).includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
 
-        const categories = metadata.item_categories;
+        const categories = metadata;
         const filteredItems = [];
 
         for (const category in categories) {
@@ -32,7 +32,6 @@ class ItemGenerator {
                     const item = new Item(
                         itemData.name,
                         itemData.desc,
-                        category,
                         itemData.rarity,
                         itemData.properties
                     );
@@ -51,11 +50,69 @@ class ItemGenerator {
 
     getItemByCategory(category){
         const temp = metadata[category];
-        if (temp.length === 0) throw new Error('No items found for category: ${category}');
+        if (temp.length === 0) throw new Error(`No items found for category: ${category}`);
+
 
         // this random index gives a fair chance to every item that is in the list
-        let randomIndex = Math.floor() * temp.length;
-        return temp[randomIndex];
+        let randomIndex = Math.floor(this.#randomGen() * temp.length)
+        const i = temp[randomIndex];
+        const item = new Item(i.name, i.desc, i.rarity, i.properties); 
+        return item;
+    }
+
+    getItemByName(name) {
+        for (const category in metadata) {
+            const itemList = metadata[category];
+            const found = itemList.find(item => item.name === name);
+            if (found) {
+                return new Item(found.name, found.desc, found.rarity, found.properties);
+            }
+        }
+        console.log("No item by name: " + name);
+        return null;
+    }
+
+
+    getItem(categories){
+        if (!categories) throw new Error("Category list is empty!");
+
+        // getting all the items from these categories
+        const itemList = [];
+        categories.forEach((category) => {
+            itemList.push(...metadata[category]);
+        });
+
+        const groupedItems = []; // grouped by rarity
+        
+        do {
+            const rarity = this.#getRandomRarity();
+            for (const itemData of itemList) {
+                if (itemData.rarity === rarity) {
+                    const item = new Item(
+                        itemData.name,
+                        itemData.desc,
+                        itemData.rarity,
+                        itemData.properties
+                    );
+                    groupedItems.push(item);
+                }
+            }
+        }
+        while (groupedItems.length === 0);
+
+        const randomIndex = Math.floor(this.#randomGen() * groupedItems.length);
+        
+        return groupedItems[randomIndex];
+    }
+
+    #getRandomRarity() {
+        const rand = this.#randomGen() * 100 + 1; //SEED
+        let percentage = 0;
+        for (const rarity in ItemRarity) {
+            percentage += ItemRarity[rarity];
+            if (rand <= percentage) return rarity;
+        }
+        return "common";
     }
 }
 
