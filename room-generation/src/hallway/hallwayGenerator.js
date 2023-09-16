@@ -97,6 +97,7 @@ function checkOverlap(hallway) {
 }
 
 function generateHallways(rooms, w, h) {
+    console.log(rooms);
     midPoints = { };
     roomToRoomConnections = [];
     hallways = [];
@@ -104,17 +105,14 @@ function generateHallways(rooms, w, h) {
     map = [...Array(w)].map(e => Array(h).fill(TileID.DOUBLE_WALL_CONNECTED));
     generateCurrentMap(rooms);
     for (let key in rooms) {
-        if(rooms[key] instanceof Room) {
-            point = getmidPoint(rooms[key]);
-            midPoints[key] = point;
-            midpoints.push(point.getX());
-            midpoints.push(point.getY());
-        }
+        point = getmidPoint(rooms[key]);
+        midPoints[key] = point;
+        midpoints.push(point.getX());
+        midpoints.push(point.getY());
     }
     console.log(midpoints);
     const delaunay = new Delaunator.default(midpoints);
     let triangles = delaunay.triangles;
-    //console.log(triangles);fromRoom
 
     mapConnections(triangles);
     console.log(roomToRoomConnections);
@@ -154,10 +152,6 @@ function minimumSpanningTree(rooms) {
     for (const room in rooms) {
         disjointSet.makeSet(room);
     }
-    console.log(midpoints);
-    const delaunay = new Delaunator(midpoints);
-    let triangles = delaunay.triangles;
-    console.log(triangles);
 
     console.log(disjointSet);
 
@@ -492,4 +486,3 @@ function createFromEntryExit(fromPos, toPos, shape) {
 }
 
 module.exports = generateHallways;
-
