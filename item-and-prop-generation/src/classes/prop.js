@@ -8,12 +8,10 @@ const Item = require("./item");
  * 
  */
 class Prop {
-
-    #position = new Point(0, 0); // Position of the prop in the room.
     #items = [];
 
     // Rendering elements.
-    #offset = new Point(0, 0);
+    #origin = new Point(0, 0); //this is where it will be rendered from
     #rotation = 0;
 
     /**
@@ -28,13 +26,18 @@ class Prop {
      * @param rarity The rarity level, influencing its likelihood of appearing in the
      *               generated map
      * @param containsItem t/f on whether or not the prop has hidden items.
+     * @param possibleItems A category of items that the prop can contain.
+     * @param placementRules A set of rules dictating how the prop will be placed.
      */
-    constructor(name, desc, category, rarity, containsItem) {
+    constructor(name, desc, category, rarity, containsItem, possibleItems, placementRules, size) {
         this.name = name;
         this.desc = desc;
         this.category = category;
         this.rarity = rarity;
         this.containsItem = containsItem;
+        this.possibleItems = possibleItems;
+        this.placementRules = placementRules;
+        this.size = size;
     }
 
     addItem(item){
@@ -44,15 +47,18 @@ class Prop {
     }
 
     // Getters.
-    getPosition() { return this.#position; }
-    getOffset() { return this.#offset; }
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
+    getOrigin() {return this.#origin; }
 
     getName() { return this.name; }
     getDesc() { return this.desc; }
     getRarity() { return this.rarity; }
+
     getContainsItem() { return this.containsItem; }
+    getPlacementRules() { return this.placementRules; }
+    getPossibleItems() { return this.possibleItems; }
+    getSize() { return this.size;}
 
     getPathName() { 
         var snakeCaseName = this.name.split(" ").join("_").toLowerCase();
@@ -62,17 +68,12 @@ class Prop {
     }
 
     // Setters.
-    setPosition(position) { 
+    setOrigin(position){
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
-        this.#position = position; 
+        this.#origin = position;
     }
-    setOffset(offset) { 
-        if (!(offset instanceof Point)) throw new Error("Offset must be provided as Point.");
-        this.#offset = offset; 
-    }
-
     setRotation(rotation) { this.#rotation = rotation; }
-
+    
     toString() {
         let result = "";
         result += "name: " + this.name + "\n";

@@ -100,7 +100,7 @@ class PropMap {
             anchorPos = this.#getRandomPosition();
         } while (anchorPos === null);
 
-        propSet[0].setPosition(anchorPos);
+        propSet[0].setOrigin(anchorPos);
         this.#populatedRoom.set(anchorPos.toString(), propSet[0]);
         let range = this.#room.getDimensions().getX()-3;
         for (var i=1; i<propSet.length; i++) {
@@ -109,7 +109,7 @@ class PropMap {
 
             if (relativePos === null) continue;
 
-            prop.setPosition(relativePos);
+            prop.setOrigin(relativePos);
             this.#populatedRoom.set(relativePos.toString(), prop);
         }
     }
