@@ -1,6 +1,5 @@
 import  React from 'react';
-import { Stage, Sprite } from '@pixi/react';
-import { Application, BaseTexture, SCALE_MODES } from 'pixi.js';
+import { Application, BaseTexture, SCALE_MODES, Sprite } from 'pixi.js';
 import { EventSystem } from "@pixi/events"; 
 import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
@@ -15,6 +14,10 @@ const RendererCanvas = (props) => {
 
 	const canvasRef = React.useRef();
 	const pixiApp = React.useRef();
+	const viewport = React.useRef();
+
+	const maxX = React.useRef(0);
+	const maxY = React.useRef(0);
 
 	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
 
@@ -22,12 +25,13 @@ const RendererCanvas = (props) => {
         requestAnimationFrame(() => {
 		  pixiApp.current.renderer.view.style.width = `${window.innerWidth}px`;
 		  pixiApp.current.renderer.view.style.height = `${window.innerHeight}px`;
+		  // NOTE: This is bad, try resizing and see. Fix ASAP.
         });
 	};
 
 	React.useEffect(() => {
 		if (!pixiApp.current) {
-			window.addEventListener('resize', onResize);
+			window.addEventListener("resize", onResize);
 
 			BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
@@ -39,16 +43,15 @@ const RendererCanvas = (props) => {
 				width: window.innerWidth
 			});
 			
-			let viewport = getViewport();
+			viewport.current = getViewport();
 
-			console.log(pixiApp.current)
-			pixiApp.current.stage.addChild(viewport);
+			pixiApp.current.stage.addChild(viewport.current);
 			canvasRef.current.appendChild(pixiApp.current.view);
 		}
 
 		return () => {
 			if (pixiApp.current) {
-				window.removeEventListener('resize', onResize);
+				window.removeEventListener("resize", onResize);
 
 				pixiApp.current.stop();
 				pixiApp.current.destroy(true);
@@ -70,25 +73,61 @@ const RendererCanvas = (props) => {
 			events: events,
 			disableOnContextMenu: true,
 			sortableChildren: true,
-			maxX: maxX,
-			maxY: maxY,
+			maxX: maxX.current,
+			maxY: maxY.current,
 			screenWidth: width,
 			screenHeight: height
 		});
 
-		const fitYAxis = maxY/maxX > window.innerWidth / window.innerHeight;
-
 		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 })
-		.clampZoom({
-			minScale: (fitYAxis ? (height-70)/maxY : width/maxX) / 1.5,
-			maxScale: 8,
-		});
-		
-		viewport.moveCenter(maxX/2, (height/((height+70)/maxY))/2);
-		if(fitYAxis) viewport.setZoom(((height-70)/maxY)/1.1, true, true, true);
-		else viewport.fitWidth(maxX*1.1, true, true, true);
 
 		return viewport;
+	}
+
+	React.useEffect(() => {
+		while(viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
+
+		dungeon.forEach((room) => {
+			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size * scaleX;
+			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size * scaleY;
+			if(roomMaxX > maxX.current) {
+				maxX.current = roomMaxX;
+				viewport.current.maxX = maxX.current;
+			}
+			if(roomMaxY > maxY.current) {
+				maxY.current = roomMaxY;
+				viewport.current.maxY = maxY.current;
+			}
+			
+			room.getTiles().forEach((tile) => viewport.current.addChild(getTile(tile, room.getPosition())));
+		});
+
+		// Move into separate method, also does not have same result as it previously did, consult Gideon.
+		const fitYAxis = maxY.current / maxX.current > viewport.current.screenWidth / viewport.current.screenHeight;
+
+		viewport.current.clampZoom({
+			minScale: (fitYAxis ? (viewport.current.screenHeight - 70) / maxY.current : viewport.current.screenWidth / maxX.current) / 1.5,
+			maxScale: 8,
+		});
+
+		viewport.current.moveCenter(maxX.current / 2, (viewport.current.screenHeight / ((viewport.current.screenHeight + 70) / maxY.current)) / 2);
+		if(fitYAxis) viewport.current.setZoom(((viewport.current.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
+		else viewport.current.fitWidth(maxX.current * 1.1, true, true, true);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dungeon]);
+
+	const getTile = (tile, roomPos) => {
+		const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX;
+		const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY;
+
+		let sprite = Sprite.from(tileIDImageMap.get(tile.getTileID()).img);
+		sprite.anchor.set(0.5);
+		sprite.scale.set(scaleX * tile.getScale().getX(), scaleY * tile.getScale().getY());	
+		sprite.position.set(xPos, yPos);
+		sprite.angle = tile.getRotation();
+		sprite.zIndex = tile.getDepth();
+
+		return sprite;
 	}
 
   // const [popupContent, setPopupContent] = useState('');
@@ -116,19 +155,6 @@ const RendererCanvas = (props) => {
   const size = 64
   const scaleX = 0.5
   const scaleY = 0.5
-
-  // const drawTile = (tile, roomPos) => {
-  //   const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
-  //   const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
-  //   return <Sprite 
-  //             image={tileIDImageMap.get(tile.getTileID()).img}
-  //             anchor={0.5}
-  //             scale={{x:scaleX*tile.getScale().getX(), y:scaleY*tile.getScale().getY()}} 
-  //             position={{x:xPos, y:yPos}}
-  //             angle={tile.getRotation()}
-  //             zIndex={tile.getDepth()}
-  //           />
-  // }
   
   // const drawProp = (prop, roomPos) => {
   //   const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
@@ -145,34 +171,6 @@ const RendererCanvas = (props) => {
   //             cursor='pointer'
   //             pointerdown={(e) => onClick(e, prop)}
   //           />
-  // }
-
-  // // Keep track of the max X and Y values
-  let maxX = 0
-  let maxY = 0
-
-  // const drawDungeon = () => {
-  //   return props.dungeon.map((room) => {
-  //     let roomMaxX =(room.getPosition().getX()+room.getDimensions().getX()) * size * scaleX;
-  //     let roomMaxY = (room.getPosition().getY()+room.getDimensions().getY()) * size * scaleY;
-  //     if(roomMaxX > maxX) {
-  //       maxX = roomMaxX;
-  //       if (stageRef.current) {
-  //         let viewport = stageRef.current.mountNode.containerInfo.children[0];
-  //         viewport.maxX = maxX;
-  //       }
-  //     }
-  //     if(roomMaxY > maxY) {
-  //       maxY = roomMaxY;
-  //       if (stageRef.current) {
-  //         let viewport = stageRef.current.mountNode.containerInfo.children[0];
-  //         viewport.maxY = maxY;
-  //       }
-  //     }
-      
-  //     // Get the sprites for each tile in this room
-  //     return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
-  //   })
   // }
 
   // const drawProps = () => {
