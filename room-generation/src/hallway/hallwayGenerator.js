@@ -68,8 +68,32 @@ function generateCurrentMap(rooms) {
             }
         }
     }
+}
 
-    console.log(map);
+function checkOverlap(hallway) {
+    console.log(hallway);
+    let hallwayWidth = hallway.getDimensions().getX();
+    let hallwayHeight = hallway.getDimensions().getY();
+    let hallwayPos = hallway.getPosition();
+    let hallwayX = hallwayPos.getX();
+    let hallwayY = hallwayPos.getY();
+
+    for (let i = 0; i < hallwayWidth; i++) {
+        for (let j = 0; j < hallwayHeight; j++) {
+            if (map[hallwayX + i][hallwayY + j] != undefined 
+                && map[hallwayX + i][hallwayY + j] != TileID.DOUBLE_WALL_CONNECTED) {
+                let hallwayTile = hallway.getTile(new Point(i, j));
+                if (hallwayTile == undefined) {
+                    continue;
+                }
+                if (hallwayTile.getTileID() == TileID.FLOOR) {
+                    hallway.addTile(new Tile("floor", new Point(i, j)).setTileID(TileID.FLOOR));
+                } else if (map[hallwayX + i][hallwayY + j] != undefined && map[hallwayX + i][hallwayY + j].getTileID() == TileID.FLOOR) {
+                    hallway.addTile(new Tile("floor", new Point(i, j)).setTileID(TileID.FLOOR));
+                }
+            }
+        }
+    }
 }
 
 function generateHallways(rooms, w, h) {
@@ -77,8 +101,7 @@ function generateHallways(rooms, w, h) {
     roomToRoomConnections = [];
     hallways = [];
     const midpoints = [];
-    map = [...Array(w)].map(e => Array(h).fill(TileID.EDGE_WALL));
-    console.log(map);
+    map = [...Array(w)].map(e => Array(h).fill(TileID.DOUBLE_WALL_CONNECTED));
     generateCurrentMap(rooms);
     for (let key in rooms) {
         if(rooms[key] instanceof Room) {
@@ -100,8 +123,9 @@ function generateHallways(rooms, w, h) {
     for (key in mst) {
         createHallway(mst[key], rooms);
     }
-    for(hallway in hallways) {
-        rooms.push(hallways[hallway]);
+    for(hallway of hallways) {
+        checkOverlap(hallway);
+        rooms.push(hallway);
     }
 }
 
@@ -299,27 +323,32 @@ function createHallwayFromShape(shape, from, to) {
     fromEdges.splice(0, 1);
     fromEdges.splice(fromEdges.length-1, 1);
     toEdges.splice(0, 1);
-    toEdges.splice(toEdges.length-1, 1)
+    toEdges.splice(toEdges.length-1, 1);
 
     if (shape != HallwayShapes.LEFT_RIGHT && shape != HallwayShapes.TOP_DOWN) {
         middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
         middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.TOP_DOWN) {
-        for (fromEdge of fromEdges) {
-            for (toEdge of toEdges) {
-                if (fromEdge.getPosition().getX() == toEdge.getPosition().getX()) {
-                    middleFromTile = fromEdge;
-                    middleToTile = toEdge;
+
+        while (middleFromTile == undefined) {
+            for (fromEdge of fromEdges) {
+                for (toEdge of toEdges) {
+                    if (fromEdge.getPosition().getX() == toEdge.getPosition().getX()) {
+                        middleFromTile = fromEdge;
+                        middleToTile = toEdge;
+                    }
                 }
             }
         }
     } else {
         //LEFT_RIGHT
-        for (fromEdge of fromEdges) {
-            for (toEdge of toEdges) {
-                if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
-                    middleFromTile = fromEdge;
-                    middleToTile = toEdge;
+        while (middleFromTile == undefined) {
+            for (fromEdge of fromEdges) {
+                for (toEdge of toEdges) {
+                    if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
+                        middleFromTile = fromEdge;
+                        middleToTile = toEdge;
+                    }
                 }
             }
         }
@@ -360,12 +389,12 @@ function createFromEntryExit(fromPos, toPos, shape) {
 
     if (shape == HallwayShapes.RIGHT_TOP) {
         for (let i = 0; i < diffX; i++) {
-            hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
         }
         for (let i = 0; i < diffY; i++) {
-            hallway.addTile(new Tile("wall", new Point(diffX - 1, 1 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(diffX - 3, 1 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(diffX - 1, 1 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(diffX - 3, 1 + i)).setTileID(TileID.EDGE_WALL));
         }
 
         for (let i = 0; i < diffX-1; i++) {
@@ -380,12 +409,12 @@ function createFromEntryExit(fromPos, toPos, shape) {
     
     else if (shape == HallwayShapes.DOWN_LEFT) {
         for (let i = 0; i < diffY-1; i++) {
-            hallway.addTile(new Tile("wall", new Point(0, 0 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(2, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(2, 0 + i)).setTileID(TileID.EDGE_WALL));
         }
         for (let i = 0; i < diffX; i++) {
-            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)).setTileID(TileID.EDGE_WALL));
         }
         for (let i = 0; i < diffY-1; i++) {
             hallway.addTile(new Tile("floor", new Point(1, 0 + i)).setTileID(TileID.FLOOR));
@@ -398,12 +427,12 @@ function createFromEntryExit(fromPos, toPos, shape) {
 
     else if (shape == HallwayShapes.RIGHT_DOWN) {
         for (let i = 0; i < diffX; i++) {
-            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 1)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, diffY - 3)).setTileID(TileID.EDGE_WALL));
         }
         for (let i = 0; i < diffY-1; i++) {
-            hallway.addTile(new Tile("wall", new Point(diffX - 1, 0 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(diffX - 3, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(diffX - 1, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(diffX - 3, 0 + i)).setTileID(TileID.EDGE_WALL));
         }
 
         for (let i = 0; i < diffX-1; i++) {
@@ -418,13 +447,13 @@ function createFromEntryExit(fromPos, toPos, shape) {
 
     else if (shape == HallwayShapes.TOP_LEFT) {
         for (let i = 0; i < diffY+1; i++) {
-            hallway.addTile(new Tile("wall", new Point(0, 0 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(2, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0, 0 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(2, 0 + i)).setTileID(TileID.EDGE_WALL));
         }
 
         for (let i = 0; i < diffX+1; i++) {
-            hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
         }
 
         for (let i = 0; i < diffY; i++) {
@@ -439,8 +468,8 @@ function createFromEntryExit(fromPos, toPos, shape) {
     
     else if (shape == HallwayShapes.LEFT_RIGHT) {
         for (let i = 0; i < diffX; i++) {
-            hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
 
             hallway.addTile(new Tile("floor", new Point(0 + i, 1)).setTileID(TileID.FLOOR));
             hallway.setPosition(new Point(toX+1, startingY-1));
@@ -449,8 +478,8 @@ function createFromEntryExit(fromPos, toPos, shape) {
     
     else if (shape == HallwayShapes.TOP_DOWN) {
         for (let i = 0; i < diffY-1; i++) {
-            hallway.addTile(new Tile("wall", new Point(0, 1 + i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("wall", new Point(2, 1 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(0, 1 + i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(2, 1 + i)).setTileID(TileID.EDGE_WALL));
 
             hallway.addTile(new Tile("floor", new Point(1, 1 + i)).setTileID(TileID.FLOOR));
             hallway.setPosition(new Point(startingX, toY));
