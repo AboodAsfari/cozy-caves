@@ -136,17 +136,13 @@
                 "name": "Pouch of Gems",
                 "desc": "A tiny sack containing scattered gems throughout the map, valuable as trade items or components for magical rituals.",
                 "rarity": "uncommon",
-                "contains_items": true,
-                "item_category": [],
-                "size": {"w": 0, "h":0} 
+                "properties":"This pouch contains an assortment of various gemstones, each possessing its own unique size, color, and value. While not as rare as some individual gemstones, this collection is still quite valuable. The gems can be used for trade and commerce, where they are highly sought after for their beauty and rarity. Additionally, some spellcasters and alchemists may find these gems useful as components in their magical rituals and experiments."
             },
             {
                 "name": "Gem of Seeing",
                 "desc": "A gem that allows truesight out to 120 feet when you peer through the gem.",
                 "rarity": "rare",
-                "contains_items": true,
-                "item_category": [],
-                "size": {"w": 0, "h":0} 
+                "properties": "This extraordinary gem possesses three charges of otherworldly energy, which can be harnessed for remarkable insight and vision. By speaking the gem's secret command word and expending a single charge as an action, the wielder can unlock its extraordinary power. For the next ten minutes, those who peer through the gem are bestowed with the gift of truesight. This extraordinary vision extends up to 120 feet, allowing the user to see through illusions, magical disguises, and perceive the true nature of creatures and objects concealed from ordinary sight. The Gem of Seeing is not an infinite well of power. However, it regenerates its magical energy gradually. At each dawn, it regains a random number of expended charges, usually ranging from 1 to 3. This ensures that its wielder can call upon its power again, but not without moments of anticipation and uncertainty."
             }
         ],
         "Key Items": [
