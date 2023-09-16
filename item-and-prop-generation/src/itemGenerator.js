@@ -79,18 +79,25 @@ class ItemGenerator {
         // getting all the items from these categories
         const itemList = [];
         categories.forEach((category) => {
-            itemList.push(...metadata[category]);
+            metadata[category].forEach((i) => {
+                i.category = category;
+                itemList.push(i);
+            });
         });
 
         const groupedItems = []; // grouped by rarity
         
+        // if random rarity picked doesn't exist in the set of items, 
+        // it will retry again with a different rarity
         do {
             const rarity = this.#getRandomRarity();
+            //console.log('rarity: '+rarity);
             for (const itemData of itemList) {
                 if (itemData.rarity === rarity) {
                     const item = new Item(
                         itemData.name,
                         itemData.desc,
+                        itemData.category,
                         itemData.rarity,
                         itemData.properties
                     );
