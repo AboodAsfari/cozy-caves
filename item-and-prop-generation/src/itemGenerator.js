@@ -19,35 +19,6 @@ class ItemGenerator {
         this.#randomGen = seedrandom(this.seed);
     }
 
-    getItemByRarity(rarity) { 
-        if (!Object.keys(ItemRarity).includes(rarity)) throw new Error(`Invalid rarity category: ${rarity}`);
-
-        const categories = metadata;
-        const filteredItems = [];
-
-        for (const category in categories) {
-            const categoryItems = categories[category];
-            for (const itemData of categoryItems) {
-                if (itemData.rarity === rarity) {
-                    const item = new Item(
-                        itemData.name,
-                        itemData.desc,
-                        itemData.rarity,
-                        itemData.properties
-                    );
-                    filteredItems.push(item);
-                }
-            }
-        }
-
-        if (filteredItems.length === 0) throw new Error(`No props found for rarity: ${rarity}`);
-
-        // Generate a random index based on the length of the filtered props
-        const randomIndex = Math.floor(this.#randomGen() * filteredItems.length);
-        
-        return filteredItems[randomIndex];
-    }
-
     getItemByCategory(category){
         const temp = metadata[category];
         if (temp.length === 0) throw new Error(`No items found for category: ${category}`);
@@ -56,7 +27,7 @@ class ItemGenerator {
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(this.#randomGen() * temp.length)
         const i = temp[randomIndex];
-        const item = new Item(i.name, i.desc, i.rarity, i.properties); 
+        const item = new Item(i.name, i.desc, category, i.rarity, i.properties); 
         return item;
     }
 

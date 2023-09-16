@@ -20,19 +20,16 @@ class PropGenerator {
     }
 
     #storeItem(prop) {
-        if (!(prop instanceof Prop)) {
-            throw new Error("Invalid type. Expecting a Prop object.");
-        }
-        if (!prop.getContainsItem()) return;
+        if (!(prop instanceof Prop)) throw new Error("Invalid type. Expecting a Prop object.");
+        if (!prop.getContainsItem()) return; // checking if prop is a storage
+
         const max = Math.floor(this.#randomGen() * 5) + 1; // maximum number of items a prop can have
         const itemGenerator = new ItemGenerator(this.#randomGen());
         for (let i=0; i<max; i++){
-            const rarity = this.#getRandomRarity();
-            prop.addItem(itemGenerator.getItemByRarity(rarity));
+            prop.addItem(itemGenerator.getItem(prop.possibleItems));
         }
     }
 
-    
     #getRandomRarity() {
         const rand = this.#randomGen() * 100 + 1; //SEED
         let percentage = 0;
@@ -47,7 +44,7 @@ class PropGenerator {
     getPropByName(name){
         if (metadata.hasOwnProperty(name)) {
             const p = metadata[name];
-            return new Prop(
+            const prop = new Prop(
                     name, 
                     p.information.desc, 
                     p.information.rarity, 
@@ -56,6 +53,8 @@ class PropGenerator {
                     p.render_rules.placement_rules, 
                     p.render_rules.size
                 );
+            this.#storeItem(prop);
+            return prop;
         } else {
             throw new Error(`Prop with name '${name}' not found in metadata.`);
         }
@@ -92,17 +91,7 @@ class PropGenerator {
         while (groupedProps.length === 0);
 
         const randomIndex = Math.floor(this.#randomGen() * groupedProps.length);
-        return groupedProps[randomIndex];
-    }
-
-    getPropByCategory(category){
-        const temp = metadata.prop_categories[category];
-        if (temp === undefined || temp.length === 0) throw new Error(`No props found for category: ${category}`);
-
-        // this random index gives a fair chance to every item that is in the list
-        let randomIndex = Math.floor(this.#randomGen() * temp.length); 
-        let p = temp[randomIndex];
-        const prop = new Prop(p.name, p.desc, category, p.rarity, p.contains_items); 
+        const prop = groupedProps[randomIndex];
         this.#storeItem(prop);
         return prop;
     }
