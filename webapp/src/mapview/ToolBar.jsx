@@ -36,6 +36,7 @@ export default function ToolBar(props) {
         dungeon,
         intialRender,
         mapSettings,
+        pixiApp,
         setIntialRender,
         setMapSettings,
         setDungeon,
@@ -62,8 +63,6 @@ export default function ToolBar(props) {
         }
 
         requestAnimationFrame(() => {
-            if (!viewport.current) return;
-
             setLoadingAnimation(false);
             // Check if the image is taller than it is wide
             let fitYAxis = viewport.current.maxY / viewport.current.maxX > viewport.current.screenHeight / viewport.current.screenWidth;
@@ -122,35 +121,25 @@ export default function ToolBar(props) {
         viewport.current.animate({position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
     
-    const printMap = () => {
-        if (!viewport.current) return;
-        let width = viewport.current.worldScreenWidth, height = viewport.current.worldScreenHeight, center = viewport.current.center;
-        centerMap();    
-        // setTimeout(async function(){
-        //     if (!stageRef.current) return;
-        //     const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
-        //     let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
-        //     viewport.moveCenter(center.x, center.y);
-        //     viewport.fit(true, width, height);
-        //     if(!WinPrint) {
-        //         return;
-        //     }
-        //     WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
-        //     WinPrint.document.close();  
-        //     WinPrint.focus();
-        //     WinPrint.print();
-        //     WinPrint.close();
-        // }, 500);   
-    }
+    const printMap = async () => {
+        let width = viewport.current.worldScreenWidth;
+        let height = viewport.current.worldScreenHeight;
+        let center = viewport.current.center;
 
-    const centerMap = () => {
-        if (!viewport.current || loadingAnimation || centeringAnimation) return;
-        setCenteringAnimation(true);
-        const fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
-        let position= { x: viewport.maxX/2, y: (viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY))/2};
-        let scale = (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
-        viewport.animate({position: position, scale: scale, time: 500, ease: "easeInOutCubic"});
-        setTimeout(() => setCenteringAnimation(false), 500);
+        viewport.current.resetCamera(); 
+
+        const printingTab = window.open("", "", "");
+        setTimeout(async function(){
+            let canvasImage = await pixiApp.current.renderer.extract.image(pixiApp.current.stage);
+            viewport.current.moveCenter(center.x, center.y);
+            viewport.current.fit(true, width, height);
+            if(!printingTab) return;
+            printingTab.document.write('<img src="'+canvasImage.src+'"/>');
+            printingTab.document.close();  
+            printingTab.focus();
+            printingTab.print();
+            printingTab.close();
+        }, 100);   
     }
 
     const toggleSettings = () => {

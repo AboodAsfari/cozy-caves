@@ -10,14 +10,15 @@ const MapPage = (props) => {
 		setMapSettings
 	} = props;
 
+	const pixiApp = React.useRef();
 	const viewport = React.useRef();
   // const [zoomScaleRequest, setZoomScaleRequest] = React.useState(1);
   // const stageRef = React.createRef();
 
 	return ( <>
-		<RendererCanvas dungeon={dungeon} viewport={viewport} />
+		<RendererCanvas dungeon={dungeon} viewport={viewport} pixiApp={pixiApp} />
 		<ToolBar mapSettings={mapSettings} setMapSettings={setMapSettings} dungeon={dungeon} setDungeon={setDungeon} 
-			intialRender={props.intialRender} setIntialRender={props.setIntialRender} viewport={viewport} />
+			intialRender={props.intialRender} setIntialRender={props.setIntialRender} viewport={viewport} pixiApp={pixiApp} />
     </> );
 };
 

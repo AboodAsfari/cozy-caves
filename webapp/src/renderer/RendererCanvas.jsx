@@ -8,11 +8,11 @@ import Popup from '../mapview/Popup';
 const RendererCanvas = (props) => {
 	const {
 		dungeon,
+		pixiApp,
 		viewport
 	} = props;
 
 	const canvasRef = React.useRef();
-	const pixiApp = React.useRef();
 
 	const maxX = React.useRef(0);
 	const maxY = React.useRef(0);
