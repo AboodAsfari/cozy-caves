@@ -20,6 +20,7 @@ const RendererCanvas = (props) => {
 	const maxY = React.useRef(0);
 
 	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
+	const size = 64;
 
 	const onResize = () => {
         requestAnimationFrame(() => {
@@ -112,8 +113,8 @@ const RendererCanvas = (props) => {
 		while (viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
 
 		dungeon.forEach((room) => {
-			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size * scaleX;
-			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size * scaleY;
+			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size;
+			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size;
 			if (roomMaxX > maxX.current) {
 				maxX.current = roomMaxX;
 				viewport.current.maxX = maxX.current;
@@ -125,7 +126,7 @@ const RendererCanvas = (props) => {
 			
 			// Store all tiles in a room in their own container.
 			let roomContainer = new Container();
-			roomContainer.position.set(room.getPosition().getX() * size * scaleX, room.getPosition().getY() * size * scaleY);
+			roomContainer.position.set(room.getPosition().getX() * size, room.getPosition().getY() * size);
 			room.getTiles().forEach((tile) => roomContainer.addChild(getTile(tile)));
 			viewport.current.addChild(roomContainer);
 		});
@@ -137,12 +138,12 @@ const RendererCanvas = (props) => {
 	}, [dungeon]);
 
 	const getTile = (tile) => {
-		const xPos = (tile.getPosition().getX() + tile.getOffset().getX()) * size * scaleX;
-		const yPos = (tile.getPosition().getY() + tile.getOffset().getY()) * size * scaleY;
+		const xPos = (tile.getPosition().getX() + tile.getOffset().getX()) * size;
+		const yPos = (tile.getPosition().getY() + tile.getOffset().getY()) * size;
 
 		let sprite = Sprite.from(tileIDImageMap.get(tile.getTileID()).img);
 		sprite.anchor.set(0.5);
-		sprite.scale.set(scaleX * tile.getScale().getX(), scaleY * tile.getScale().getY());	
+		sprite.scale.set(tile.getScale().getX(), tile.getScale().getY());	
 		sprite.position.set(xPos, yPos);
 		sprite.angle = tile.getRotation();
 		sprite.zIndex = tile.getDepth();
@@ -171,10 +172,6 @@ const RendererCanvas = (props) => {
   //   props.setZoomScaleRequest(1);
   // // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [props.zoomScaleRequest]);
-
-  const size = 64
-  const scaleX = 0.5
-  const scaleY = 0.5
   
   // const drawProp = (prop, roomPos) => {
   //   const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
