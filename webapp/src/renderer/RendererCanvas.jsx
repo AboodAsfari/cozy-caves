@@ -5,8 +5,6 @@ import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
 import Popup from '../mapview/Popup';
 
-const { useState, useEffect } = React;
-
 const RendererCanvas = (props) => {
 	const {
 		dungeon
@@ -18,6 +16,11 @@ const RendererCanvas = (props) => {
 
 	const maxX = React.useRef(0);
 	const maxY = React.useRef(0);
+
+	const [popupContent, setPopupContent] = React.useState('');
+	const [isPopupOpen, setIsPopupOpen] = React.useState(false);
+	const [clickX, setClickX] = React.useState(0);
+	const [clickY, setClickY] = React.useState(0);
 
 	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
 	const size = 64;
@@ -124,14 +127,19 @@ const RendererCanvas = (props) => {
 				viewport.current.maxY = maxY.current;
 			}
 			
-			// Store all tiles in a room in their own container.
 			let roomContainer = new Container();
+			let tilesContainer = new Container();
+			let propsContainer = new Container();
 			roomContainer.position.set(room.getPosition().getX() * size, room.getPosition().getY() * size);
-			room.getTiles().forEach((tile) => roomContainer.addChild(getTile(tile)));
+			propsContainer.zIndex = 1000;
+
+			room.getTiles().forEach((tile) => tilesContainer.addChild(getTile(tile)));
+			if(room.getPropMap()) room.getPropMap().getPropList().forEach((prop) => propsContainer.addChild(getProp(prop)));
+
+			roomContainer.addChild(tilesContainer);
+			roomContainer.addChild(propsContainer);
 			viewport.current.addChild(roomContainer);
 		});
-
-		console.log(viewport.current);
 
 		viewport.current.resetCamera();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,20 +159,28 @@ const RendererCanvas = (props) => {
 		return sprite;
 	}
 
-  // const [popupContent, setPopupContent] = useState('');
-  // const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const getProp = (prop) => {
+		const xPos = (prop.getPosition().getX() + prop.getOffset().getX()) * size;
+		const yPos = (prop.getPosition().getY() + prop.getOffset().getY()) * size;
 
-  // const [clickX, setClickX] = useState(0);
-  // const [clickY, setClickY] = useState(0);
-  
-  // const onClick = (e, tileInfo) => {
-  //   setPopupContent(tileInfo);
-  //   setIsPopupOpen(true);
+		let sprite = Sprite.from("resources/props/" + prop.getPathName() + ".png");
+		sprite.anchor.set(0.5);
+		sprite.position.set(xPos, yPos);
+		sprite.angle = prop.getRotation();
+		sprite.eventMode = "dynamic";
+		sprite.cursor = "pointer";
+		sprite.on("pointerdown", e => onClick(e, prop));
 
-  //   // Pass the mouse click coordinates
-  //   setClickX(e.clientX);
-  //   setClickY(e.clientY); 
-  // };
+		return sprite;
+	}
+
+	const onClick = (e, prop) => {
+		setPopupContent(prop);
+		setIsPopupOpen(true);
+
+		setClickX(e.clientX);
+		setClickY(e.clientY); 
+	};
 
   // useEffect(() => {
   //   if (props.zoomScaleRequest === 1) return;
@@ -172,31 +188,6 @@ const RendererCanvas = (props) => {
   //   props.setZoomScaleRequest(1);
   // // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [props.zoomScaleRequest]);
-  
-  // const drawProp = (prop, roomPos) => {
-  //   const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
-  //   const xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
-  //   const yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
-  //   return <Sprite
-  //             image={"resources/props/"+prop.getPathName()+".png"}
-  //             anchor={0.5}
-  //             scale={{x:scaleX, y:scaleY}} 
-  //             position={{x:xPos, y:yPos}}
-  //             angle={prop.getRotation()}
-  //             zIndex={1000}
-  //             eventMode='dynamic'
-  //             cursor='pointer'
-  //             pointerdown={(e) => onClick(e, prop)}
-  //           />
-  // }
-
-  // const drawProps = () => {
-  //   return props.dungeon.map((room) => {
-  //     if(room.getPropMap() === undefined) return null;
-  //     return room.getPropMap().getPropList().map((prop) => drawProp(prop, room.getPosition()));
-  //   })
-  // }
-
   // const zoom = (factor) => {
   //   let viewport = stageRef.current.mountNode.containerInfo.children[0];
   //   let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
@@ -207,35 +198,16 @@ const RendererCanvas = (props) => {
   //   else  viewport.animate({ scale: newScale, time: 250 });  
   // }
 
-  // // Get the dungeon and prop sprites
-  // let renderableDungeon = drawDungeon()
-  // let propsList = drawProps()
-
-  return (
-    <div ref={canvasRef} />
-    // <>
-    //   <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
-    //     <Viewport
-    //       maxX={maxX}
-    //       maxY={maxY}
-    //       screenWidth={width}
-    //       screenHeight={height}
-    //     >
-    //      { renderableDungeon }
-    //      { propsList }
-    //     </Viewport>
-    //   </Stage>
-
-    //   {/*Add Popup for Tile/Item Information*/}
-    //   <Popup
-    //     isOpen={isPopupOpen}
-    //     content={popupContent}
-    //     onClose={() => setIsPopupOpen(false)}
-    //     clickX={clickX}
-    //     clickY={clickY}
-    //   />
-    // </>
-  );
+	return ( <>
+		<div ref={canvasRef} />
+		<Popup
+			isOpen={isPopupOpen}
+			content={popupContent}
+			onClose={() => setIsPopupOpen(false)}
+			clickX={clickX}
+			clickY={clickY}
+		/>
+	</> );
 };
 
 export default RendererCanvas;
