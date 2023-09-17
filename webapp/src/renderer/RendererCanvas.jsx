@@ -1,5 +1,5 @@
 import  React from 'react';
-import { Application, BaseTexture, SCALE_MODES, Sprite } from 'pixi.js';
+import { Application, BaseTexture, Container, SCALE_MODES, Sprite } from 'pixi.js';
 import { EventSystem } from "@pixi/events"; 
 import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
@@ -99,7 +99,7 @@ const RendererCanvas = (props) => {
 			this.updateClamp();
 
 			this.moveCenter(maxX.current / 2, (this.screenHeight / ((this.screenHeight + 70) / maxY.current)) / 2);
-			if(fitYAxis) this.setZoom(((this.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
+			if (fitYAxis) this.setZoom(((this.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
 			else this.fitWidth(maxX.current * 1.1, true, true, true);
 		}
 
@@ -109,31 +109,36 @@ const RendererCanvas = (props) => {
 	}
 
 	React.useEffect(() => {
-		while(viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
+		while (viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
 
 		dungeon.forEach((room) => {
 			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size * scaleX;
 			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size * scaleY;
-			if(roomMaxX > maxX.current) {
+			if (roomMaxX > maxX.current) {
 				maxX.current = roomMaxX;
 				viewport.current.maxX = maxX.current;
 			}
-			if(roomMaxY > maxY.current) {
+			if (roomMaxY > maxY.current) {
 				maxY.current = roomMaxY;
 				viewport.current.maxY = maxY.current;
 			}
 			
 			// Store all tiles in a room in their own container.
-			room.getTiles().forEach((tile) => viewport.current.addChild(getTile(tile, room.getPosition())));
+			let roomContainer = new Container();
+			roomContainer.position.set(room.getPosition().getX() * size * scaleX, room.getPosition().getY() * size * scaleY);
+			room.getTiles().forEach((tile) => roomContainer.addChild(getTile(tile)));
+			viewport.current.addChild(roomContainer);
 		});
-		
+
+		console.log(viewport.current);
+
 		viewport.current.resetCamera();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dungeon]);
 
-	const getTile = (tile, roomPos) => {
-		const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX;
-		const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY;
+	const getTile = (tile) => {
+		const xPos = (tile.getPosition().getX() + tile.getOffset().getX()) * size * scaleX;
+		const yPos = (tile.getPosition().getY() + tile.getOffset().getY()) * size * scaleY;
 
 		let sprite = Sprite.from(tileIDImageMap.get(tile.getTileID()).img);
 		sprite.anchor.set(0.5);
