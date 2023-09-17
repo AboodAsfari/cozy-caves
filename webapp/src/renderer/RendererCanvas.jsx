@@ -7,12 +7,12 @@ import Popup from '../mapview/Popup';
 
 const RendererCanvas = (props) => {
 	const {
-		dungeon
+		dungeon,
+		viewport
 	} = props;
 
 	const canvasRef = React.useRef();
 	const pixiApp = React.useRef();
-	const viewport = React.useRef();
 
 	const maxX = React.useRef(0);
 	const maxY = React.useRef(0);
@@ -107,6 +107,15 @@ const RendererCanvas = (props) => {
 			else this.fitWidth(maxX.current * 1.1, true, true, true);
 		}
 
+		viewport.scaleZoom = function(factor) {
+			let clampOptions = this.plugins.plugins["clamp-zoom"].options;
+			let newScale = this.scale._x * factor;
+
+			if (newScale > clampOptions.maxScale) this.animate({ scale: clampOptions.maxScale, time: 250, ease: "easeInOutCubic" });
+			else if (newScale < clampOptions.minScale) this.animate({ scale: clampOptions.minScale, time: 250, ease: "easeInOutCubic" });
+			else  this.animate({ scale: newScale, time: 250 });  
+		} 
+
 		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 });
 
 		return viewport;
@@ -169,12 +178,12 @@ const RendererCanvas = (props) => {
 		sprite.angle = prop.getRotation();
 		sprite.eventMode = "dynamic";
 		sprite.cursor = "pointer";
-		sprite.on("pointerdown", e => onClick(e, prop));
+		sprite.on("pointerdown", e => onPropClick(e, prop));
 
 		return sprite;
 	}
 
-	const onClick = (e, prop) => {
+	const onPropClick = (e, prop) => {
 		setPopupContent(prop);
 		setIsPopupOpen(true);
 

@@ -33,14 +33,13 @@ import ImageIcon from '@mui/icons-material/Image';
 
 export default function ToolBar(props) {
     const {
-        zoom,
         dungeon,
         intialRender,
         mapSettings,
         setIntialRender,
         setMapSettings,
         setDungeon,
-        stageRef
+        viewport
     } = props;
 
     const [open, setOpen] = React.useState(true);
@@ -63,29 +62,28 @@ export default function ToolBar(props) {
         }
 
         requestAnimationFrame(() => {
-            let viewport = stageRef.current.mountNode.containerInfo.children[0];
-            if (!viewport) return;
+            if (!viewport.current) return;
 
             setLoadingAnimation(false);
             // Check if the image is taller than it is wide
-            let fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
+            let fitYAxis = viewport.current.maxY / viewport.current.maxX > viewport.current.screenHeight / viewport.current.screenWidth;
             // Update the amount the user can zoom out by
-            viewport.plugins.plugins["clamp-zoom"].options.minScale =  (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
+            viewport.current.plugins.plugins["clamp-zoom"].options.minScale =  (fitYAxis ? (viewport.current.screenHeight-70) / viewport.current.maxY : viewport.current.screenWidth / viewport.current.maxX) / 1.5;
             // Fit the image to the screen
             if(fitYAxis){
                 // Account for Navbar
-                viewport.setZoom(((viewport.screenHeight-70)/viewport.maxY)/1.1, true, true, true);
+                viewport.current.setZoom(((viewport.current.screenHeight-70) / viewport.current.maxY)/1.1, true, true, true);
             } else {
-                viewport.fitWidth(viewport.maxX*1.1, true, true, true);
+                viewport.current.fitWidth(viewport.current.maxX*1.1, true, true, true);
             }
             // Find the height of the image after fitting
             // This is used to center the image
             // Account for Navbar
-            let fitHeight = viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY);
+            let fitHeight = viewport.current.screenHeight/((viewport.current.screenHeight+70)/viewport.current.maxY);
             // Move into correct position before animation
-            viewport.moveCenter(viewport.worldScreenWidth * 2, fitHeight/2);
+            viewport.current.moveCenter(viewport.current.worldScreenWidth * 2, fitHeight/2);
             // Move to center of screen
-            viewport.animate({position: { x: viewport.maxX/2, y: fitHeight/2}, time: 500, ease: "easeOutCubic"});
+            viewport.current.animate({position: { x: viewport.current.maxX/2, y: fitHeight/2}, time: 500, ease: "easeOutCubic"});
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dungeon]);
@@ -96,7 +94,6 @@ export default function ToolBar(props) {
     }
 
     const generateMap = (newSettings) => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
         setTimeout(() => setLoadingAnimation(true), 150);
 
         function requestNewMap() {
@@ -111,11 +108,10 @@ export default function ToolBar(props) {
             setMapSettings(newSettings);
         }
 
-        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, ease: "easeInCubic", callbackOnComplete: requestNewMap});
+        viewport.current.animate({position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, time: 500, ease: "easeInCubic", callbackOnComplete: requestNewMap});
     }
 
     const loadMap = (dungeonData, newSettings) => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
         setLoadingAnimation(true);
 
         function requestNewMap() {
@@ -123,34 +119,32 @@ export default function ToolBar(props) {
             setMapSettings(newSettings);
         }
 
-        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+        viewport.current.animate({position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, time: 500, callbackOnComplete: requestNewMap});
     }
     
     const printMap = () => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        if (!viewport) return;
-        let width = viewport.worldScreenWidth, height = viewport.worldScreenHeight, center = viewport.center;
+        if (!viewport.current) return;
+        let width = viewport.current.worldScreenWidth, height = viewport.current.worldScreenHeight, center = viewport.current.center;
         centerMap();    
-        setTimeout(async function(){
-            if (!stageRef.current) return;
-            const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
-            let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
-            viewport.moveCenter(center.x, center.y);
-            viewport.fit(true, width, height);
-            if(!WinPrint) {
-                return;
-            }
-            WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
-            WinPrint.document.close();  
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
-        }, 500);   
+        // setTimeout(async function(){
+        //     if (!stageRef.current) return;
+        //     const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
+        //     let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
+        //     viewport.moveCenter(center.x, center.y);
+        //     viewport.fit(true, width, height);
+        //     if(!WinPrint) {
+        //         return;
+        //     }
+        //     WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
+        //     WinPrint.document.close();  
+        //     WinPrint.focus();
+        //     WinPrint.print();
+        //     WinPrint.close();
+        // }, 500);   
     }
 
     const centerMap = () => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        if (!viewport || loadingAnimation || centeringAnimation) return;
+        if (!viewport.current || loadingAnimation || centeringAnimation) return;
         setCenteringAnimation(true);
         const fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
         let position= { x: viewport.maxX/2, y: (viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY))/2};
@@ -178,16 +172,16 @@ export default function ToolBar(props) {
     }
 
     const getFileContents = async (isImage = false) => {
-        if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
-        else {
-            let serializableDungeon = { 
-                mapSettings: mapSettings,
-                dungeon: dungeon.map((room) => room.getSerializableRoom())
-            };
+        // if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
+        // else {
+        //     let serializableDungeon = { 
+        //         mapSettings: mapSettings,
+        //         dungeon: dungeon.map((room) => room.getSerializableRoom())
+        //     };
 
-            let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
-            return "data:text/plain;charset=utf-8," + serializedDungeon;
-        }
+        //     let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
+        //     return "data:text/plain;charset=utf-8," + serializedDungeon;
+        // }
     }
 
     const getToolbarButtonColors = (name) => {
@@ -209,8 +203,8 @@ export default function ToolBar(props) {
         <Stack direction="row" sx={{ position: 'absolute', top: '70px ', right: '0', height: "100vh" }}>
             <TransitionGroup component={null} >
                 <Collapse direction="left" sx={{ position: "relative"}}>
-                    <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => zoom(2/3)} />
-                    <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => zoom(1.5)} />   
+                    <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => viewport.current.scaleZoom(2/3)} />
+                    <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => viewport.current.scaleZoom(1.5)} />   
                     <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => centerMap()} /> 
                 </Collapse>
 
