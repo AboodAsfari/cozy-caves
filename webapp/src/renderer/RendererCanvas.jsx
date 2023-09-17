@@ -93,6 +93,16 @@ const RendererCanvas = (props) => {
 			});
 		};
 
+		viewport.resetCamera = function() {
+			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
+		
+			this.updateClamp();
+
+			this.moveCenter(maxX.current / 2, (this.screenHeight / ((this.screenHeight + 70) / maxY.current)) / 2);
+			if(fitYAxis) this.setZoom(((this.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
+			else this.fitWidth(maxX.current * 1.1, true, true, true);
+		}
+
 		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 });
 
 		return viewport;
@@ -116,17 +126,8 @@ const RendererCanvas = (props) => {
 			// Store all tiles in a room in their own container.
 			room.getTiles().forEach((tile) => viewport.current.addChild(getTile(tile, room.getPosition())));
 		});
-
-		// Update app and viewport values that change for different maps, eg maxX and maxY.
-
-		// Move into separate method
-		const fitYAxis = maxY.current / maxX.current > viewport.current.screenHeight / viewport.current.screenWidth;
 		
-		viewport.current.updateClamp();
-
-		viewport.current.moveCenter(maxX.current / 2, (viewport.current.screenHeight / ((viewport.current.screenHeight + 70) / maxY.current)) / 2);
-		if(fitYAxis) viewport.current.setZoom(((viewport.current.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
-		else viewport.current.fitWidth(maxX.current * 1.1, true, true, true);
+		viewport.current.resetCamera();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dungeon]);
 
