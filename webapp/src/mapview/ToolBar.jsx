@@ -205,7 +205,7 @@ export default function ToolBar(props) {
                 <Collapse direction="left" sx={{ position: "relative"}}>
                     <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => viewport.current.scaleZoom(2/3)} />
                     <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => viewport.current.scaleZoom(1.5)} />   
-                    <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => centerMap()} /> 
+                    <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => viewport.current.resetCamera(true)} /> 
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>

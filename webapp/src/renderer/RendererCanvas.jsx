@@ -97,14 +97,27 @@ const RendererCanvas = (props) => {
 			});
 		};
 
-		viewport.resetCamera = function() {
+		viewport.resetCamera = function(animate = false) {
 			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
 		
 			this.updateClamp();
 
-			this.moveCenter(maxX.current / 2, (this.screenHeight / ((this.screenHeight + 70) / maxY.current)) / 2);
-			if (fitYAxis) this.setZoom(((this.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
-			else this.fitWidth(maxX.current * 1.1, true, true, true);
+			let position = { x: maxX.current / 2, y: (this.screenHeight / ((this.screenHeight + 70) / maxY.current)) / 2 };
+			let scale = (fitYAxis ? (this.screenHeight - 70) / maxY.current : this.screenWidth / maxX.current) / 1.5;
+			if (animate) {
+				if (this.animating) return;
+				this.animating = true;
+				this.animate({
+					position: position, 
+					scale: scale, 
+					time: 500, 
+					ease: "easeInOutCubic", 
+					callbackOnComplete: () => this.animating = false
+				});
+			} else {
+				this.moveCenter(position.x, position.y);
+				this.setZoom(scale, true, true, true);
+			}
 		}
 
 		viewport.scaleZoom = function(factor) {
