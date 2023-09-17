@@ -109,9 +109,9 @@ const RendererCanvas = (props) => {
 
 		// Update app and viewport values that change for different maps, eg maxX and maxY.
 
-		// Move into separate method, also does not have same result as it previously did, consult Gideon.
-		const fitYAxis = maxY.current / maxX.current > viewport.current.screenWidth / viewport.current.screenHeight;
-
+		// Move into separate method
+		const fitYAxis = maxY.current / maxX.current > viewport.current.screenHeight / viewport.current.screenWidth;
+		
 		viewport.current.clampZoom({
 			minScale: (fitYAxis ? (viewport.current.screenHeight - 70) / maxY.current : viewport.current.screenWidth / maxX.current) / 1.5,
 			maxScale: 8,
