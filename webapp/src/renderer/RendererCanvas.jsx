@@ -27,6 +27,9 @@ const RendererCanvas = (props) => {
 				window.innerWidth,
 				window.innerHeight
 			);
+			viewport.current.screenWidth = window.innerWidth;
+			viewport.current.screenHeight = window.innerHeight;
+			pixiApp.current.renderer.render(pixiApp.current.stage);
         });
 	};
 
