@@ -29,6 +29,7 @@ const RendererCanvas = (props) => {
 			);
 			viewport.current.screenWidth = window.innerWidth;
 			viewport.current.screenHeight = window.innerHeight;
+			viewport.current.updateClamp();
 			pixiApp.current.renderer.render(pixiApp.current.stage);
         });
 	};
@@ -83,7 +84,16 @@ const RendererCanvas = (props) => {
 			screenHeight: height
 		});
 
-		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 })
+		viewport.updateClamp = function() {
+			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
+		
+			this.clampZoom({
+				minScale: (fitYAxis ? (this.screenHeight - 70) / maxY.current : this.screenWidth / maxX.current) / 1.5,
+				maxScale: 8,
+			});
+		};
+
+		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 });
 
 		return viewport;
 	}
@@ -112,10 +122,7 @@ const RendererCanvas = (props) => {
 		// Move into separate method
 		const fitYAxis = maxY.current / maxX.current > viewport.current.screenHeight / viewport.current.screenWidth;
 		
-		viewport.current.clampZoom({
-			minScale: (fitYAxis ? (viewport.current.screenHeight - 70) / maxY.current : viewport.current.screenWidth / maxX.current) / 1.5,
-			maxScale: 8,
-		});
+		viewport.current.updateClamp();
 
 		viewport.current.moveCenter(maxX.current / 2, (viewport.current.screenHeight / ((viewport.current.screenHeight + 70) / maxY.current)) / 2);
 		if(fitYAxis) viewport.current.setZoom(((viewport.current.screenHeight - 70) / maxY.current) / 1.1, true, true, true);
