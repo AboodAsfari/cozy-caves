@@ -23,9 +23,10 @@ const RendererCanvas = (props) => {
 
 	const onResize = () => {
         requestAnimationFrame(() => {
-		  pixiApp.current.renderer.view.style.width = `${window.innerWidth}px`;
-		  pixiApp.current.renderer.view.style.height = `${window.innerHeight}px`;
-		  // NOTE: This is bad, try resizing and see. Fix ASAP.
+			pixiApp.current.renderer.resize(
+				window.innerWidth,
+				window.innerHeight
+			);
         });
 	};
 
@@ -99,8 +100,11 @@ const RendererCanvas = (props) => {
 				viewport.current.maxY = maxY.current;
 			}
 			
+			// Store all tiles in a room in their own container.
 			room.getTiles().forEach((tile) => viewport.current.addChild(getTile(tile, room.getPosition())));
 		});
+
+		// Update app and viewport values that change for different maps, eg maxX and maxY.
 
 		// Move into separate method, also does not have same result as it previously did, consult Gideon.
 		const fitYAxis = maxY.current / maxX.current > viewport.current.screenWidth / viewport.current.screenHeight;
