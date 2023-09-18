@@ -15,7 +15,6 @@ function App() {
   const transitionPanelWidthRef = React.useRef();
   transitionPanelWidthRef.current = transitionPanelWidth;
   const transitionOverCallback = React.useRef();
-  const [intialRender, setIntialRender] = React.useState(true);
 
   const [dungeon, setDungeon ] = React.useState([]);
   const [mapSettings, setMapSettings] = React.useState({});
@@ -80,15 +79,14 @@ function App() {
 
   const getPageHeader = () => {
     return (
-      <Navbar activePage={activePage} setActivePage={setActivePage} setIntialRender={setIntialRender} toggleTransitionPanel={toggleTransitionPanel} />
+      <Navbar activePage={activePage} setActivePage={setActivePage} toggleTransitionPanel={toggleTransitionPanel} />
     );
   }
 
   const getPage = () => {
     if (activePage === "home" || activePage === "options") return <Homepage setActivePage={setActivePage}/>;
     if (activePage === "map") {
-      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} 
-        setMapSettings={setMapSettings} intialRender={intialRender} setIntialRender={setIntialRender} />;
+      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
     }
     return null;
   }

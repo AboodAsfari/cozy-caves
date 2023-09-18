@@ -34,10 +34,8 @@ import ImageIcon from '@mui/icons-material/Image';
 export default function ToolBar(props) {
     const {
         dungeon,
-        intialRender,
         mapSettings,
         pixiApp,
-        setIntialRender,
         setMapSettings,
         setDungeon,
         viewport
@@ -46,7 +44,6 @@ export default function ToolBar(props) {
     const [open, setOpen] = React.useState(true);
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
-    const [centeringAnimation, setCenteringAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
     const [downloadDialog, setDownloadDialog] = React.useState(false);
     const [downloadLabel, setDownloadLabel] = React.useState("...");
@@ -54,38 +51,7 @@ export default function ToolBar(props) {
     const [downloadFileContents, setDownloadFileContents] = React.useState(null);
     const [downloadImageContents, setDownloadImageContents] = React.useState(null);
 
-    React.useEffect(() => {
-        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
-
-        if (intialRender) {
-            setIntialRender(false);
-            return;
-        }
-
-        requestAnimationFrame(() => {
-            setLoadingAnimation(false);
-            // Check if the image is taller than it is wide
-            let fitYAxis = viewport.current.maxY / viewport.current.maxX > viewport.current.screenHeight / viewport.current.screenWidth;
-            // Update the amount the user can zoom out by
-            viewport.current.plugins.plugins["clamp-zoom"].options.minScale =  (fitYAxis ? (viewport.current.screenHeight-70) / viewport.current.maxY : viewport.current.screenWidth / viewport.current.maxX) / 1.5;
-            // Fit the image to the screen
-            if(fitYAxis){
-                // Account for Navbar
-                viewport.current.setZoom(((viewport.current.screenHeight-70) / viewport.current.maxY)/1.1, true, true, true);
-            } else {
-                viewport.current.fitWidth(viewport.current.maxX*1.1, true, true, true);
-            }
-            // Find the height of the image after fitting
-            // This is used to center the image
-            // Account for Navbar
-            let fitHeight = viewport.current.screenHeight/((viewport.current.screenHeight+70)/viewport.current.maxY);
-            // Move into correct position before animation
-            viewport.current.moveCenter(viewport.current.worldScreenWidth * 2, fitHeight/2);
-            // Move to center of screen
-            viewport.current.animate({position: { x: viewport.current.maxX/2, y: fitHeight/2}, time: 500, ease: "easeOutCubic"});
-        });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dungeon]);
+    React.useEffect(() => setLoadingAnimation(false), [dungeon]);
 
     const regenerateMap = () => {
         const newSettings = { ...mapSettings, seed: Math.random() };
@@ -93,9 +59,9 @@ export default function ToolBar(props) {
     }
 
     const generateMap = (newSettings) => {
-        setTimeout(() => setLoadingAnimation(true), 150);
-
         function requestNewMap() {
+            setLoadingAnimation(true);
+            
             setDungeon(new DungeonBuilder()
                 .setSeed(newSettings.seed.toString())
                 .setSize(Number(newSettings.width), Number(newSettings.height))
@@ -107,18 +73,36 @@ export default function ToolBar(props) {
             setMapSettings(newSettings);
         }
 
-        viewport.current.animate({position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, time: 500, ease: "easeInCubic", callbackOnComplete: requestNewMap});
+        viewport.current.resetCamera(true, 250, () => {
+            setTimeout(() => setLoadingAnimation(true), 150);
+
+            viewport.current.animate({
+                position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, 
+                time: 500, 
+                ease: "easeInCubic", 
+                callbackOnComplete: requestNewMap
+            });
+        });
     }
 
     const loadMap = (dungeonData, newSettings) => {
-        setLoadingAnimation(true);
-
         function requestNewMap() {
+            setLoadingAnimation(true);
+            
             setDungeon(dungeonData);
             setMapSettings(newSettings);
         }
 
-        viewport.current.animate({position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, time: 500, callbackOnComplete: requestNewMap});
+        viewport.current.resetCamera(true, 250, () => {
+            setTimeout(() => setLoadingAnimation(true), 150);
+
+            viewport.current.animate({
+                position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, 
+                time: 500, 
+                ease: "easeInCubic", 
+                callbackOnComplete: requestNewMap
+            });
+        });
     }
     
     const printMap = async () => {
@@ -156,21 +140,22 @@ export default function ToolBar(props) {
     }
 
     const openDownloadDialog = () => {
+        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
         getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
         setDownloadDialog(true);
     }
 
     const getFileContents = async (isImage = false) => {
-        // if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
-        // else {
-        //     let serializableDungeon = { 
-        //         mapSettings: mapSettings,
-        //         dungeon: dungeon.map((room) => room.getSerializableRoom())
-        //     };
+        if (isImage) return (await pixiApp.current.renderer.extract.image(pixiApp.current.stage)).src;
+        else {
+            let serializableDungeon = { 
+                mapSettings: mapSettings,
+                dungeon: dungeon.map((room) => room.getSerializableRoom())
+            };
 
-        //     let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
-        //     return "data:text/plain;charset=utf-8," + serializedDungeon;
-        // }
+            let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
+            return "data:text/plain;charset=utf-8," + serializedDungeon;
+        }
     }
 
     const getToolbarButtonColors = (name) => {

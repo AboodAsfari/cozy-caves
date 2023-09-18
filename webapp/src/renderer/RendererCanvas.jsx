@@ -97,7 +97,7 @@ const RendererCanvas = (props) => {
 			});
 		};
 
-		viewport.resetCamera = function(animate = false) {
+		viewport.resetCamera = function(animate = false, animateTime = 500, callbackOnComplete = null) {
 			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
 		
 			this.updateClamp();
@@ -106,13 +106,21 @@ const RendererCanvas = (props) => {
 			let scale = (fitYAxis ? (this.screenHeight - 70) / maxY.current : this.screenWidth / maxX.current) / 1.5;
 			if (animate) {
 				if (this.animating) return;
+				if (this.center.x === position.x && this.center.y === position.y && this.scale._x === scale) {
+					if (callbackOnComplete) callbackOnComplete();
+					return;
+				}
+
 				this.animating = true;
 				this.animate({
 					position: position, 
 					scale: scale, 
-					time: 500, 
+					time: animateTime, 
 					ease: "easeInOutCubic", 
-					callbackOnComplete: () => this.animating = false
+					callbackOnComplete: () => {
+						this.animating = false;
+						if (callbackOnComplete) callbackOnComplete();
+					}
 				});
 			} else {
 				this.moveCenter(position.x, position.y);
@@ -137,6 +145,9 @@ const RendererCanvas = (props) => {
 	React.useEffect(() => {
 		while (viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
 
+		maxX.current = 0;
+		maxY.current = 0;
+		let toAdd = [];
 		dungeon.forEach((room) => {
 			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size;
 			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size;
@@ -160,10 +171,23 @@ const RendererCanvas = (props) => {
 
 			roomContainer.addChild(tilesContainer);
 			roomContainer.addChild(propsContainer);
-			viewport.current.addChild(roomContainer);
+			toAdd.push(roomContainer);
 		});
 
 		viewport.current.resetCamera();
+		if (viewport.current.initialLoaded) viewport.current.moveCenter(viewport.current.worldScreenWidth * 2, viewport.current.center.y);
+
+		viewport.current.addChild(...toAdd);
+
+		if (viewport.current.initialLoaded) {
+			requestAnimationFrame(() => {
+				viewport.current.animate({
+					position: { x: maxX.current / 2, y: viewport.current.center.y }, 
+					time: 500, 
+					ease: "easeOutCubic"
+				});
+			});
+		} else viewport.current.initialLoaded = true;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dungeon]);
 

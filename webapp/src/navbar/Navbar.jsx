@@ -8,7 +8,6 @@ import {
 
 const Navbar = (props) => {
     const handleGoHome = () => {
-        props.setIntialRender(true);
         props.toggleTransitionPanel(() => {
             props.setActivePage("home");
             props.toggleTransitionPanel();
