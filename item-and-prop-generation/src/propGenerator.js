@@ -31,7 +31,7 @@ class PropGenerator {
     }
 
     #getRandomRarity() {
-        const rand = this.#randomGen() * 100 + 1; //SEED
+        const rand = this.#randomGen() * 100 + 1;
         let percentage = 0;
         for (const rarity in PropRarity) {
             percentage += PropRarity[rarity];

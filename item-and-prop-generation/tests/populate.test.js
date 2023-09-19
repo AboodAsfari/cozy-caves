@@ -4,6 +4,7 @@ const RoomBuilder = require("@cozy-caves/room-generation").RoomBuilder;
 const PropGenerator = require("../src/propGenerator");
 const populateRoom = require("../src/propMap");
 const ItemGenerator = require("../src/itemGenerator");
+const PropSet = require("../src/propSet");
 
 // test('Testing Prop Generation', () => {
 //     log("TESTING PROP GENERATION\n");
@@ -87,6 +88,17 @@ test('Testing props by set', () => {
     const generator = new PropGenerator(Math.random());
     for (let i=0; i<5; i++) {
         log(generator.getProp(["Table", "Chair", "Bed", "Bookshelf"]).toString() + "\n");
+    }
+    log("-------------------------------");
+});
+
+test('Testing get prop set', () => {
+    log("TESTING GET PROP SET\n");
+    const generator = new PropSet(Math.random());
+    const propSet = generator.getPropSet(10);
+    
+    for (let p of propSet) {
+        log(p.toString());
     }
     log("-------------------------------");
 });

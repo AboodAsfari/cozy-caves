@@ -23,7 +23,6 @@ class ItemGenerator {
         const temp = metadata[category];
         if (temp.length === 0) throw new Error(`No items found for category: ${category}`);
 
-
         // this random index gives a fair chance to every item that is in the list
         let randomIndex = Math.floor(this.#randomGen() * temp.length)
         const i = temp[randomIndex];

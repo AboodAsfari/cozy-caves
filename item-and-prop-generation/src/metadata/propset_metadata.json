@@ -8,13 +8,17 @@
     "Fireplace": {
         "rarity": "rare",
         "props": [
-            "Fireplace", "Hearth", "Steam Vents", "Candles"
+            "Fireplace", "Candles", "Statues", "Tapestries", "Barrel"
         ]
     },
     "Abandoned": {
         "rarity": "uncommon",
         "props": [
-            "Cobwebs", "Dust", "Runes", "Glyphs"
+            "Cobwebs", "Rubble", "Runes", "Glyphs", "Banners"
         ]
+    },
+    "Treasure Room": {
+        "rarity": "uncommon",
+        "props": ["Golden Altar", "Jeweled Chest"]
     }
 }
