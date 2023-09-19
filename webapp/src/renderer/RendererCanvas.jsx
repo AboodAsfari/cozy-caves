@@ -228,22 +228,6 @@ const RendererCanvas = (props) => {
 		setClickY(e.clientY); 
 	};
 
-  // useEffect(() => {
-  //   if (props.zoomScaleRequest === 1) return;
-  //   zoom(props.zoomScaleRequest);
-  //   props.setZoomScaleRequest(1);
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [props.zoomScaleRequest]);
-  // const zoom = (factor) => {
-  //   let viewport = stageRef.current.mountNode.containerInfo.children[0];
-  //   let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
-  //   let newScale = viewport.scale._x * factor;
-
-  //   if (newScale > clampOptions.maxScale) viewport.animate({ scale: clampOptions.maxScale, time: 250 });
-  //   else if (newScale < clampOptions.minScale) viewport.animate({ scale: clampOptions.minScale, time: 250 });
-  //   else  viewport.animate({ scale: newScale, time: 250 });  
-  // }
-
 	return ( <>
 		<div ref={canvasRef} />
 		<Popup
