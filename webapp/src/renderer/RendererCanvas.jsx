@@ -4,6 +4,9 @@ import { EventSystem } from "@pixi/events";
 import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
 import Popup from '../mapview/Popup';
+import PropHoverView from '../mapview/PropHoverView';
+import { Fade } from 'hamburger-react';
+import { Box, Collapse, Slide, Typography } from '@mui/material';
 
 const RendererCanvas = (props) => {
 	const {
@@ -19,8 +22,10 @@ const RendererCanvas = (props) => {
 
 	const [popupContent, setPopupContent] = React.useState('');
 	const [isPopupOpen, setIsPopupOpen] = React.useState(false);
-	const [clickX, setClickX] = React.useState(0);
-	const [clickY, setClickY] = React.useState(0);
+	const isPopupOpenRef = React.useRef();
+	isPopupOpenRef.current = isPopupOpen;
+	const [mouseX, setMouseX] = React.useState(0);
+	const [mouseY, setMouseY] = React.useState(0);
 
 	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
 	const size = 64;
@@ -216,6 +221,8 @@ const RendererCanvas = (props) => {
 		sprite.eventMode = "dynamic";
 		sprite.cursor = "pointer";
 		sprite.on("pointerdown", e => onPropClick(e, prop));
+		sprite.on("pointermove", e => onPropHover(e, prop));
+		sprite.on("pointerleave", e => { if (!isPopupOpenRef.current) setPopupContent(null) });
 
 		return sprite;
 	}
@@ -224,9 +231,16 @@ const RendererCanvas = (props) => {
 		setPopupContent(prop);
 		setIsPopupOpen(true);
 
-		setClickX(e.clientX);
-		setClickY(e.clientY); 
+		setMouseX(e.clientX);
+		setMouseY(e.clientY); 
 	};
+
+	const onPropHover = (e, prop) => {
+		setPopupContent(prop);
+
+		setMouseX(e.clientX);
+		setMouseY(e.clientY); 
+	}
 
 	return ( <>
 		<div ref={canvasRef} />
@@ -234,9 +248,11 @@ const RendererCanvas = (props) => {
 			isOpen={isPopupOpen}
 			content={popupContent}
 			onClose={() => setIsPopupOpen(false)}
-			clickX={clickX}
-			clickY={clickY}
+			clickX={mouseX}
+			clickY={mouseY}
 		/>
+
+		<PropHoverView menuOpen={isPopupOpen} prop={popupContent} mouseX={mouseX} mouseY={mouseY} />
 	</> );
 };
 
