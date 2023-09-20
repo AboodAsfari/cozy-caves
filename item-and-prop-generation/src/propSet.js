@@ -34,19 +34,19 @@ class PropSet {
         }
 
         const index = Math.floor(this.#randomGen() * setList.length);
-        const propCount = Math.floor(this.#randomGen() * (maxProp - 3)) + 2; 
+        const propCount = Math.floor(this.#randomGen() * (maxProp - 2 + 1)) + 2; 
+        console.log("Allow: " + propCount);
+
         const propMap = new Map();
         const propSet = [];
         const propList = metadata[setList[index]].props;
         
         let tries = 0;
         do {
-            if (tries >= 1000) break; // just in case to prevent infinite loop
+            if (tries >= 100) break; // just in case to prevent infinite loop
 
             const prop = this.propGenerator.getProp(propList);
             const propName = prop.getName(); // Get the name of the prop
-            
-            console.log(propMap.get(propName));
             
             if (propMap.get(propName) <= this.#allowedDuplicate(prop.getRarity())) {
                 propSet.push(prop);
@@ -56,10 +56,8 @@ class PropSet {
                 const currentValue = propMap.get(propName);
                 propMap.set(propName, currentValue + 1);
             } else{
-                console.log("putting it into the map.." + propName);
                 propMap.set(propName, 1);
             }
-            
             tries++;            
         } while (propSet.length < propCount); 
         
@@ -72,6 +70,7 @@ class PropSet {
         return 1; 
     }
 
+    // redo
     getPropSetByName(setName, maxProp){
         const set = metadata[setName];
         if (!set) throw new Error(`No set found for ${setName}.`);

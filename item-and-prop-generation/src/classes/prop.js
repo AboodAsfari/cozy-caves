@@ -13,6 +13,7 @@ class Prop {
     // Rendering elements.
     #origin = new Point(0, 0); //this is where it will be rendered from
     #rotation = 0;
+    #scale = new Point(0,0);
 
     /**
      * Constructs a tile based on the metadata provided.
@@ -48,6 +49,7 @@ class Prop {
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
     getOrigin() {return this.#origin; }
+    getScale() { return this.#scale; }
 
     getName() { return this.name; }
     getDesc() { return this.desc; }
@@ -67,7 +69,14 @@ class Prop {
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#origin = position;
     }
-    setRotation(rotation) { this.#rotation = rotation; }
+    setRotation(rotation) { 
+        this.#rotation = rotation; 
+    }
+
+    setScale(scale) {
+        if (!(scale instanceof Point)) throw new Error("Scale must be provided as Point.");
+        this.#scale = scale;
+    }
     
     toString() {
         let result = "";

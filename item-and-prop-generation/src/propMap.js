@@ -7,6 +7,7 @@ class PropMap {
     #populatedRoom = new Map();
     #room;
     #propSet;
+    #propList;
     #seed;
     #randomGen;
 
@@ -17,9 +18,25 @@ class PropMap {
         this.#room = room;
         this.#randomGen = seedrandom(this.#seed);
         this.#propSet = new PropSet(this.#randomGen());
+        this.#propList = this.#propSet.getPropSet(this.#getMaxProp());
 
-        this.#populatePropMap();
+        //this.#populatePropMap();
     }
+
+    #getMaxProp() {
+        let x = this.#room.getDimensions().getX();
+        let y = this.#room.getDimensions().getY();
+
+        let size = Math.max(x, y);
+        if (size <= 7) return 4;
+        else if (size <= 12) return 7;
+        else if (size <= 15) return 10;
+        return 15;
+    }
+
+    
+
+
     
     #getRandomRarity() {
         const rand = this.#randomGen() * 100 + 1;
@@ -74,9 +91,36 @@ class PropMap {
         return null;
     }
 
+    #nearWall(prop) {
+        const w = prop.getSize().w;
+        const h = prop.getSize().h;
+
+        
+
+        let dimensions = this.#room.getDimensions();
+
+        // getting all the wall tiles
+        const walls = [];
+        for (let i = 0; i < dimensions.getY(); i++) {
+            for (let j = 0; j < dimensions.getX(); j++) {
+                let pos = new Point(j, i);
+                let tile = this.#room.getTile(pos);
+                if (tile.getTileType() === "wall") walls.push(pos);
+            }
+        }
+
+        let left = new Point(-1,0);
+        let right = new Point(1,0);
+        let top = new Point(0,-1);
+        let bottom = new Point(0,1);
+
+        const edgeWallValues = [left.toString(), right.toString(), top.toString(), bottom.toString()];
+        const allEdgeWalls = walls.filter((pos) => edgeWallValues.includes(pos.toString()));
+        
+    }
+
     /**
      * Checks whether or not the position provided is a free space to put prop in.
-     * Rules can be added here if when the code is extended.
      * 
      * @param {Point} pos - Position to be checked 
      * @returns boolean

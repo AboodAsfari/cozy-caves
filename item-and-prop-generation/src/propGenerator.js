@@ -66,6 +66,7 @@ class PropGenerator {
         const allProps = [];
         propList.forEach((name) => {
             var propData = metadata[name];
+            if (!propData) throw new Error(`metadata not found for ${name}`);
             propData.name = name;
             allProps.push(propData);
         });
