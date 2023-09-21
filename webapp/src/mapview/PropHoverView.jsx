@@ -20,7 +20,7 @@ const PropHoverView = (props) => {
     const [propInfo, setPropInfo] = useState(null);
 
     React.useEffect(() => {
-        if (mouseY < document.body.clientHeight / 2) setRenderingAbove(false);
+        if (mouseY - 70 <= viewHeight + arrowSize) setRenderingAbove(false);
         else setRenderingAbove(true);
     }, [mouseY]);
 
