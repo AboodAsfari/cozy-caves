@@ -20,10 +20,10 @@ const RendererCanvas = (props) => {
 	const maxX = React.useRef(0);
 	const maxY = React.useRef(0);
 
-	const [popupContent, setPopupContent] = React.useState('');
-	const [isPopupOpen, setIsPopupOpen] = React.useState(false);
-	const isPopupOpenRef = React.useRef();
-	isPopupOpenRef.current = isPopupOpen;
+	const [hoverProp, setHoverProp] = React.useState(null);
+	const [dialogProp, setDialogProp] = React.useState(null);
+	const dialogPropRef = React.useRef();
+	dialogPropRef.current = dialogProp;
 	const [mouseX, setMouseX] = React.useState(0);
 	const [mouseY, setMouseY] = React.useState(0);
 
@@ -220,23 +220,16 @@ const RendererCanvas = (props) => {
 		sprite.angle = prop.getRotation();
 		sprite.eventMode = "dynamic";
 		sprite.cursor = "pointer";
-		sprite.on("pointerdown", e => onPropClick(e, prop));
+		sprite.on("pointerdown", () => setDialogProp(prop));
 		sprite.on("pointermove", e => onPropHover(e, prop));
-		sprite.on("pointerleave", e => { if (!isPopupOpenRef.current) setPopupContent(null) });
+		sprite.on("pointerenter", e => onPropHover(e, prop));
+		sprite.on("pointerleave", () => setHoverProp(null));
 
 		return sprite;
 	}
 
-	const onPropClick = (e, prop) => {
-		setPopupContent(prop);
-		setIsPopupOpen(true);
-
-		setMouseX(e.clientX);
-		setMouseY(e.clientY); 
-	};
-
 	const onPropHover = (e, prop) => {
-		setPopupContent(prop);
+		setHoverProp(prop);
 
 		setMouseX(e.clientX);
 		setMouseY(e.clientY); 
@@ -245,14 +238,13 @@ const RendererCanvas = (props) => {
 	return ( <>
 		<div ref={canvasRef} />
 		<Popup
-			isOpen={isPopupOpen}
-			content={popupContent}
-			onClose={() => setIsPopupOpen(false)}
+			prop={dialogProp}
+			onClose={() => setDialogProp(null)}
 			clickX={mouseX}
 			clickY={mouseY}
 		/>
 
-		<PropHoverView menuOpen={isPopupOpen} prop={popupContent} mouseX={mouseX} mouseY={mouseY} />
+		<PropHoverView menuOpen={!!dialogProp} prop={hoverProp} mouseX={mouseX} mouseY={mouseY} />
 	</> );
 };
 
