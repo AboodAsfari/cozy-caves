@@ -406,23 +406,23 @@ function createFromEntryExit(fromPos, toPos, shape) {
     let hallway = new Room(new Point(diffX+xCompensation, diffY+yCompensation));
 
     if (shape == HallwayShapes.RIGHT_TOP) {
-        for (let i = 0; i < diffX+1; i++) {
-            // hallway.addTile(new Tile("wall", new Point(0 + i, 0)).setTileID(TileID.EDGE_WALL));
-            // hallway.addTile(new Tile("wall", new Point(0 + i, 2)).setTileID(TileID.EDGE_WALL));
+        for (let i = 1; i <= diffX+1; i++) {
+            // hallway.addTile(new Tile("wall", new Point(i, 0)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(i, 2)).setTileID(TileID.EDGE_WALL));
         }
-        for (let i = 0; i < diffY; i++) {
-            // hallway.addTile(new Tile("wall", new Point(diffX - 1, 1 + i)).setTileID(TileID.EDGE_WALL));
-            // hallway.addTile(new Tile("wall", new Point(diffX - 3, 1 + i)).setTileID(TileID.EDGE_WALL));
-        }
-
-        for (let i = 0; i < diffX; i++) {
-            hallway.addTile(new Tile("floor", new Point(0 + i, 1)).setTileID(TileID.FLOOR));
+        for (let i = 1; i <= diffY; i++) {
+            // hallway.addTile(new Tile("wall", new Point(diffX - 1, i)).setTileID(TileID.EDGE_WALL));
+            // hallway.addTile(new Tile("wall", new Point(diffX + 1, i)).setTileID(TileID.EDGE_WALL));
         }
 
-        for (let i = 0; i < diffY; i++) {
-            hallway.addTile(new Tile("floor", new Point(diffX - 2, 1 + i)).setTileID(TileID.FLOOR));
+        for (let i = 1; i <= diffX; i++) {
+            hallway.addTile(new Tile("floor", new Point(i, 1)).setTileID(TileID.FLOOR));
         }
-        hallway.setPosition(new Point(startingX+1, startingY-1));
+
+        for (let i = 1; i <= diffY; i++) {
+            hallway.addTile(new Tile("floor", new Point(diffX, i)).setTileID(TileID.FLOOR));
+        }
+        hallway.setPosition(new Point(startingX, startingY-1));
     } 
     
     else if (shape == HallwayShapes.DOWN_LEFT) {
@@ -444,7 +444,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
     }
 
     else if (shape == HallwayShapes.RIGHT_DOWN) {
-        for (let i = 1; i <= diffX; i++) {
+        for (let i = 1; i <= diffX+1; i++) {
             hallway.addTile(new Tile("wall", new Point(i, diffY - 1)).setTileID(TileID.EDGE_WALL));
             hallway.addTile(new Tile("wall", new Point(i, diffY + 1)).setTileID(TileID.EDGE_WALL));
         }
@@ -454,14 +454,13 @@ function createFromEntryExit(fromPos, toPos, shape) {
         }
 
         for (let i = 1; i <= diffX; i++) {
-            hallway.addTile(new Tile("floor", new Point(i, diffY)).setTileID(TileID.FLOOR));
+            hallway.addTile(new Tile("floor", new Point(i, diffY)).setTileID(TileID.FLOOR_4));
         }
 
         for (let i = 1; i <= diffY; i++) {
-            hallway.addTile(new Tile("floor", new Point(diffX, i)).setTileID(TileID.FLOOR));
+            hallway.addTile(new Tile("floor", new Point(diffX, i)).setTileID(TileID.FLOOR_4));
         }
 
-        hallway.addTile(new Tile("floor", new Point(diffX + 1, diffY + 1)).setTileID(TileID.EDGE_WALL));
 
         hallway.setPosition(new Point(startingX, toY));
     }
