@@ -336,13 +336,16 @@ function createHallwayFromShape(shape, from, to) {
         }
     } else {
         //LEFT_RIGHT
-        while (middleFromTile == undefined) {
-            for (fromEdge of fromEdges) {
-                for (toEdge of toEdges) {
-                    if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
-                        middleFromTile = fromEdge;
-                        middleToTile = toEdge;
-                    }
+        let matchFound = false;
+        for (fromEdge of fromEdges) {
+            if (matchFound) {
+                break;
+            }
+            for (toEdge of toEdges) {
+                if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
+                    middleFromTile = fromEdge;
+                    middleToTile = toEdge;
+                    matchFound = true;
                 }
             }
         }
