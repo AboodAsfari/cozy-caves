@@ -202,7 +202,27 @@ class DungeonBuilder {
         this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
-        generateHallways(map);
+
+
+        // let rooms = [];
+        // let testInputs = [
+        //     { size: new Point(9, 9), leniency: new Point(0, 0) },
+        //     { size: new Point(8, 12), leniency: new Point(0, 0) },
+        //     { size: new Point(8, 8), leniency: new Point(0, 0) },
+        //     { size: new Point(13, 13), leniency: new Point(0, 0) },
+        //     { size: new Point(11, 11), leniency: new Point(0, 0) },
+        //     { size: new Point(7, 7), leniency: new Point(0, 0) },
+        //     { size: new Point(6, 6), leniency: new Point(0, 0) },
+        // ];
+        // for (const key in testInputs) {
+    
+        //     let room = new RoomBuilder().setSize(testInputs[key].size).setLeniency(testInputs[key].leniency).build();
+            
+        //      room.setPosition(new Point(150 - key * 15, key * 15));
+        //      rooms.push(room);
+        // }
+
+        generateHallways(map, 200, 200);
         return map;
     }
 
