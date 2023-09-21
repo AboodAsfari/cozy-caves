@@ -314,23 +314,34 @@ function createHallwayFromShape(shape, from, to) {
         return;
     }
     
-    fromEdges.splice(0, 1);
-    fromEdges.splice(fromEdges.length-1, 1);
-    toEdges.splice(0, 1);
-    toEdges.splice(toEdges.length-1, 1);
+    // fromEdges.splice(0, 1);
+    // fromEdges.splice(fromEdges.length-1, 1);
+    // toEdges.splice(0, 1);
+    // toEdges.splice(toEdges.length-1, 1);
+
+    if (swapped) {
+        let temp = from;
+        from = to;
+        to = temp;
+    }
 
     if (shape != HallwayShapes.LEFT_RIGHT && shape != HallwayShapes.TOP_DOWN) {
         middleFromTile = fromEdges[(Math.floor(fromEdges.length / 2))];
         middleToTile = toEdges[(Math.floor(toEdges.length / 2))];
     } else if (shape == HallwayShapes.TOP_DOWN) {
-
-        while (middleFromTile == undefined) {
-            for (fromEdge of fromEdges) {
-                for (toEdge of toEdges) {
-                    if (fromEdge.getPosition().getX() == toEdge.getPosition().getX()) {
-                        middleFromTile = fromEdge;
-                        middleToTile = toEdge;
-                    }
+        let matchFound = false;
+        for (fromEdge of fromEdges) {
+            if (matchFound) {
+                break;
+            }
+            for (toEdge of toEdges) {
+                if (fromEdge.getPosition().getX() + from.getPosition().getX() == toEdge.getPosition().getX() + to.getPosition().getX()) {
+                    console.log("!!!!");
+                    console.log(fromEdge.getPosition());
+                    console.log(toEdge.getPosition());
+                    middleFromTile = fromEdge;
+                    middleToTile = toEdge;
+                    matchFound = true;
                 }
             }
         }
@@ -342,7 +353,8 @@ function createHallwayFromShape(shape, from, to) {
                 break;
             }
             for (toEdge of toEdges) {
-                if (fromEdge.getPosition().getY() == toEdge.getPosition().getY()) {
+                if (fromEdge.getPosition().getY() + from.getPosition().getY() == toEdge.getPosition().getY() + to.getPosition().getY()) {
+                    console.log("!!!!");
                     middleFromTile = fromEdge;
                     middleToTile = toEdge;
                     matchFound = true;
@@ -351,12 +363,7 @@ function createHallwayFromShape(shape, from, to) {
         }
     }
 
-    if (!swapped) {
-        createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()), shape);
-    } else {
-        console.log(middleToTile.getPosition());
-        createFromEntryExit(to.getPosition().add(middleFromTile.getPosition()), from.getPosition().add(middleToTile.getPosition()), shape);
-    }
+    createFromEntryExit(from.getPosition().add(middleFromTile.getPosition()), to.getPosition().add(middleToTile.getPosition()), shape);
 }
 
 function createFromEntryExit(fromPos, toPos, shape) {
@@ -416,7 +423,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         for (let i = 0; i < diffY-1; i++) {
             hallway.addTile(new Tile("floor", new Point(1, 0 + i)).setTileID(TileID.FLOOR));
         }
-        for (let i = 0; i < diffX-1; i++) {
+        for (let i = 0; i < diffX; i++) {
             hallway.addTile(new Tile("floor", new Point(1 + i, diffY - 2)).setTileID(TileID.FLOOR));
         }
         hallway.setPosition(new Point(startingX, startingY));
