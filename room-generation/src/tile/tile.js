@@ -8,6 +8,7 @@ const Point = require("@cozy-caves/utils").Point;
 class Tile {
     #tileType; // Type of tile to display.
     #tileID; // ID of tile to display.
+    #tileSpacialType; // Spacial type of tile logically.
     #partitionNum = -1; // Index of the partition this tile belongs in.
     #position; // Position of the tile in the room.
     #offset = new Point(0, 0); // Rendering offset.
@@ -32,6 +33,7 @@ class Tile {
 
     // Setters.
     setTileID(tileID) { this.#tileID = tileID; }
+    setTileSpacialType(tileSpacialType) { this.#tileSpacialType = tileSpacialType; }
     setPartitionNum(partitionNum) { this.#partitionNum = partitionNum; }
     setOffset(offset) { this.#offset = offset; }
     setScale(scale) { this.#scale = scale; }
@@ -41,6 +43,7 @@ class Tile {
     // Getters.
     getTileType() { return this.#tileType; }
     getTileID() { return this.#tileID; }
+    getTileSpacialType() { return this.#tileSpacialType; }
     getPartitionNum() { return this.#partitionNum; }
     getPosition() { return this.#position; }
     getOffset() { return this.#offset; }
@@ -57,6 +60,7 @@ class Tile {
         return {
             tileType: this.#tileType,
             tileID: this.#tileID,
+            tileSpacialType: this.#tileSpacialType,
             position: this.#position.toString(),
             partitionNum: this.#partitionNum,
             offset: this.#offset.toString(),
@@ -80,6 +84,7 @@ class Tile {
         if (serializedTile.tileID !== 0 && !serializedTile.tileID) return tile;
 
         tile.setTileID(serializedTile.tileID);
+        tile.setTileSpacialType(serializedTile.tileSpacialType);
         let offsetArray = serializedTile.offset.split(',');
         tile.setOffset(new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1])));
         let scaleArray = serializedTile.scale.split(',');
