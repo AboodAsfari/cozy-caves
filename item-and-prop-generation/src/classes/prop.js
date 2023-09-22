@@ -11,7 +11,8 @@ class Prop {
     #items = [];
 
     // Rendering elements.
-    #origin = new Point(0, 0); //this is where it will be rendered from
+    #position = new Point(0, 0); //this is where it will be rendered from
+    #offset = new Point(0, 0);
     #rotation = 0;
     #scale = new Point(0,0);
 
@@ -48,7 +49,8 @@ class Prop {
     // Getters.
     getRotation() { return this.#rotation; }
     getItems(){ return this.#items; }
-    getOrigin() {return this.#origin; }
+    getPosition() {return this.#position; }
+    getOffset() {return this.#offset;}
     getScale() { return this.#scale; }
 
     getName() { return this.name; }
@@ -65,9 +67,13 @@ class Prop {
     }
 
     // Setters.
-    setOrigin(position){
+    setPosition(position){
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
-        this.#origin = position;
+        this.#position = position;
+    }
+    setOffset(offset){
+        if (!(offset instanceof Point)) throw new Error("Offset must be provided as Point.");
+        this.#offset = offset;
     }
     setRotation(rotation) { 
         this.#rotation = rotation; 
