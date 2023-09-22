@@ -55,12 +55,7 @@ export default function ToolBar(props) {
     const [downloadFileContents, setDownloadFileContents] = React.useState(null);
     const [downloadImageContents, setDownloadImageContents] = React.useState(null);
 
-    React.useEffect(() => {
-        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
-        getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
-        setLoadingAnimation(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dungeon]);
+    React.useEffect(() => setLoadingAnimation(false), [dungeon]);
 
     const regenerateMap = () => {
         const newSettings = { ...mapSettings, seed: Math.random() };
@@ -163,6 +158,8 @@ export default function ToolBar(props) {
 
     const toolHover = (e, name) => {
         if (name === "Download") {
+            getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
+            getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
             setDownloadMenuAnchor(e.currentTarget);
             setDownloadMenuOpen(true);
         }
