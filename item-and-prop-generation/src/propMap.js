@@ -20,7 +20,7 @@ class PropMap {
         this.#propSet = new PropSet(this.#randomGen());
         this.#propList = this.#propSet.getPropSet(this.#getMaxProp());
 
-        //this.#populatePropMap();
+        this.#populatePropMap();
     }
 
     #getMaxProp() {
@@ -34,31 +34,59 @@ class PropMap {
         return 15;
     }
 
+    // with the list of props, look at their placement rules, and decide on position depending on the placement rule
     
+    processProps(){
+        const propList = this.#propSet.getPropSet(this.#getMaxProp());
 
+        // Ensure that you have a valid propSet
+        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
 
+        console.log("PROPLIST___________________");
     
-    #getRandomRarity() {
-        const rand = this.#randomGen() * 100 + 1;
-        let percentage = 0;
-        for (const rarity in Rarity) {
-            percentage += Rarity[rarity];
+        // parse data
+        for (let i = 0; i < propList.length; i++) {
+            const p = propList[i];
+            
+            const nearWall = p.getPlacementRules().nearWall;
+            const nearProp = p.getPlacementRules().nearProp;
+            const atCenter = p.getPlacementRules().atCenter;
+            const overlap = p.getPlacementRules().overlap;
 
-            if (rand <= percentage) return rarity;
+            if (nearWall !== "none") {
+                findPositionNearWall(p, nearWall); 
+            }
+            if (nearProp !== "none") {
+                findPositionNearProp(p, nearProp);
+            }
+            if (atCenter) {
+                findCenterPositon(p);
+            }
         }
-        return "common";
     }
 
+    findPositionNearWall(prop, wall) {
+        // implement later
+    }
+
+    findPositionNearWall(prop, nextTo) {
+        // implement later
+    }
+
+    findCenterPositon(prop) {
+        // implement later
+    }
+    
     /**
      * Populates the populatedRoom with a set of props based on rarity.
      */
     #populatePropMap() {
-        const propSet = this.#propSet.getSetByRarity(this.#getRandomRarity());
+        const propList = this.#propSet.getPropSet(this.#getMaxProp());
 
         // Ensure that you have a valid propSet
-        if (!Array.isArray(propSet) || propSet.length === 0) throw new Error("Empty prop set");
+        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
 
-        this.#placeProps(propSet);
+        this.#placeProps(propList);
         
     }
 

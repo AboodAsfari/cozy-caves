@@ -35,7 +35,6 @@ class PropSet {
 
         const index = Math.floor(this.#randomGen() * setList.length);
         const propCount = Math.floor(this.#randomGen() * (maxProp - 2 + 1)) + 2; 
-        console.log("Allow: " + propCount);
 
         const propMap = new Map();
         const propSet = [];

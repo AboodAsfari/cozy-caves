@@ -107,9 +107,10 @@ test('Testing Prop Generation', () => {
     log("TESTING PROP GENERATION\n");
 
     const room = new RoomBuilder(Math.random()).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
-    log(room.toString());
+    // log(room.toString());
     const propMap = populateRoom(room, Math.random());
-    //log(propMap.printPropList());
+    // propMap.processProps();
+    log(propMap.toString());
     log("-------------------------------");
 
 });
