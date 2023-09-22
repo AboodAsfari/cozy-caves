@@ -17,7 +17,7 @@ test("Rect room generation", () => {
     for (const testInput of testInputs) {
         log("Generating room with expected size: " + testInput.size.toString() + ", and leniency: " + testInput.leniency.toString());
 
-        let room = new RoomBuilder().setSize(testInput.size).setLeniency(testInput.leniency).build();
+        let room = new RoomBuilder(3).setSize(testInput.size).setLeniency(testInput.leniency).setPopulateWithItems(false).build();
         log(room.toString());
         log("----------------------------------------------------------------");
 
@@ -27,7 +27,7 @@ test("Rect room generation", () => {
 });
 
 test("Edge fetching", () => {
-    let room = new RoomBuilder().setSize(new Point(3, 3)).build();
+    let room = new RoomBuilder(3).setSize(new Point(3, 3)).setPopulateWithItems(false).build();
 
     let bottomEdges = room.getBottomEdges();
     expect(bottomEdges[0].getPosition().toString()).toBe("0,2");
