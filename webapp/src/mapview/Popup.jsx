@@ -14,6 +14,7 @@ const Popup = (props) => {
 	const [selectedItem, setSelectedItem] = React.useState(null);
 
 	const getPropRarity = () => !propInfo ? "" : propInfo.rarity.charAt(0).toUpperCase() + propInfo.rarity.slice(1);
+	const getSelectedItemRarity = () => !selectedItem ? "" : selectedItem.rarity.charAt(0).toUpperCase() + selectedItem.rarity.slice(1);
 
 	React.useEffect(() => {
 		if (prop) {
@@ -56,8 +57,8 @@ const Popup = (props) => {
 								<Typography sx={{ fontSize: 35, textAlign: "left" }}> { selectedItem.name } </Typography>
 								<InsertEmoticonIcon sx={{ mt: 0.8, ml: 1, fontSize: 35 }} />
 							</Stack>
-							<Typography sx={{ fontSize: 20, textAlign: "left", mt: -1, color: "grey", mb: 2 }}> {getPropRarity()} </Typography>
-							<Typography sx={{ minWidth: "100%", width: 0, fontSize: 20, textAlign: "left" }}> {propInfo && propInfo.desc} </Typography>
+							<Typography sx={{ fontSize: 20, textAlign: "left", mt: -1, color: "grey", mb: 2 }}> {getSelectedItemRarity()} </Typography>
+							<Typography sx={{ minWidth: "100%", width: 0, fontSize: 20, textAlign: "left" }}> {selectedItem.desc} </Typography>
 						</Stack>
 					}
 				</Stack>
