@@ -472,22 +472,35 @@ function createFromEntryExit(fromPos, toPos, shape) {
     } 
     
     else if (shape == HallwayShapes.LEFT_RIGHT) {
-        for (let i = 1; i < diffX; i++) {
-            // hallway.addTile(new Tile("wall", new Point(i, 0)).setTileID(TileID.EDGE_WALL));
-            // hallway.addTile(new Tile("wall", new Point(i, 2)).setTileID(TileID.EDGE_WALL));
-
-            hallway.addTile(new Tile("floor", new Point(i, 1)).setTileID(TileID.FLOOR));
+        if (diffX == 1) {
+            hallway.addTile(new Tile("floor", new Point(0, 0)).setTileID(TileID.FLOOR));
+            hallway.addTile(new Tile("floor", new Point(1, 0)).setTileID(TileID.FLOOR));
+            hallway.setPosition(new Point(toX, startingY));
+        } else {
+            for (let i = 1; i < diffX; i++) {
+                // hallway.addTile(new Tile("wall", new Point(i, 0)).setTileID(TileID.EDGE_WALL));
+                // hallway.addTile(new Tile("wall", new Point(i, 2)).setTileID(TileID.EDGE_WALL));
+    
+                hallway.addTile(new Tile("floor", new Point(i, 1)).setTileID(TileID.FLOOR));
+            }
+            hallway.setPosition(new Point(toX, startingY-1));
         }
-        hallway.setPosition(new Point(toX, startingY-1));
+        
     } 
     
     else if (shape == HallwayShapes.TOP_DOWN) {
-        for (let i = 1; i < diffY; i++) {
-            // hallway.addTile(new Tile("wall", new Point(0, i)).setTileID(TileID.EDGE_WALL));
-            // hallway.addTile(new Tile("wall", new Point(2, i)).setTileID(TileID.EDGE_WALL));
-            hallway.addTile(new Tile("floor", new Point(1, i)).setTileID(TileID.FLOOR));
+        if (diffY == 1) {
+            hallway.addTile(new Tile("floor", new Point(1, 0)).setTileID(TileID.FLOOR));
+            hallway.addTile(new Tile("floor", new Point(1, 1)).setTileID(TileID.FLOOR));
+            hallway.setPosition(new Point(startingX, toY));
+        } else {
+            for (let i = 1; i < diffY; i++) {
+                // hallway.addTile(new Tile("wall", new Point(0, i)).setTileID(TileID.EDGE_WALL));
+                // hallway.addTile(new Tile("wall", new Point(2, i)).setTileID(TileID.EDGE_WALL));
+                hallway.addTile(new Tile("floor", new Point(1, i)).setTileID(TileID.FLOOR));
+            }
+            hallway.setPosition(new Point(startingX-1, toY));
         }
-        hallway.setPosition(new Point(startingX-1, toY));
     } else {
         return;
     }
