@@ -65,35 +65,44 @@ function generateCurrentMap(rooms) {
             for (let j = 0; j < roomHeight; j++) {
                 map[roomX + i][roomY + j] = room.getTile(new Point(i, j));
             }
+function mergeHallways(hallways, hallwayMap) {
+
+    let disjointSet = new DisjointSet();
+
+    for (key in hallways) {
+        disjointSet.makeSet(key);
+    }
+
+    for (key in hallways) {
+        let hallway = hallways[key];
+        let hallwayPos = hallway.getPosition();
+        for (let tile of hallway.getTiles()) {
+            let tileX = tile.getPosition().getX() + hallwayPos.getX();
+            let tileY = tile.getPosition().getY() + hallwayPos.getY();
+            
+            if (hallwayMap[tileX][tileY] < 0) {
+                hallwayMap[tileX][tileY] = key;
+            } else {
+                disjointSet.union(key, hallwayMap[tileX][tileY]);
+            }
+        }
+    }
+    
+    let mergedHallways = new Map();
+
+    for (key in hallways) {
+        let parent = disjointSet.findSet(key);
+        if (mergedHallways.has(parent)) {
+            console.log(parent);
+            let currentList = mergedHallways.get(parent);
+            currentList.push(hallways[key]);
+            mergedHallways.set(parent, currentList);
+        } else {
+            let list = [hallways[key]];
+            mergedHallways.set(parent, list);
         }
     }
 }
-
-// function checkOverlap(hallway) {
-//     console.log(hallway);
-//     let hallwayWidth = hallway.getDimensions().getX();
-//     let hallwayHeight = hallway.getDimensions().getY();
-//     let hallwayPos = hallway.getPosition();
-//     let hallwayX = hallwayPos.getX();
-//     let hallwayY = hallwayPos.getY();
-
-//     for (let i = 0; i < hallwayWidth; i++) {
-//         for (let j = 0; j < hallwayHeight; j++) {
-//             if (map[hallwayX + i][hallwayY + j] != undefined 
-//                 && map[hallwayX + i][hallwayY + j] != TileID.DOUBLE_WALL_CONNECTED) {
-//                 let hallwayTile = hallway.getTile(new Point(i, j));
-//                 if (hallwayTile == undefined) {
-//                     continue;
-//                 }
-//                 if (hallwayTile.getTileID() == TileID.FLOOR) {
-//                     hallway.addTile(new Tile("floor", new Point(i, j)).setTileID(TileID.FLOOR));
-//                 } else if (map[hallwayX + i][hallwayY + j] != undefined && map[hallwayX + i][hallwayY + j].getTileID() == TileID.FLOOR) {
-//                     hallway.addTile(new Tile("floor", new Point(i, j)).setTileID(TileID.FLOOR));
-//                 }
-//             }
-//         }
-//     }
-// }
 
 function generateHallways(rooms, w, h) {
     console.log(rooms);
@@ -101,7 +110,7 @@ function generateHallways(rooms, w, h) {
     roomToRoomConnections = [];
     hallways = [];
     const midpoints = [];
-    map = [...Array(w)].map(e => Array(h).fill(TileID.DOUBLE_WALL_CONNECTED));
+    map = [...Array(w)].map(e => Array(h).fill(-1));
     generateCurrentMap(rooms);
     for (let key in rooms) {
         point = getmidPoint(rooms[key]);
@@ -119,9 +128,16 @@ function generateHallways(rooms, w, h) {
     console.log(mst);
     for (key in mst) {
         createHallway(mst[key], rooms);
-    }
+    }   
+
+
+    let hallwayMap = [...Array(w)].map(e => Array(h).fill(-1));
+    let toMergeMap = mergeHallways(hallways, hallwayMap);
+
+
+
     for(hallway of hallways) {
-        //checkOverlap(hallway);
+        checkOverlap(hallway, rooms);
         rooms.push(hallway);
     }
 }
