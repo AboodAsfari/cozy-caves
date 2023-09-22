@@ -35,6 +35,18 @@ const PropHoverView = (props) => {
 
     const getPropRarity = () => propInfo.rarity.charAt(0).toUpperCase() + propInfo.rarity.slice(1);
 
+    const getRarityColor = (rarity) => {
+		if (!rarity) return "grey";
+		switch (rarity) {
+			case "Common": return "grey";
+			case "Uncommon": return "#4C9553";
+			case "Rare": return "#4b99cc";
+			case "Epic": return "#9b59b6";
+			case "Legendary": return "#ccbb4b";
+			default: return "grey";
+		}
+	}
+
     return (
         <Fade in={ !!prop && !menuOpen } direction="right">
             <Box> { propInfo && 
@@ -45,7 +57,7 @@ const PropHoverView = (props) => {
                             <Typography sx={{ fontSize: 25, textAlign: "left", flexGrow: 1 }}> { propInfo.name } </Typography>
                             <InsertEmoticonIcon sx={{ mt: 0.5 }}/>
                         </Stack>
-                        <Typography sx={{ fontSize: 15, textAlign: "left", mt: -1, color: "grey", mb: 2 }}> { getPropRarity() } </Typography>
+                        <Typography sx={{ fontSize: 15, textAlign: "left", mt: -1, color: getRarityColor(getPropRarity()), mb: 2 }}> { getPropRarity() } </Typography>
                         <Typography sx={{ fontSize: 15, textAlign: "left" }}> { propInfo.desc } </Typography>
 
                         { propInfo.getItems().length > 0 && <>
