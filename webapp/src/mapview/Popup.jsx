@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Dialog, Stack, DialogContent, Modal, Box } from "@mui/material";
+import { Typography, Stack, Modal, Box } from "@mui/material";
 
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import CloseIcon from '@mui/icons-material/Close';
