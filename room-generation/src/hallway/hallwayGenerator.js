@@ -144,7 +144,6 @@ function generateHallways(rooms, w, h) {
 
 
     for(hallway of hallways) {
-        checkOverlap(hallway, rooms);
         hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(2))));
         rooms.push(hallway);
     }
