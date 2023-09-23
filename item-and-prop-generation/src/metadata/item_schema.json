@@ -1,35 +1,29 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "properties": {
-    "item_categories": {
-      "type": "object",
-      "patternProperties": {
-        "^[A-Za-z\\s]+$": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "desc": {
-                "type": "string"
-              },
-              "rarity": {
-                "type": "string",
-                "enum": ["common", "uncommon", "rare", "epic", "legendary"]
-              },
-              "properties": {
-                "type": "string"
-              }
-            },
-            "required": ["name", "desc", "rarity"]
+  "patternProperties": {
+    "^[A-Za-z\\s]+$": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "rarity": {
+            "type": "string",
+            "enum": ["common", "uncommon", "rare", "epic", "legendary"]
+          },
+          "properties": {
+            "type": "string"
           }
-        }
-      },
-      "minProperties": 1
+        },
+        "required": ["name", "desc", "rarity"]
+      }
     }
   },
-  "required": ["item_categories"]
+  "minProperties": 1
 }

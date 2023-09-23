@@ -5,7 +5,7 @@
     },
     "Fireplace": {
         "rarity": "rare",
-        "props": ["Fireplace", "Chair", "Candles"]
+        "props": ["Fireplace", "Candles", "Chair", "Statues", "Tapestries", "Barrel"]
     },
     "Abandoned": {
         "rarity": "uncommon",
@@ -30,6 +30,4 @@
     "Statuary": {
         "rarity": "rare",
         "props": ["Statues", "Rubble", "Cobwebs"]
-    }
-
 }

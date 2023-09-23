@@ -7,6 +7,7 @@ class PropMap {
     #populatedRoom = new Map();
     #room;
     #propSet;
+    #propList;
     #seed;
     #randomGen;
 
@@ -17,31 +18,75 @@ class PropMap {
         this.#room = room;
         this.#randomGen = seedrandom(this.#seed);
         this.#propSet = new PropSet(this.#randomGen());
+        this.#propList = this.#propSet.getPropSet(this.#getMaxProp());
 
         this.#populatePropMap();
     }
-    
-    #getRandomRarity() {
-        const rand = this.#randomGen() * 100 + 1;
-        let percentage = 0;
-        for (const rarity in Rarity) {
-            percentage += Rarity[rarity];
 
-            if (rand <= percentage) return rarity;
-        }
-        return "common";
+    #getMaxProp() {
+        let x = this.#room.getDimensions().getX();
+        let y = this.#room.getDimensions().getY();
+
+        let size = Math.max(x, y);
+        if (size <= 7) return 4;
+        else if (size <= 12) return 7;
+        else if (size <= 15) return 10;
+        return 15;
     }
 
+    // with the list of props, look at their placement rules, and decide on position depending on the placement rule
+    
+    processProps(){
+        const propList = this.#propSet.getPropSet(this.#getMaxProp());
+
+        // Ensure that you have a valid propSet
+        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
+
+        console.log("PROPLIST___________________");
+    
+        // parse data
+        for (let i = 0; i < propList.length; i++) {
+            const p = propList[i];
+            
+            const nearWall = p.getPlacementRules().nearWall;
+            const nearProp = p.getPlacementRules().nearProp;
+            const atCenter = p.getPlacementRules().atCenter;
+            const overlap = p.getPlacementRules().overlap;
+
+            if (nearWall !== "none") {
+                findPositionNearWall(p, nearWall); 
+            }
+            if (nearProp !== "none") {
+                findPositionNearProp(p, nearProp);
+            }
+            if (atCenter) {
+                findCenterPositon(p);
+            }
+        }
+    }
+
+    findPositionNearWall(prop, wall) {
+        // implement later
+    }
+
+    findPositionNearWall(prop, nextTo) {
+        // implement later
+    }
+
+    findCenterPositon(prop) {
+        // implement later
+    }
+    
     /**
      * Populates the populatedRoom with a set of props based on rarity.
      */
     #populatePropMap() {
-        const propSet = this.#propSet.getSetByRarity(this.#getRandomRarity());
+        const propList = this.#propSet.getPropSet(this.#getMaxProp());
 
         // Ensure that you have a valid propSet
-        if (!Array.isArray(propSet) || propSet.length === 0) throw new Error("Empty prop set");
+        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
 
-        this.#placeProps(propSet);
+        this.#placeProps(propList);
         
     }
 
@@ -74,9 +119,36 @@ class PropMap {
         return null;
     }
 
+    #nearWall(prop) {
+        const w = prop.getSize().w;
+        const h = prop.getSize().h;
+
+        
+
+        let dimensions = this.#room.getDimensions();
+
+        // getting all the wall tiles
+        const walls = [];
+        for (let i = 0; i < dimensions.getY(); i++) {
+            for (let j = 0; j < dimensions.getX(); j++) {
+                let pos = new Point(j, i);
+                let tile = this.#room.getTile(pos);
+                if (tile.getTileType() === "wall") walls.push(pos);
+            }
+        }
+
+        let left = new Point(-1,0);
+        let right = new Point(1,0);
+        let top = new Point(0,-1);
+        let bottom = new Point(0,1);
+
+        const edgeWallValues = [left.toString(), right.toString(), top.toString(), bottom.toString()];
+        const allEdgeWalls = walls.filter((pos) => edgeWallValues.includes(pos.toString()));
+        
+    }
+
     /**
      * Checks whether or not the position provided is a free space to put prop in.
-     * Rules can be added here if when the code is extended.
      * 
      * @param {Point} pos - Position to be checked 
      * @returns boolean
