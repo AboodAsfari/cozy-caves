@@ -30,7 +30,7 @@ class Layout {
     #maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER); // Largest encountered X/Y positions in partition.
 
     #generateRoom(tilerType, numGen) {
-        let room = new Room(this.#getDimensions());
+        let room = new Room();
 
         let posUpdater = new Point(-this.#minEncountered.getX(), -this.#minEncountered.getY());
         let flipXUpdater = new Point(this.#maxEncountered.getX() - posUpdater.getX(), 0);

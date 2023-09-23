@@ -8,10 +8,10 @@ class Room {
     #position;
     #propMap;
 
-    constructor(dimensions) {
-        if (!Point.isPositivePoint(dimensions)) throw new Error('Invalid dimensions provided.');
-        this.#dimensions = dimensions;
-    }
+    // constructor(dimensions) {
+    //     if (!Point.isPositivePoint(dimensions)) throw new Error('Invalid dimensions provided.');
+    //     this.#dimensions = dimensions;
+    // }
 
     setPosition(pos) {
         this.#position = pos; 
@@ -20,6 +20,8 @@ class Room {
     setPropMap(propMap) {
         this.#propMap = propMap;
     }
+
+    
 
     getRightEdges() { return this.#edgeFetcher(true, false); }
     getLeftEdges() { return this.#edgeFetcher(false, false); }
@@ -44,7 +46,22 @@ class Room {
         return finalList;
     }
 
-    addTile(tile) { this.#tiles.set(tile.getPosition().toString(), tile); }
+    addTile(tile) { 
+        this.#tiles.set(tile.getPosition().toString(), tile); 
+        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+        let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+
+        for (let tile of this.#tiles.values()) {
+            if (tile.getPosition().getX() > maxEncountered.getX()) maxEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getX() < minEncountered.getX()) minEncountered.setX(tile.getPosition().getX());
+            if (tile.getPosition().getY() > maxEncountered.getY()) maxEncountered.setY(tile.getPosition().getY());
+            if (tile.getPosition().getY() < minEncountered.getY()) minEncountered.setY(tile.getPosition().getY());
+        }
+
+        let width = maxEncountered.getX() - minEncountered.getX() + 1;
+        let height = maxEncountered.getY() - minEncountered.getY() + 1;
+        this.#dimensions = new Point(width, height);
+    }
     getTile(pos) { return this.#tiles.get(pos.toString()); }
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }
     getPosition() { return this.#position; }
@@ -53,15 +70,13 @@ class Room {
 
     getSerializableRoom() {
         return {
-            dimensions: this.#dimensions.toString(),
             position: this.#position.toString(),
             tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
         };
     }
 
     static fromSerializableRoom(serializableRoom) {
-        let dimensionsArray = serializableRoom.dimensions.split(',');
-        let room = new Room(new Point(parseInt(dimensionsArray[0]), parseInt(dimensionsArray[1])));
+        let room = new Room();
         let posArray = serializableRoom.position.split(',');
         room.#position = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
         serializableRoom.tiles.forEach(tile => room.addTile(Tile.fromSerializableTile(tile)));

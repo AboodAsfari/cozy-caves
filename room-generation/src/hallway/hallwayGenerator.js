@@ -413,7 +413,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         yCompensation = 3;
     }
 
-    let hallway = new Room(new Point(diffX+xCompensation+2, diffY+yCompensation+2));
+    let hallway = new Room();
 
     if (shape == HallwayShapes.RIGHT_TOP) {
         hallway.setPosition(new Point(startingX, startingY-1));
