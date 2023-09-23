@@ -8,11 +8,6 @@ class Room {
     #position;
     #propMap;
 
-    // constructor(dimensions) {
-    //     if (!Point.isPositivePoint(dimensions)) throw new Error('Invalid dimensions provided.');
-    //     this.#dimensions = dimensions;
-    // }
-
     setPosition(pos) {
         this.#position = pos; 
     }
@@ -21,7 +16,28 @@ class Room {
         this.#propMap = propMap;
     }
 
-    
+    merge(rooms) {
+        let finalRoom = new Room();
+        rooms.push(this);
+
+        let minX = Number.MAX_SAFE_INTEGER;
+        let maxY = Number.MIN_SAFE_INTEGER;
+        for (let room of rooms) {
+            minX = Math.min(minX, room.getDimensions().getX());
+            maxY = Math.min(minY, room.getDimensions().getY());
+        }
+        finalRoom.setPosition(new Point(minX, minY));
+
+        for (let room of rooms) {
+            for (let tile of room.getTiles()) {
+                let globalPos = tile.getPosition().add(room.getPosition());
+                let newLocalPos = globalPos.subtract(finalRoom.getPosition());
+                if (!finalRoom.getTile(newLocalPos) || finalRoom.getTile(newLocalPos).getTileType() === "wall") finalRoom.addTile(tile.clone(newLocalPos));
+            }
+        }
+
+        return finalRoom;
+    }
 
     getRightEdges() { return this.#edgeFetcher(true, false); }
     getLeftEdges() { return this.#edgeFetcher(false, false); }
