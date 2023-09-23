@@ -1,94 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Modal, Typography, Button } from '@mui/material';
+import React from 'react';
+import { Typography, Stack, Modal, Box } from "@mui/material";
 
-const style = {
-  width: 460,
-  bgcolor: 'white',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import CloseIcon from '@mui/icons-material/Close';
 
-const Popup = ({ isOpen, content, onClose, clickX, clickY }) => {
-  // Dimensions of the popup
-  const popupWidth = 460;
-  const popupHeight = 200;
+const Popup = (props) => {
+	const {
+		prop,
+		onClose
+	} = props;
 
-  // Calculate the top and left positions for the popup
-  const popupStyle = {
-    position: 'fixed',
-    top: clickY - popupHeight + 50,
-    left: clickX - popupWidth / 2 - 30,
-    ...style,
-  };
+	const [propInfo, setPropInfo] = React.useState(null);
+	const [selectedItem, setSelectedItem] = React.useState(null);
 
-  // Extract prop attributes from content
-  const { name, desc, category, rarity } = content || {};
-  
-  // State variable to hold items
-  const [items, setItems] = useState('');
+	const getPropRarity = () => !propInfo ? "" : propInfo.rarity.charAt(0).toUpperCase() + propInfo.rarity.slice(1);
+	const getSelectedItemRarity = () => !selectedItem ? "" : selectedItem.rarity.charAt(0).toUpperCase() + selectedItem.rarity.slice(1);
 
-  // Parse items from content.toString()
-  useEffect(() => {
-    if (content) {
-      const contentString = content.toString();
-      // Retrieve items from contentString
-      const itemsMatch = contentString.match(/items: \[([^\]]+)\]/);
-      if (itemsMatch) {
-        const itemsString = itemsMatch[1];
-        const itemsArray = itemsString.split(',').map(item => item.trim());
-        
-        // Filter out empty items and join with a comma and space
-        setItems(itemsArray.filter(item => item !== '').join(', ')); 
-      } else {
-        setItems('');
-      }
-    }
-  }, [content]);
+	const getRarityColor = (rarity) => {
+		if (!rarity) return "grey";
+		switch (rarity) {
+			case "Common": return "grey";
+			case "Uncommon": return "#4C9553";
+			case "Rare": return "#4b99cc";
+			case "Epic": return "#9b59b6";
+			case "Legendary": return "#ccbb4b";
+			default: return "grey";
+		}
+	}
 
-  return (
-    <Modal
-      open={isOpen}
-      onClose={onClose}
-      aria-labelledby="popup-modal-title"
-      aria-describedby="popup-modal-description"
-    >
-      <Box sx={popupStyle}>
-      <Button 
-        variant="contained"
-        size="sm"
-        color="secondary"
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          '&:hover': {
-            backgroundColor: '#9b55c7',
-          },
-        }}
-        onClick={onClose}
-      >
-        X
-      </Button>
-        <Typography id="popup-modal-title" variant="h6" component="h2" sx={{ mb: 2, color: 'black' }}>
-        <strong>Information Viewer</strong>
-        </Typography>
-        <Typography id="popup-modal-description" sx={{ mt: 2, color: 'black', textAlign: 'left' }}>
-        <strong>Name:</strong> {name}
-          <br />
-          <strong>Description:</strong> {desc}
-          <br />
-          <strong>Category:</strong> {category}
-          <br />
-          <strong>Rarity:</strong> {rarity}
-          <br />
-          <strong>Contains Items:</strong>
-          {items ? items : 'None'}
-        </Typography>
-      </Box>
-    </Modal>
-  );
+	React.useEffect(() => {
+		if (prop) {
+			setPropInfo(prop);
+			if (prop.getItems().length > 0) setSelectedItem(prop.getItems()[0]);
+		}
+	}, [prop]);
+
+	const handleClose = () => {
+		onClose();
+		setSelectedItem(null);
+		setPropInfo(null)
+	}
+
+	return ( <>
+		<Modal open={!!prop} onClose={handleClose}>
+			<Box sx={{ width: "100%", height: "100%", pointerEvents: "none" }}>
+				<Stack direction="row" sx={{ height: "100%", alignItems: "center", justifyContent: "center" }} >
+					<Stack direction="row" spacing={3} sx={{ height: "40%" }} >
+						<Stack sx={{ position: "relative", width: "450px", height: "65%", backgroundColor: "black", pointerEvents: "all", backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))", p: "10px", alignItems: "left" }}>
+							<CloseIcon sx={{ position: "absolute", top: "10px", right: "10px", "&:hover": { color: "#4C9553", cursor: "pointer" } }} onClick={handleClose} />
+							<Stack direction="row">
+								<Typography sx={{ fontSize: 35, textAlign: "left" }}> {propInfo && propInfo.name} </Typography>
+								<InsertEmoticonIcon sx={{ mt: 0.8, ml: 1, fontSize: 35 }} />
+							</Stack>
+							<Typography sx={{ fontSize: 20, textAlign: "left", mt: -1, color: getRarityColor(getPropRarity()), mb: 2 }}> {getPropRarity()} </Typography>
+							<Typography sx={{ fontSize: 20, textAlign: "left" }}> {propInfo && propInfo.desc} </Typography>
+
+							{propInfo && propInfo.getItems().length > 0 && <>
+								<Typography sx={{ fontSize: 30, textAlign: "left", mt: 2 }}> Contains: </Typography>
+								<Stack direction="row">
+									{propInfo.getItems().map((item, i) => <InsertEmoticonIcon key={item.name + i} onClick={() => setSelectedItem(item)}
+										sx={{ color: item === selectedItem ? "#4C9553" : "white", fontSize: 35, "&:hover": { color: "#4C9553", cursor: "pointer" } }} />)}
+								</Stack>
+							</>}
+						</Stack>
+
+						{ propInfo && propInfo.getItems().length > 0 &&
+							<Stack sx={{ minWidth: "290px", height: "100%", backgroundColor: "black", pointerEvents: "all", backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))", p: "10px", alignItems: "left" }}>
+								<Stack direction="row">
+									<Typography sx={{ fontSize: 35, textAlign: "left" }}> { selectedItem.name } </Typography>
+									<InsertEmoticonIcon sx={{ mt: 0.8, ml: 1, fontSize: 35 }} />
+								</Stack>
+								<Typography sx={{ fontSize: 20, textAlign: "left", mt: -1, color: getRarityColor(getSelectedItemRarity()), mb: 2 }}> {getSelectedItemRarity()} </Typography>
+								<Typography sx={{ minWidth: "100%", width: 0, fontSize: 20, textAlign: "left" }}> {selectedItem.desc} </Typography>
+								<Typography sx={{ minWidth: "100%", width: 0, fontSize: 20, textAlign: "left", mt: 2 }}> {selectedItem.properties} </Typography>
+							</Stack>
+						}
+					</Stack>
+				</Stack>
+			</Box>
+		</Modal>
+	</> );
 };
 
 export default Popup;
-

@@ -1,20 +1,34 @@
 {
     "Room": {
         "rarity": "common",
-        "props": [
-            "Table", "Chair", "Bed", "Bookshelf"
-        ]
+        "props": ["Table", "Chair", "Bed", "Bookshelf", "Potted Plants", "Cabinet"]
     },
     "Fireplace": {
         "rarity": "rare",
-        "props": [
-            "Fireplace", "Hearth", "Steam Vents", "Candles"
-        ]
+        "props": ["Fireplace", "Candles", "Chair", "Statues", "Tapestries", "Barrel"]
     },
     "Abandoned": {
         "rarity": "uncommon",
-        "props": [
-            "Cobwebs", "Dust", "Runes", "Glyphs"
-        ]
+        "props": ["Cobwebs", "Runes", "Glyphs", "Rubble", "Statues"]
+    },
+    "Storage": {
+        "rarity": "common",
+        "props": ["Barrel", "Cabinet", "Crate", "Jeweled Chest"]
+    },
+    "Library": {
+        "rarity": "common",
+        "props": ["Bookshelf", "Table", "Chair"]
+    },
+    "Decoration": {
+        "rarity": "common",
+        "props": ["Banners", "Tapestries", "Candles", "Runes", "Glyphs", "Potted Plants"]
+    },
+    "Treasure Vault": {
+        "rarity": "uncommon",
+        "props": ["Jeweled Chest", "Golden Altar"]
+    },
+    "Statuary": {
+        "rarity": "rare",
+        "props": ["Statues", "Rubble", "Cobwebs"]
     }
 }

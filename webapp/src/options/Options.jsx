@@ -110,6 +110,7 @@ const Options = (props) => {
                 "& .MuiPaper-root": {
                     width: "100%",
                     maxWidth: "750px",
+                    borderRadius: 0
                 },
             } }}
         >

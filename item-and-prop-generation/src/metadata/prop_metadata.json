@@ -1,152 +1,340 @@
 {
-    "prop_categories": {
-        "Decorations": [
-            {
-                "name": "Table",
-                "desc": "Found in taverns, inns, or dining areas, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
-                "rarity": "common",
-                "contains_items": false
+	"Table": {
+        "information": {
+            "desc": "Found in taverns, inns, or dining areas, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "Chair",
+                "atCenter": true,
+                "overlap": true
             },
-            {
-                "name": "Chair",
-                "desc": "Provide seating for role-playing interactions, resting, or tactical positioning during combat encounters.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 3, "h": 2 }
+        }
+    },
+    "Chair": {
+        "information": {
+            "desc": "Provide seating for role-playing interactions, resting, or tactical positioning during combat encounters.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "Table",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Bed",
-                "desc": "Found in taverns, inns, or bedrooms, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Bed": {
+        "information": {
+            "desc": "Found in taverns, inns, or bedrooms, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Potted Plants",
-                "desc": "Plants suspended from ceilings, adding a natural and refreshing element to interiors.",
-                "rarity": "common",
-                "contains_items": false
-            }
-        ],
-        "Storages": [
-            {
-                "name": "Barrel",
-                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
-                "rarity": "common",
-                "contains_items": true
+            "size": { "w": 2, "h": 3 }
+        }
+    },
+    "Potted Plants": {
+        "information": {
+            "desc": "Plants suspended from walls, adding a natural and refreshing element to interiors.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "cornerWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Bookshelf",
-                "desc": "Can be placed in libraries, wizard towers, or study rooms. May hold valuable books with lore, spells, or hints for quests.",
-                "rarity": "common",
-                "contains_items": true
+            "size": { "w": 3, "h": 1 }
+        }
+    },
+    "Barrel": {
+        "information": {
+            "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": [
+                "Potions and Elixirs",
+                "Traps and Tools",
+                "Treasure and Valuables",
+                "Cursed Items",
+                "Quest-related Items"
+            ],
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Cabinet",
-                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, or loot.",
-                "rarity": "common",
-                "contains_items": true
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Bookshelf": {
+        "information": {
+            "desc": "Can be placed in libraries, wizard towers, or study rooms. May hold valuable books with lore, spells, or hints for quests.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": [
+                "Scrolls",
+                "Magical Items",
+                "Treasure and Valuables",
+                "Quest-related Items",
+                "Epic and Legendary Items"
+            ],
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Crate",
-                "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
-                "rarity": "common",
-                "contains_items": true
-            }
-        ],
-        "Environmental Details": [
-            {
-                "name": "Cobwebs",
-                "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 3, "h": 1 }
+        }
+    },
+    "Cabinet": {
+        "information": {
+            "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies or loot.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": [
+                "Potions and Elixirs",
+                "Traps and Tools",
+                "Treasure and Valuables",
+                "Key Items",
+                "Dungeoneering Supplies"
+            ],
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "Bed",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Dust",
-                "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 2, "h": 1 }
+        }
+    },
+    "Crate": {
+        "information": {
+            "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": [
+                "Potions and Elixirs",
+                "Traps and Tools",
+                "Treasure and Valuables",
+                "Key Items",
+                "Dungeoneering Supplies"
+            ],
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Runes",
-                "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 2, "h": 2 }
+        }
+    },
+    "Cobwebs": {
+        "information": {
+            "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "cornerWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Glyphs",
-                "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Rubble": {
+        "information": {
+            "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "cornerWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Banners",
-                "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 2, "h": 2 }
+        }
+    },
+    "Runes": {
+        "information": {
+            "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Tapestries",
-                "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
-                "rarity": "common",
-                "contains_items": false
-            }
-        ],
-        "Atmospheric Elements": [
-            {
-                "name": "Candles",
-                "desc": "Candles placed in decorative holders, providing both illumination and ambiance to the surroundings.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 2, "h": 2 }
+        }
+    },
+    "Glyphs": {
+        "information": {
+            "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Fireplace",
-                "desc": "Provides warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Banners": {
+        "information": {
+            "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "Banners",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Hearth",
-                "desc": "An area around the fireplace that serves as a gathering point for warmth and comfort. Players can strategize and interact.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Tapestries": {
+        "information": {
+            "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "Banners",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Steam Vents",
-                "desc": "Vents that release hot steam and can be used strategically in combat or puzzle-solving.",
-                "rarity": "common",
-                "contains_items": false
+            "size": { "w": 2, "h": 1 }
+        }
+    },
+    "Candles": {
+        "information": {
+            "desc": "Candles placed in decorative holders, providing both illumination and ambiance to the surroundings.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Frozen Statues",
-                "desc": "Statues covered in ice, which players can melt to reveal hidden passages or items.",
-                "rarity": "common",
-                "contains_items": false
-            }
-        ],
-        "Treasure Hoards": [
-            {
-                "name": "Jeweled Chest",
-                "desc": "An laborate chest filled with valuable treasures, guarded by monsters or traps.",
-                "rarity": "uncommon",
-                "contains_items": true
+            "size": { "w": 1, "h": 1 }
+        }
+    },
+    "Fireplace": {
+        "information": {
+            "desc": "Provides warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
+            "rarity": "common"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": false
             },
-            {
-                "name": "Golden Altar",
-                "desc": "An altar adorned with gold and gems that require offerings or rituals to gain rewards.",
-                "rarity": "uncommon",
-                "contains_items": true
+            "size": { "w": 2, "h": 2 }
+        }
+    },
+    "Statues": {
+        "information": {
+            "desc": "Statues covered in rubble, which players can clean to reveal hidden passages or items.",
+            "rarity": "rare"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "edgeWall",
+                "nearProp": "Rubble",
+                "atCenter": false,
+                "overlap": true
             },
-            {
-                "name": "Pouch of Gems",
-                "desc": "A tiny sack containing scattered gems throughout the map, valuable as trade items or components for magical rituals.",
-                "rarity": "uncommon",
-                "contains_items": true
+            "size": { "w": 2, "h": 2 }
+        }
+    },
+    "Jeweled Chest": {
+        "information": {
+            "desc": "An elaborate chest filled with valuable treasures, guarded by monsters or traps.",
+            "rarity": "uncommon"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": [
+                "Treasure and Valuables",
+                "Quest-related Items",
+                "Epic and Legendary Items"
+            ],
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "none",
+                "atCenter": true,
+                "overlap": false
             },
-            {
-                "name": "Gem of Seeing",
-                "desc": "A gem that allows truesight out to 120 feet when you peer through the gem.",
-                "rarity": "rare",
-                "contains_items": true
-            }
-        ]
+            "size": { "w": 2, "h": 1 }
+        }
+    },
+    "Golden Altar": {
+        "information": {
+            "desc": "An altar adorned with gold and gems that require offerings or rituals to gain rewards.",
+            "rarity": "uncommon"
+        },
+        "render_rules": {
+            "contains_item": true,
+            "item_categories": ["Quest-related Items", "Epic and Legendary Items"],
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "none",
+                "atCenter": true,
+                "overlap": true
+            },
+            "size": { "w": 3, "h": 1 }
+        }
     }
 }

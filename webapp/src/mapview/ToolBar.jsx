@@ -5,6 +5,8 @@ import {
     Collapse,
     Dialog,
     DialogTitle,
+    Grow,
+    Popper,
     Slide,
     Snackbar,
     Stack,
@@ -33,62 +35,27 @@ import ImageIcon from '@mui/icons-material/Image';
 
 export default function ToolBar(props) {
     const {
-        zoom,
         dungeon,
-        intialRender,
         mapSettings,
-        setIntialRender,
+        pixiApp,
         setMapSettings,
         setDungeon,
-        stageRef
+        viewport
     } = props;
 
     const [open, setOpen] = React.useState(true);
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
-    const [centeringAnimation, setCenteringAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
-    const [downloadDialog, setDownloadDialog] = React.useState(false);
-    const [downloadLabel, setDownloadLabel] = React.useState("...");
+    const [downloadLabel, setDownloadLabel] = React.useState("Download");
+
+    const [downloadMenuOpen, setDownloadMenuOpen] = React.useState(false);
+    const [downloadMenuAnchor, setDownloadMenuAnchor] = React.useState(null);
     
     const [downloadFileContents, setDownloadFileContents] = React.useState(null);
     const [downloadImageContents, setDownloadImageContents] = React.useState(null);
 
-    React.useEffect(() => {
-        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
-
-        if (intialRender) {
-            setIntialRender(false);
-            return;
-        }
-
-        requestAnimationFrame(() => {
-            let viewport = stageRef.current.mountNode.containerInfo.children[0];
-            if (!viewport) return;
-
-            setLoadingAnimation(false);
-            // Check if the image is taller than it is wide
-            let fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
-            // Update the amount the user can zoom out by
-            viewport.plugins.plugins["clamp-zoom"].options.minScale =  (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
-            // Fit the image to the screen
-            if(fitYAxis){
-                // Account for Navbar
-                viewport.setZoom(((viewport.screenHeight-70)/viewport.maxY)/1.1, true, true, true);
-            } else {
-                viewport.fitWidth(viewport.maxX*1.1, true, true, true);
-            }
-            // Find the height of the image after fitting
-            // This is used to center the image
-            // Account for Navbar
-            let fitHeight = viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY);
-            // Move into correct position before animation
-            viewport.moveCenter(viewport.worldScreenWidth * 2, fitHeight/2);
-            // Move to center of screen
-            viewport.animate({position: { x: viewport.maxX/2, y: fitHeight/2}, time: 500, ease: "easeOutCubic"});
-        });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dungeon]);
+    React.useEffect(() => setLoadingAnimation(false), [dungeon]);
 
     const regenerateMap = () => {
         const newSettings = { ...mapSettings, seed: Math.random() };
@@ -96,10 +63,9 @@ export default function ToolBar(props) {
     }
 
     const generateMap = (newSettings) => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        setTimeout(() => setLoadingAnimation(true), 150);
-
         function requestNewMap() {
+            setLoadingAnimation(true);
+            
             setDungeon(new DungeonBuilder()
                 .setSeed(newSettings.seed.toString())
                 .setSize(Number(newSettings.width), Number(newSettings.height))
@@ -111,52 +77,57 @@ export default function ToolBar(props) {
             setMapSettings(newSettings);
         }
 
-        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, ease: "easeInCubic", callbackOnComplete: requestNewMap});
+        viewport.current.resetCamera(true, 250, () => {
+            setTimeout(() => setLoadingAnimation(true), 150);
+
+            viewport.current.animate({
+                position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, 
+                time: 500, 
+                ease: "easeInCubic", 
+                callbackOnComplete: requestNewMap
+            });
+        });
     }
 
     const loadMap = (dungeonData, newSettings) => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        setLoadingAnimation(true);
-
         function requestNewMap() {
+            setLoadingAnimation(true);
+            
             setDungeon(dungeonData);
             setMapSettings(newSettings);
         }
 
-        viewport.animate({position: { x: -viewport.worldScreenWidth * 2, y: viewport.center.y}, time: 500, callbackOnComplete: requestNewMap});
+        viewport.current.resetCamera(true, 250, () => {
+            setTimeout(() => setLoadingAnimation(true), 150);
+
+            viewport.current.animate({
+                position: { x: -viewport.current.worldScreenWidth * 2, y: viewport.current.center.y}, 
+                time: 500, 
+                ease: "easeInCubic", 
+                callbackOnComplete: requestNewMap
+            });
+        });
     }
     
-    const printMap = () => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        if (!viewport) return;
-        let width = viewport.worldScreenWidth, height = viewport.worldScreenHeight, center = viewport.center;
-        centerMap();    
-        setTimeout(async function(){
-            if (!stageRef.current) return;
-            const WinPrint = window.open('', '', "left=0,top=0,width="+window.screen.width+",height="+window.screen.height+",toolbar=0,scrollbars=0,status=0");
-            let canvasImage = await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage);
-            viewport.moveCenter(center.x, center.y);
-            viewport.fit(true, width, height);
-            if(!WinPrint) {
-                return;
-            }
-            WinPrint.document.write('<img src="'+canvasImage.src+'"/>');
-            WinPrint.document.close();  
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
-        }, 500);   
-    }
+    const printMap = async () => {
+        let width = viewport.current.worldScreenWidth;
+        let height = viewport.current.worldScreenHeight;
+        let center = viewport.current.center;
 
-    const centerMap = () => {
-        let viewport = stageRef.current.mountNode.containerInfo.children[0];
-        if (!viewport || loadingAnimation || centeringAnimation) return;
-        setCenteringAnimation(true);
-        const fitYAxis = viewport.maxY/viewport.maxX > viewport.screenHeight/viewport.screenWidth;
-        let position= { x: viewport.maxX/2, y: (viewport.screenHeight/((viewport.screenHeight+70)/viewport.maxY))/2};
-        let scale = (fitYAxis ? (viewport.screenHeight-70)/viewport.maxY : viewport.screenWidth/viewport.maxX) / 1.5;
-        viewport.animate({position: position, scale: scale, time: 500, ease: "easeInOutCubic"});
-        setTimeout(() => setCenteringAnimation(false), 500);
+        viewport.current.resetCamera(); 
+
+        const printingTab = window.open("", "", "");
+        setTimeout(async function(){
+            let canvasImage = await pixiApp.current.renderer.extract.image(pixiApp.current.stage);
+            viewport.current.moveCenter(center.x, center.y);
+            viewport.current.fit(true, width, height);
+            if(!printingTab) return;
+            printingTab.document.write('<img src="'+canvasImage.src+'"/>');
+            printingTab.document.close();  
+            printingTab.focus();
+            printingTab.print();
+            printingTab.close();
+        }, 100);   
     }
 
     const toggleSettings = () => {
@@ -172,13 +143,8 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
-    const openDownloadDialog = () => {
-        getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
-        setDownloadDialog(true);
-    }
-
     const getFileContents = async (isImage = false) => {
-        if (isImage) return (await stageRef.current.app.renderer.extract.image(stageRef.current.app.stage)).src;
+        if (isImage) return (await pixiApp.current.renderer.extract.image(pixiApp.current.stage)).src;
         else {
             let serializableDungeon = { 
                 mapSettings: mapSettings,
@@ -188,6 +154,19 @@ export default function ToolBar(props) {
             let serializedDungeon = JSON.stringify(serializableDungeon, null, 4);
             return "data:text/plain;charset=utf-8," + serializedDungeon;
         }
+    }
+
+    const toolHover = (e, name) => {
+        if (name === "Download") {
+            getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
+            getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
+            setDownloadMenuAnchor(e.currentTarget);
+            setDownloadMenuOpen(true);
+        }
+    }
+
+    const toolHoverOut = (e, name) => {
+        if (name === "Download") setDownloadMenuOpen(false);
     }
 
     const getToolbarButtonColors = (name) => {
@@ -200,7 +179,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: openDownloadDialog },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -209,9 +188,9 @@ export default function ToolBar(props) {
         <Stack direction="row" sx={{ position: 'absolute', top: '70px ', right: '0', height: "100vh" }}>
             <TransitionGroup component={null} >
                 <Collapse direction="left" sx={{ position: "relative"}}>
-                    <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => zoom(2/3)} />
-                    <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => zoom(1.5)} />   
-                    <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => centerMap()} /> 
+                    <RemoveIcon className="zoom-button" sx={{ right: "92px !important" }} onClick={() => viewport.current.scaleZoom(2/3)} />
+                    <AddIcon className="zoom-button"sx={{ right: "52px !important" }} onClick={() => viewport.current.scaleZoom(1.5)} />   
+                    <CenterFocusStrongSharpIcon className="zoom-button" sx={{ fontSize: "37px !important", bottom: "83px !important" }} onClick={() => viewport.current.resetCamera(true)} /> 
                 </Collapse>
 
                 {currPanel && <Collapse orientation='horizontal'>
@@ -221,8 +200,9 @@ export default function ToolBar(props) {
                 {open && <Collapse orientation='horizontal'>
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
-                            <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
+                            <Tooltip key={tool.name} title={tool.name === "Download" ? "" : tool.name} placement="left" className="toolbar-tooltip">
+                                <Button className="toolbar-button" disableRipple onMouseEnter={(e) => toolHover(e, tool.name)} onMouseLeave={(e) => toolHoverOut(e, tool.name)}
+                                    onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
                                     {tool.icon}
                                 </Button>
                             </Tooltip>
@@ -236,20 +216,27 @@ export default function ToolBar(props) {
             <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
         </Slide>
 
-        <Dialog open={downloadDialog} onClose={() => setDownloadDialog(false)}>
-            <DialogTitle sx={{ fontSize: 50, px: 10, userSelect: "none" }}> Download Map </DialogTitle>
-            <Stack direction="row" sx={{ alignSelf: "center" }} spacing={5} onMouseOut={() => setDownloadLabel("...")}>
-                <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Download as Image")}> 
-                    <ImageIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
-                </a>
+        <Popper anchorEl={downloadMenuAnchor} open={downloadMenuOpen} onMouseEnter={() => setDownloadMenuOpen(true)} 
+            onMouseLeave={() => setDownloadMenuOpen(false)} onClose={() => setDownloadMenuOpen(false)} placement="left" transition>
+            {({ TransitionProps }) => (
+                <Grow {...TransitionProps}>
+                    <Box>
+                        <Box sx={{ width: "calc(50px + 3rem)", height: "30px", backgroundColor: "#4C9553", position: "absolute", top: -40, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <Typography sx={{ fontSize: 17, mb: -0.5, userSelect: "none" }}> { downloadLabel } </Typography>
+                        </Box>
 
-                <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Download as Loadable File")}> 
-                    <FilePresentIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
-                </a>
-            </Stack>
-            <Typography sx={{ fontSize: 30, pb: 2, visibility: downloadLabel !== "..." ? "visible" : "hidden" }}>{downloadLabel} </Typography>
-            <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={() => setDownloadDialog(false)}/>
-        </Dialog>
+                        <Stack direction="row" spacing={1} sx={{ backgroundColor: "#4C9553", height: "31px", width: "50px", mr: 1, justifyContent: "center", alignItems: "center", px: 3, py: 1 }}>
+                            <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Image")} onMouseOut={() => setDownloadLabel("Download")}> 
+                                <ImageIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} />
+                            </a>
+                            <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Loadable File")} onMouseOut={() => setDownloadLabel("Download")}> 
+                                <FilePresentIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} />
+                            </a>
+                        </Stack>
+                    </Box>
+                </Grow>
+            )}
+        </Popper>
 
         <Snackbar
             sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}

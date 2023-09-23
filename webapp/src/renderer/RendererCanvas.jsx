@@ -1,177 +1,251 @@
 import  React from 'react';
-import { Stage, Sprite } from '@pixi/react';
-import { BaseTexture, SCALE_MODES } from 'pixi.js';
+import { Application, BaseTexture, Container, SCALE_MODES, Sprite } from 'pixi.js';
+import { EventSystem } from "@pixi/events"; 
 import { TileID } from '@cozy-caves/utils';
-import  Viewport from './Viewport';
+import { Viewport } from "pixi-viewport";
 import Popup from '../mapview/Popup';
-
-const { useState, useEffect } = React;
+import PropHoverView from '../mapview/PropHoverView';
+import { Fade } from 'hamburger-react';
+import { Box, Collapse, Slide, Typography } from '@mui/material';
 
 const RendererCanvas = (props) => {
-  const {
-    stageRef
-  } = props;
+	const {
+		dungeon,
+		pixiApp,
+		viewport
+	} = props;
 
-  const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
-  BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
-  
-  const stageOptions = {
-    antialias: true,
-    autoDensity: true,
-    backgroundColor: "#1A1B1D",
-  };
+	const canvasRef = React.useRef();
 
-  const [popupContent, setPopupContent] = useState('');
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const maxX = React.useRef(0);
+	const maxY = React.useRef(0);
 
-  const [clickX, setClickX] = useState(0);
-  const [clickY, setClickY] = useState(0);
-  
-  const onClick = (e, tileInfo) => {
-    setPopupContent(tileInfo);
-    setIsPopupOpen(true);
+	const [hoverProp, setHoverProp] = React.useState(null);
+	const [dialogProp, setDialogProp] = React.useState(null);
+	const dialogPropRef = React.useRef();
+	dialogPropRef.current = dialogProp;
+	const [mouseX, setMouseX] = React.useState(0);
+	const [mouseY, setMouseY] = React.useState(0);
 
-    // Pass the mouse click coordinates
-    setClickX(e.clientX);
-    setClickY(e.clientY); 
-  };
+	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
+	const size = 64;
 
-  useEffect(() => {
-    if (props.zoomScaleRequest === 1) return;
-    zoom(props.zoomScaleRequest);
-    props.setZoomScaleRequest(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.zoomScaleRequest]);
-
-
-  const useResize = () => {
-    const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
-    
-    useEffect(() => {
-      const onResize = () => {
+	const onResize = () => {
         requestAnimationFrame(() => {
-          setSize([window.innerWidth, window.innerHeight])        
-        })
-      };
+			pixiApp.current.renderer.resize(
+				window.innerWidth,
+				window.innerHeight
+			);
+			viewport.current.screenWidth = window.innerWidth;
+			viewport.current.screenHeight = window.innerHeight;
+			viewport.current.updateClamp();
+			pixiApp.current.renderer.render(pixiApp.current.stage);
+        });
+	};
 
-      window.addEventListener('resize', onResize);
-      
-      return () => {
-        window.removeEventListener('resize', onResize);
-      }
-    }, []);
-    
-    return size;
-  };
+	React.useEffect(() => {
+		if (!pixiApp.current) {
+			window.addEventListener("resize", onResize);
 
-  const size = 64
-  const scaleX = 0.5
-  const scaleY = 0.5
+			BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
-  const drawTile = (tile, roomPos) => {
-    const xPos = (tile.getPosition().getX() + tile.getOffset().getX() + roomPos.getX()) * size * scaleX
-    const yPos = (tile.getPosition().getY() + tile.getOffset().getY() + roomPos.getY()) * size * scaleY
-    return <Sprite 
-              image={tileIDImageMap.get(tile.getTileID()).img}
-              anchor={0.5}
-              scale={{x:scaleX*tile.getScale().getX(), y:scaleY*tile.getScale().getY()}} 
-              position={{x:xPos, y:yPos}}
-              angle={tile.getRotation()}
-              zIndex={tile.getDepth()}
-            />
-  }
-  
-  const drawProp = (prop, roomPos) => {
-    const tileInfo = `Clicked on (${prop.getPosition().getX()}, ${prop.getPosition().getY()}) || Type: ${prop.getName()}`;
-    const xPos = (prop.getPosition().getX() + prop.getOffset().getX() + roomPos.getX()) * size * scaleX
-    const yPos = (prop.getPosition().getY() + prop.getOffset().getY() + roomPos.getY()) * size * scaleY
-    return <Sprite
-              image={"resources/props/"+prop.getPathName()+".png"}
-              anchor={0.5}
-              scale={{x:scaleX, y:scaleY}} 
-              position={{x:xPos, y:yPos}}
-              angle={prop.getRotation()}
-              zIndex={1000}
-              eventMode='dynamic'
-              cursor='pointer'
-              pointerdown={(e) => onClick(e, prop)}
-            />
-  }
+			pixiApp.current = new Application({
+				antialias: true,
+				autoDensity: true,
+				backgroundColor: "#1A1B1D",
+				height: window.innerHeight,
+				width: window.innerWidth
+			});
+			
+			viewport.current = getViewport();
 
-  // Keep track of the max X and Y values
-  let maxX = 0
-  let maxY = 0
+			pixiApp.current.stage.addChild(viewport.current);
+			canvasRef.current.appendChild(pixiApp.current.view);
+		}
 
-  const drawDungeon = () => {
-    return props.dungeon.map((room) => {
-      let roomMaxX =(room.getPosition().getX()+room.getDimensions().getX()) * size * scaleX;
-      let roomMaxY = (room.getPosition().getY()+room.getDimensions().getY()) * size * scaleY;
-      if(roomMaxX > maxX) {
-        maxX = roomMaxX;
-        if (stageRef.current) {
-          let viewport = stageRef.current.mountNode.containerInfo.children[0];
-          viewport.maxX = maxX;
-        }
-      }
-      if(roomMaxY > maxY) {
-        maxY = roomMaxY;
-        if (stageRef.current) {
-          let viewport = stageRef.current.mountNode.containerInfo.children[0];
-          viewport.maxY = maxY;
-        }
-      }
-      
-      // Get the sprites for each tile in this room
-      return room.getTiles().map((tile) => drawTile(tile, room.getPosition()))
-    })
-  }
+		return () => {
+			if (pixiApp.current) {
+				window.removeEventListener("resize", onResize);
 
-  const drawProps = () => {
-    return props.dungeon.map((room) => {
-      if(room.getPropMap() === undefined) return null;
-      return room.getPropMap().getPropList().map((prop) => drawProp(prop, room.getPosition()));
-    })
-  }
+				pixiApp.current.stop();
+				pixiApp.current.destroy(true);
+				pixiApp.current = null;
+			}
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-  const zoom = (factor) => {
-    let viewport = stageRef.current.mountNode.containerInfo.children[0];
-    let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
-    let newScale = viewport.scale._x * factor;
+	const getViewport = () => {
+		const events = new EventSystem(pixiApp.current.renderer);
+		events.domElement = pixiApp.current.renderer.view;
 
-    if (newScale > clampOptions.maxScale) viewport.animate({ scale: clampOptions.maxScale, time: 250 });
-    else if (newScale < clampOptions.minScale) viewport.animate({ scale: clampOptions.minScale, time: 250 });
-    else  viewport.animate({ scale: newScale, time: 250 });  
-  }
+		let width = window.innerWidth;
+		let height = window.innerHeight;
 
-  // Get the current window size
-  const [width, height] = useResize();
-  // Get the dungeon and prop sprites
-  let dungeon = drawDungeon()
-  let propsList = drawProps()
-  return (
-    <>
-      <Stage width={width} height={height} options={stageOptions} ref={stageRef}>
-        <Viewport
-          maxX={maxX}
-          maxY={maxY}
-          screenWidth={width}
-          screenHeight={height}
-        >
-         { dungeon }
-         { propsList }
-        </Viewport>
-      </Stage>
+		const viewport = new Viewport({
+			ticker: pixiApp.current.ticker,
+			events: events,
+			disableOnContextMenu: true,
+			sortableChildren: true,
+			maxX: maxX.current,
+			maxY: maxY.current,
+			screenWidth: width,
+			screenHeight: height
+		});
 
-      {/*Add Popup for Tile/Item Information*/}
-      <Popup
-        isOpen={isPopupOpen}
-        content={popupContent}
-        onClose={() => setIsPopupOpen(false)}
-        clickX={clickX}
-        clickY={clickY}
-      />
-    </>
-  );
+		viewport.updateClamp = function() {
+			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
+		
+			this.clampZoom({
+				minScale: (fitYAxis ? (this.screenHeight - 70) / maxY.current : this.screenWidth / maxX.current) / 1.5,
+				maxScale: 8,
+			});
+		};
+
+		viewport.resetCamera = function(animate = false, animateTime = 500, callbackOnComplete = null) {
+			const fitYAxis = maxY.current / maxX.current > this.screenHeight / this.screenWidth;
+		
+			this.updateClamp();
+
+			let position = { x: maxX.current / 2, y: (this.screenHeight / ((this.screenHeight + 70) / maxY.current)) / 2 };
+			let scale = (fitYAxis ? (this.screenHeight - 70) / maxY.current : this.screenWidth / maxX.current) / 1.5;
+			if (animate) {
+				if (this.animating) return;
+				if (this.center.x === position.x && this.center.y === position.y && this.scale._x === scale) {
+					if (callbackOnComplete) callbackOnComplete();
+					return;
+				}
+
+				this.animating = true;
+				this.animate({
+					position: position, 
+					scale: scale, 
+					time: animateTime, 
+					ease: "easeInOutCubic", 
+					callbackOnComplete: () => {
+						this.animating = false;
+						if (callbackOnComplete) callbackOnComplete();
+					}
+				});
+			} else {
+				this.moveCenter(position.x, position.y);
+				this.setZoom(scale, true, true, true);
+			}
+		}
+
+		viewport.scaleZoom = function(factor) {
+			let clampOptions = this.plugins.plugins["clamp-zoom"].options;
+			let newScale = this.scale._x * factor;
+
+			if (newScale > clampOptions.maxScale) this.animate({ scale: clampOptions.maxScale, time: 250, ease: "easeInOutCubic" });
+			else if (newScale < clampOptions.minScale) this.animate({ scale: clampOptions.minScale, time: 250, ease: "easeInOutCubic" });
+			else  this.animate({ scale: newScale, time: 250 });  
+		} 
+
+		viewport.drag().pinch().wheel().decelerate({ friction: 0.90 });
+
+		return viewport;
+	}
+
+	React.useEffect(() => {
+		while (viewport.current.children[0]) viewport.current.removeChild(viewport.current.children[0]);
+
+		maxX.current = 0;
+		maxY.current = 0;
+		let toAdd = [];
+		dungeon.forEach((room) => {
+			let roomMaxX = (room.getPosition().getX() + room.getDimensions().getX()) * size;
+			let roomMaxY = (room.getPosition().getY() + room.getDimensions().getY()) * size;
+			if (roomMaxX > maxX.current) {
+				maxX.current = roomMaxX;
+				viewport.current.maxX = maxX.current;
+			}
+			if (roomMaxY > maxY.current) {
+				maxY.current = roomMaxY;
+				viewport.current.maxY = maxY.current;
+			}
+			
+			let roomContainer = new Container();
+			let tilesContainer = new Container();
+			let propsContainer = new Container();
+			roomContainer.position.set(room.getPosition().getX() * size, room.getPosition().getY() * size);
+			propsContainer.zIndex = 1000;
+
+			room.getTiles().forEach((tile) => tilesContainer.addChild(getTile(tile)));
+			if(room.getPropMap()) room.getPropMap().getPropList().forEach((prop) => propsContainer.addChild(getProp(prop)));
+
+			roomContainer.addChild(tilesContainer);
+			roomContainer.addChild(propsContainer);
+			toAdd.push(roomContainer);
+		});
+
+		viewport.current.resetCamera();
+		if (viewport.current.initialLoaded) viewport.current.moveCenter(viewport.current.worldScreenWidth * 2, viewport.current.center.y);
+
+		viewport.current.addChild(...toAdd);
+
+		if (viewport.current.initialLoaded) {
+			requestAnimationFrame(() => {
+				viewport.current.animate({
+					position: { x: maxX.current / 2, y: viewport.current.center.y }, 
+					time: 500, 
+					ease: "easeOutCubic"
+				});
+			});
+		} else viewport.current.initialLoaded = true;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dungeon]);
+
+	const getTile = (tile) => {
+		const xPos = (tile.getPosition().getX() + tile.getOffset().getX()) * size;
+		const yPos = (tile.getPosition().getY() + tile.getOffset().getY()) * size;
+
+		let sprite = Sprite.from(tileIDImageMap.get(tile.getTileID()).img);
+		sprite.anchor.set(0.5);
+		sprite.scale.set(tile.getScale().getX(), tile.getScale().getY());	
+		sprite.position.set(xPos, yPos);
+		sprite.angle = tile.getRotation();
+		sprite.zIndex = tile.getDepth();
+
+		return sprite;
+	}
+
+	const getProp = (prop) => {
+		const xPos = (prop.getPosition().getX() + prop.getOffset().getX()) * size;
+		const yPos = (prop.getPosition().getY() + prop.getOffset().getY()) * size;
+
+		let sprite = Sprite.from("resources/props/" + prop.getPathName() + ".png");
+		sprite.anchor.set(0.5);
+		sprite.position.set(xPos, yPos);
+		sprite.angle = prop.getRotation();
+		sprite.eventMode = "dynamic";
+		sprite.cursor = "pointer";
+		sprite.on("pointerdown", () => setDialogProp(prop));
+		sprite.on("pointermove", e => onPropHover(e, prop));
+		sprite.on("pointerenter", e => onPropHover(e, prop));
+		sprite.on("pointerleave", () => setHoverProp(null));
+
+		return sprite;
+	}
+
+	const onPropHover = (e, prop) => {
+		setHoverProp(prop);
+
+		setMouseX(e.clientX);
+		setMouseY(e.clientY); 
+	}
+
+	return ( <>
+		<div ref={canvasRef} />
+		<Popup
+			prop={dialogProp}
+			onClose={() => setDialogProp(null)}
+			clickX={mouseX}
+			clickY={mouseY}
+		/>
+
+		<PropHoverView menuOpen={!!dialogProp} prop={hoverProp} mouseX={mouseX} mouseY={mouseY} />
+	</> );
 };
 
 export default RendererCanvas;

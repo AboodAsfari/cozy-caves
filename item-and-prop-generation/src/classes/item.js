@@ -42,6 +42,7 @@ class Item {
     
     getName() { return this.name; }
     getDesc() { return this.desc; }
+    getCategory() { return this.category; }
     getRarity() { return this.rarity; }
     getProperties() { return this.properties; }
 

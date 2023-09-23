@@ -1,22 +1,23 @@
 import React from 'react';
 import RendererCanvas from '../renderer/RendererCanvas';
 import ToolBar from './ToolBar';
-/* 
-This needs to be split into multiple components
-some of the boxes can probably 
-*/
 
 const MapPage = (props) => {
-  const [zoomScaleRequest, setZoomScaleRequest] = React.useState(1);
-  const stageRef = React.createRef();
+	const {
+		dungeon,
+		mapSettings,
+		setDungeon,
+		setMapSettings
+	} = props;
 
-  return (
-    <>
-    <RendererCanvas dungeon={props.dungeon} zoomScaleRequest={zoomScaleRequest} setZoomScaleRequest={setZoomScaleRequest} stageRef={stageRef} />
-    <ToolBar zoom={setZoomScaleRequest} mapSettings={props.mapSettings} setMapSettings={props.setMapSettings} dungeon={props.dungeon} setDungeon={props.setDungeon} 
-      stageRef={stageRef} intialRender={props.intialRender} setIntialRender={props.setIntialRender} />
-    </>
-  );
+	const pixiApp = React.useRef();
+	const viewport = React.useRef();
+
+	return ( <>
+		<RendererCanvas dungeon={dungeon} viewport={viewport} pixiApp={pixiApp} />
+		<ToolBar mapSettings={mapSettings} setMapSettings={setMapSettings} dungeon={dungeon} 
+			setDungeon={setDungeon} viewport={viewport} pixiApp={pixiApp} />
+    </> );
 };
 
 export default MapPage;

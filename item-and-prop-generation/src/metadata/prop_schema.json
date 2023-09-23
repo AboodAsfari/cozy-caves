@@ -1,37 +1,68 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "properties": {
-    "prop_categories": {
-      "type": "object",
-      "patternProperties": {
-        "^[A-Za-z\\s]+$": {
-          "type": "array",
-          "items": {
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "information": {
+        "type": "object",
+        "properties": {
+          "desc": {
+            "type": "string"
+          },
+          "rarity": {
+            "type": "string",
+            "enum": ["common", "uncommon", "rare"]
+          }
+        },
+        "required": ["desc", "rarity"]
+      },
+      "render_rules": {
+        "type": "object",
+        "properties": {
+          "contains_item": {
+            "type": "boolean"
+          },
+          "item_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "placement_rules": {
             "type": "object",
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "desc": {
-                "type": "string"
-              },
-              "rarity": {
+              "nearWall": {
                 "type": "string",
-                "enum": ["common", "uncommon", "rare"]
+                "enum": ["none", "edgeWall", "cornerWall", "innerWall"]
               },
-              "contains_items": {
+              "nearProp": {
+                "type": "string"
+              },
+              "atCenter": {
+                "type": "boolean"
+              },
+              "overlap": {
                 "type": "boolean"
               }
+            }
+          },
+          "size": {
+            "type": "object",
+            "properties": {
+              "w": {
+                "type": "integer"
+              },
+              "h": {
+                "type": "integer"
+              }
             },
-            "required": ["name", "desc", "rarity", "contains_items"],
-            "additionalProperties": false
+            "required": ["w", "h"]
           }
-        }
-      },
-      "additionalProperties": false
-    }
-  },
-  "required": ["prop_categories"],
-  "additionalProperties": false
+        },
+        "required": ["contains_item", "placement_rules", "size"]
+      }
+    },
+    "required": ["information", "render_rules"]
+  }
 }
