@@ -17,7 +17,7 @@
     },
     "Library": {
         "rarity": "common",
-        "props": ["Bookshelf", "Scrolls", "Magical Items", "Table", "Chair"]
+        "props": ["Bookshelf", "Magical Items", "Table", "Chair"]
     },
     "Decoration": {
         "rarity": "common",
