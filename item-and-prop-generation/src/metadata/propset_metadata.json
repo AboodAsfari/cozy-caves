@@ -30,4 +30,5 @@
     "Statuary": {
         "rarity": "rare",
         "props": ["Statues", "Rubble", "Cobwebs"]
+    }
 }
