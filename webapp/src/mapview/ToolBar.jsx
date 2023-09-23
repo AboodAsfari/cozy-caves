@@ -5,6 +5,8 @@ import {
     Collapse,
     Dialog,
     DialogTitle,
+    Grow,
+    Popper,
     Slide,
     Snackbar,
     Stack,
@@ -45,8 +47,10 @@ export default function ToolBar(props) {
     const [currPanel, setCurrPanel] = React.useState(null);
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
-    const [downloadDialog, setDownloadDialog] = React.useState(false);
-    const [downloadLabel, setDownloadLabel] = React.useState("...");
+    const [downloadLabel, setDownloadLabel] = React.useState("Download");
+
+    const [downloadMenuOpen, setDownloadMenuOpen] = React.useState(false);
+    const [downloadMenuAnchor, setDownloadMenuAnchor] = React.useState(null);
     
     const [downloadFileContents, setDownloadFileContents] = React.useState(null);
     const [downloadImageContents, setDownloadImageContents] = React.useState(null);
@@ -139,12 +143,6 @@ export default function ToolBar(props) {
         setCopiedSnackbar(true);
     }
 
-    const openDownloadDialog = () => {
-        getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
-        getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
-        setDownloadDialog(true);
-    }
-
     const getFileContents = async (isImage = false) => {
         if (isImage) return (await pixiApp.current.renderer.extract.image(pixiApp.current.stage)).src;
         else {
@@ -158,6 +156,19 @@ export default function ToolBar(props) {
         }
     }
 
+    const toolHover = (e, name) => {
+        if (name === "Download") {
+            getFileContents(false).then(fileContents => setDownloadFileContents(fileContents));
+            getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
+            setDownloadMenuAnchor(e.currentTarget);
+            setDownloadMenuOpen(true);
+        }
+    }
+
+    const toolHoverOut = (e, name) => {
+        if (name === "Download") setDownloadMenuOpen(false);
+    }
+
     const getToolbarButtonColors = (name) => {
         if (currPanel === "settings" && name === "Settings") return "#4C9553 !important";
         return "";
@@ -168,7 +179,7 @@ export default function ToolBar(props) {
         info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
-        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" />, method: openDownloadDialog },
+        download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
 
@@ -189,8 +200,9 @@ export default function ToolBar(props) {
                 {open && <Collapse orientation='horizontal'>
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
-                            <Tooltip key={tool.name} title={tool.name} placement="left" className="toolbar-tooltip">
-                                <Button className="toolbar-button" disableRipple onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
+                            <Tooltip key={tool.name} title={tool.name === "Download" ? "" : tool.name} placement="left" className="toolbar-tooltip">
+                                <Button className="toolbar-button" disableRipple onMouseEnter={(e) => toolHover(e, tool.name)} onMouseLeave={(e) => toolHoverOut(e, tool.name)}
+                                    onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
                                     {tool.icon}
                                 </Button>
                             </Tooltip>
@@ -204,20 +216,27 @@ export default function ToolBar(props) {
             <Box className="lds-dual-ring" sx={{ position: "absolute", top: "calc(50% - 100px)", right: "53%" }} />
         </Slide>
 
-        <Dialog open={downloadDialog} onClose={() => setDownloadDialog(false)}>
-            <DialogTitle sx={{ fontSize: 50, px: 10, userSelect: "none" }}> Download Map </DialogTitle>
-            <Stack direction="row" sx={{ alignSelf: "center" }} spacing={5} onMouseOut={() => setDownloadLabel("...")}>
-                <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Download as Image")}> 
-                    <ImageIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
-                </a>
+        <Popper anchorEl={downloadMenuAnchor} open={downloadMenuOpen} onMouseEnter={() => setDownloadMenuOpen(true)} 
+            onMouseLeave={() => setDownloadMenuOpen(false)} onClose={() => setDownloadMenuOpen(false)} placement="left" transition>
+            {({ TransitionProps }) => (
+                <Grow {...TransitionProps}>
+                    <Box>
+                        <Box sx={{ width: "calc(50px + 3rem)", height: "30px", backgroundColor: "#4C9553", position: "absolute", top: -40, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <Typography sx={{ fontSize: 17, mb: -0.5, userSelect: "none" }}> { downloadLabel } </Typography>
+                        </Box>
 
-                <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Download as Loadable File")}> 
-                    <FilePresentIcon sx={{ fontSize: 100, color: "white", "&:hover": { cursor: "pointer", color: "#4C9553" } }} />
-                </a>
-            </Stack>
-            <Typography sx={{ fontSize: 30, pb: 2, visibility: downloadLabel !== "..." ? "visible" : "hidden" }}>{downloadLabel} </Typography>
-            <CloseIcon sx={{ position: "absolute", top: "5px", right: "5px", "&:hover": {color: "#9B55C6", cursor: "pointer"}}} onClick={() => setDownloadDialog(false)}/>
-        </Dialog>
+                        <Stack direction="row" spacing={1} sx={{ backgroundColor: "#4C9553", height: "31px", width: "50px", mr: 1, justifyContent: "center", alignItems: "center", px: 3, py: 1 }}>
+                            <a href={downloadImageContents} download={"cozy-map.png"} onMouseOver={() => setDownloadLabel("Image")} onMouseOut={() => setDownloadLabel("Download")}> 
+                                <ImageIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} />
+                            </a>
+                            <a href={downloadFileContents} download={"cozy-map.json"} onMouseOver={() => setDownloadLabel("Loadable File")} onMouseOut={() => setDownloadLabel("Download")}> 
+                                <FilePresentIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} />
+                            </a>
+                        </Stack>
+                    </Box>
+                </Grow>
+            )}
+        </Popper>
 
         <Snackbar
             sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}
