@@ -4,6 +4,9 @@ import { EventSystem } from "@pixi/events";
 import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
 import Popup from '../mapview/Popup';
+import PropHoverView from '../mapview/PropHoverView';
+import { Fade } from 'hamburger-react';
+import { Box, Collapse, Slide, Typography } from '@mui/material';
 
 const RendererCanvas = (props) => {
 	const {
@@ -17,10 +20,12 @@ const RendererCanvas = (props) => {
 	const maxX = React.useRef(0);
 	const maxY = React.useRef(0);
 
-	const [popupContent, setPopupContent] = React.useState('');
-	const [isPopupOpen, setIsPopupOpen] = React.useState(false);
-	const [clickX, setClickX] = React.useState(0);
-	const [clickY, setClickY] = React.useState(0);
+	const [hoverProp, setHoverProp] = React.useState(null);
+	const [dialogProp, setDialogProp] = React.useState(null);
+	const dialogPropRef = React.useRef();
+	dialogPropRef.current = dialogProp;
+	const [mouseX, setMouseX] = React.useState(0);
+	const [mouseY, setMouseY] = React.useState(0);
 
 	const tileIDImageMap = new Map( Object.entries(TileID).map(([k, v]) => [v, { id: k, img: `resources/tiles/${k}.png` }]));
 	const size = 64;
@@ -215,44 +220,31 @@ const RendererCanvas = (props) => {
 		sprite.angle = prop.getRotation();
 		sprite.eventMode = "dynamic";
 		sprite.cursor = "pointer";
-		sprite.on("pointerdown", e => onPropClick(e, prop));
+		sprite.on("pointerdown", () => setDialogProp(prop));
+		sprite.on("pointermove", e => onPropHover(e, prop));
+		sprite.on("pointerenter", e => onPropHover(e, prop));
+		sprite.on("pointerleave", () => setHoverProp(null));
 
 		return sprite;
 	}
 
-	const onPropClick = (e, prop) => {
-		setPopupContent(prop);
-		setIsPopupOpen(true);
+	const onPropHover = (e, prop) => {
+		setHoverProp(prop);
 
-		setClickX(e.clientX);
-		setClickY(e.clientY); 
-	};
-
-  // useEffect(() => {
-  //   if (props.zoomScaleRequest === 1) return;
-  //   zoom(props.zoomScaleRequest);
-  //   props.setZoomScaleRequest(1);
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [props.zoomScaleRequest]);
-  // const zoom = (factor) => {
-  //   let viewport = stageRef.current.mountNode.containerInfo.children[0];
-  //   let clampOptions = viewport.plugins.plugins["clamp-zoom"].options;
-  //   let newScale = viewport.scale._x * factor;
-
-  //   if (newScale > clampOptions.maxScale) viewport.animate({ scale: clampOptions.maxScale, time: 250 });
-  //   else if (newScale < clampOptions.minScale) viewport.animate({ scale: clampOptions.minScale, time: 250 });
-  //   else  viewport.animate({ scale: newScale, time: 250 });  
-  // }
+		setMouseX(e.clientX);
+		setMouseY(e.clientY); 
+	}
 
 	return ( <>
 		<div ref={canvasRef} />
 		<Popup
-			isOpen={isPopupOpen}
-			content={popupContent}
-			onClose={() => setIsPopupOpen(false)}
-			clickX={clickX}
-			clickY={clickY}
+			prop={dialogProp}
+			onClose={() => setDialogProp(null)}
+			clickX={mouseX}
+			clickY={mouseY}
 		/>
+
+		<PropHoverView menuOpen={!!dialogProp} prop={hoverProp} mouseX={mouseX} mouseY={mouseY} />
 	</> );
 };
 
