@@ -1,6 +1,6 @@
 const Tile = require("../tile/tile");
-
 const Point = require("@cozy-caves/utils").Point;
+const { tilerChooser } = require("../tile/tilerLogic");
 
 class Room {
     #tiles = new Map();
@@ -39,7 +39,32 @@ class Room {
         return finalRoom;
     }
 
-    // openTiles()
+    openTiles(roomTileGlobalPositions, hallway, hallwayTileGlobalPositions, numGen) {
+        for (let tileGlobalPos of roomTileGlobalPositions) {
+            let tile = this.getTile(tileGlobalPos.subtract(this.getPosition()));
+            if (!tile) throw new Error("Cannot open nonexistent tile in room " + this.getPosition().toString());
+            
+            tile.setTileType("floor");
+            tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway, numGen));
+
+            // for (hallTileGlobalPos of hallwayTileGlobalPositions) {
+            //     let hallTile = hallway.getTile(hallTileGlobalPos.subtract(hallway.getPosition()));
+            //     if (!hallTile) throw new Error("Cannot open nonexistent tile in hallway " + hallway.getPosition().toString());
+                
+            //     if (!(tileGlobalPos.getX() === hallTileGlobalPos.getX() && Math.abs(tileGlobalPos.getY() - hallTileGlobalPos.getY()) === 1) && !(tileGlobalPos.getY() === hallTileGlobalPos.getY() && Math.abs(tileGlobalPos.getX() - hallTileGlobalPos.getX()) === 1)) return;
+            //     tile.setTileType("floor");
+            //     tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway, numGen))
+
+            //     // if (hallTile.getTileType() === "floor") {
+            //     //     tile.setTileType("floor");
+            //     //     hallTile.setTileType("floor");
+            //     // } else if (hallTile.getTileType() === "wall") {
+            //     //     tile.setTileType("wall");
+            //     //     hallTile.setTileType("wall");
+            //     // }
+            // }
+        }
+    }
 
     getRightEdges() { return this.#edgeFetcher(true, false); }
     getLeftEdges() { return this.#edgeFetcher(false, false); }
