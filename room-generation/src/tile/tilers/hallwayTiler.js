@@ -48,7 +48,8 @@ const hallwayWallTiler = (tile, room, numGen) => {
         }, TileID.INNER_WALL, numGen));
     } 
 
-    if (!isFloor(rightNeighbor) && !isFloor(leftNeighbor) && topNeighbor && bottomNeighbor) {
+    if (!isFloor(rightNeighbor) && !isFloor(leftNeighbor) && topNeighbor && bottomNeighbor && (isWall(rightNeighbor) || isWall(leftNeighbor)) &&
+        (isWall(topLeftNeighbor) || isWall(topRightNeighbor) || isWall(bottomLeftNeighbor) || isWall(bottomRightNeighbor))) {
         if (!isFloor(topNeighbor)) {
             tile.setRotation(90);
             return getEdgeWall(TileSpacialType.TOP_EDGE_WALL);
@@ -56,7 +57,8 @@ const hallwayWallTiler = (tile, room, numGen) => {
             tile.setRotation(-90);
             return getEdgeWall(TileSpacialType.BOTTOM_EDGE_WALL);
         }
-    } else if (!isFloor(topNeighbor) && !isFloor(bottomNeighbor) && leftNeighbor && rightNeighbor) {
+    } else if (!isFloor(topNeighbor) && !isFloor(bottomNeighbor) && leftNeighbor && rightNeighbor && (isWall(topNeighbor) || isWall(bottomNeighbor)) &&
+        (isWall(topLeftNeighbor) || isWall(topRightNeighbor) || isWall(bottomLeftNeighbor) || isWall(bottomRightNeighbor))) {
         if (!isFloor(leftNeighbor)) {
             tile.setScale(new Point(1, 1));
             return getEdgeWall(TileSpacialType.LEFT_EDGE_WALL);
@@ -101,7 +103,7 @@ const hallwayWallTiler = (tile, room, numGen) => {
             return getEdgeWall(TileSpacialType.BOTTOM_EDGE_WALL);
         }
     } else {
-        if (!isFloor(rightNeighbor)) {
+        if (!isFloor(rightNeighbor) && (rightNeighbor || (!isFloor(topRightNeighbor) && !isFloor(bottomRightNeighbor)))) {
             tile.setScale(new Point(-1, 1));
             return getEdgeWall(TileSpacialType.LEFT_EDGE_WALL);
         } else {
