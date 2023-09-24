@@ -508,16 +508,17 @@ function addTileHallway(hallway, tile) {
     let hallwayPos = hallway.room.getPosition();
     let tileGlobalPos = tile.getPosition().add(hallwayPos);
     let roomIndex = map[tileGlobalPos.getX()][tileGlobalPos.getY()];
+    
     if (roomIndex < 0 && hallway.overlappingRoom) {
         let roomMinimumPos = hallway.overlappingRoom.getPosition();
-        let roomMaximumPos = roomMinimumPos.add(hallway.overlappingRoom.getDimensions());
-        if((tileGlobalPos.getX() < roomMinimumPos.getX() || tileGlobalPos.getX() > roomMaximumPos.getX()) || (tileGlobalPos.getY() < roomMinimumPos.getY() || tileGlobalPos.getY() > roomMaximumPos.getY())) {
-            hallway.overlappingRoom = undefined;
-        }
+        let roomMaximumPos = roomMinimumPos.add(hallway.overlappingRoom.getDimensions()).subtract(new Point(1, 1));
+        let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
+        let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
+        if(!overlappingX || !overlappingY) hallway.overlappingRoom = undefined;
     }
+
     if (roomIndex < 0 && !hallway.overlappingRoom) {
         hallway.room.addTile(tile);
-
     } else if (roomIndex > 0) {
         hallway.overlappingRoom = rooms[roomIndex];   
     }
