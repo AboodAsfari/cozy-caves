@@ -420,7 +420,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         hallway.room.setPosition(new Point(startingX-1, startingY));
         addTilesFloor(1, diffY, hallway, false, 1);
         addTilesFloor(1, diffX, hallway, true, diffY);
-        addTilesWall(1, diffY+1, hallway, false, 1);
+        addTilesWall(0, diffY + 1, hallway, false, 1);
         addTilesWall(1, diffX + 1, hallway, true, diffY);
     }
 
