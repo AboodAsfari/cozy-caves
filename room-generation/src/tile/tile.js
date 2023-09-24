@@ -32,6 +32,7 @@ class Tile {
     }
 
     // Setters.
+    setTileType(tileType) { this.#tileType = tileType; }
     setTileID(tileID) { this.#tileID = tileID; }
     setTileSpacialType(tileSpacialType) { this.#tileSpacialType = tileSpacialType; }
     setPartitionNum(partitionNum) { this.#partitionNum = partitionNum; }
