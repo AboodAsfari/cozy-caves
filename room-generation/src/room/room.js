@@ -19,12 +19,12 @@ class Room {
     merge(rooms) {
         let finalRoom = new Room();
         rooms.push(this);
-
+        
         let minX = Number.MAX_SAFE_INTEGER;
-        let maxY = Number.MIN_SAFE_INTEGER;
+        let minY = Number.MAX_SAFE_INTEGER;
         for (let room of rooms) {
             minX = Math.min(minX, room.getDimensions().getX());
-            maxY = Math.min(minY, room.getDimensions().getY());
+            minY = Math.min(minY, room.getDimensions().getY());
         }
         finalRoom.setPosition(new Point(minX, minY));
 
