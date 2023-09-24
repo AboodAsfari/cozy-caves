@@ -66,19 +66,10 @@ class Room {
 
     addTile(tile) { 
         this.#tiles.set(tile.getPosition().toString(), tile); 
-        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 
-        for (let tile of this.#tiles.values()) {
-            if (tile.getPosition().getX() > maxEncountered.getX()) maxEncountered.setX(tile.getPosition().getX());
-            if (tile.getPosition().getX() < minEncountered.getX()) minEncountered.setX(tile.getPosition().getX());
-            if (tile.getPosition().getY() > maxEncountered.getY()) maxEncountered.setY(tile.getPosition().getY());
-            if (tile.getPosition().getY() < minEncountered.getY()) minEncountered.setY(tile.getPosition().getY());
-        }
-
-        let width = maxEncountered.getX() - minEncountered.getX() + 1;
-        let height = maxEncountered.getY() - minEncountered.getY() + 1;
-        this.#dimensions = new Point(width, height);
+        let newWidth = Math.max(this.#dimensions.getX(), tile.getPosition().getX() + 1);
+        let newHeight = Math.max(this.#dimensions.getY(), tile.getPosition().getY() + 1);
+        this.#dimensions = new Point(newWidth, newHeight);
     }
 
     getTile(pos) { return this.#tiles.get(pos.toString()); }
