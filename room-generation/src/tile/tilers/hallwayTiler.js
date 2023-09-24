@@ -50,8 +50,6 @@ const hallwayWallTiler = (tile, room, numGen) => {
 
     if (isWall(rightNeighbor) && isWall(leftNeighbor)) {
         if (isWall(topNeighbor)) {
-            // rightNeighbor.setTileType("floor")
-            console.log(rightNeighbor);
             tile.setRotation(90);
             return getEdgeWall(TileSpacialType.TOP_EDGE_WALL);
         } else if (isWall(bottomNeighbor)) {
@@ -60,10 +58,10 @@ const hallwayWallTiler = (tile, room, numGen) => {
         }
     }
 
-    if (isWall(rightNeighbor) && isWall(topNeighbor) && isFloor(bottomLeftNeighbor)) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_INNER_WALL);
-    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && isFloor(topLeftNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_INNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(topNeighbor) && isFloor(bottomRightNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_INNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_INNER_WALL);
+    if (isWall(rightNeighbor) && isWall(topNeighbor) && (isFloor(bottomLeftNeighbor) || !topRightNeighbor)) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_INNER_WALL);
+    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && (isFloor(topLeftNeighbor) || !bottomRightNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(topNeighbor) && (isFloor(bottomRightNeighbor) || !topLeftNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && (isFloor(topRightNeighbor) || !bottomLeftNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_INNER_WALL);
 
     if (isWall(rightNeighbor) && isWall(bottomNeighbor) && !isFloor(topNeighbor)) return getCornerWall(new Point(1, 1), TileSpacialType.TOP_LEFT_CORNER_WALL);
     else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && !isFloor(topNeighbor)) return getCornerWall(new Point(-1, 1), TileSpacialType.TOP_RIGHT_CORNER_WALL);
