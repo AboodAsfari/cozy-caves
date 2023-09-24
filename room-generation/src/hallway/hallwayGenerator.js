@@ -531,24 +531,24 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
         }
 
         if (!foundAnchor) return;
-
-        if (roomIndex < 0) {
-            hallway.room.addTile(tile);
-        } 
+        if (roomIndex < 0) hallway.room.addTile(tile);
     } else {
+        if (roomIndex < 0) hallway.possibleTiles.push(tile);
+        else hallway.possibleTiles = [];
+
         if (roomIndex < 0 && hallway.overlappingRoom) {
             let roomMinimumPos = hallway.overlappingRoom.getPosition();
             let roomMaximumPos = roomMinimumPos.add(hallway.overlappingRoom.getDimensions()).subtract(new Point(1, 1));
             let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
             let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
-            if(!overlappingX || !overlappingY) hallway.overlappingRoom = undefined;
-        }
-    
-        if (roomIndex < 0 && !hallway.overlappingRoom) {
-            hallway.room.addTile(tile);
-        } else if (roomIndex > 0) {
-            hallway.overlappingRoom = rooms[roomIndex];   
-        }
+            if(!overlappingX || !overlappingY) {
+                hallway.overlappingRoom = undefined;
+                hallway.possibleTiles.forEach(tile => hallway.room.addTile(tile));
+            }
+        } 
+        
+        if (roomIndex < 0 && !hallway.overlappingRoom) hallway.room.addTile(tile);
+        else if (roomIndex > 0) hallway.overlappingRoom = rooms[roomIndex];   
     }
 }
 
