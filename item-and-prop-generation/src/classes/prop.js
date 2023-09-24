@@ -38,6 +38,8 @@ class Prop {
         this.possibleItems = possibleItems;
         this.placementRules = placementRules;
         this.size = size;
+
+        this.overlap = this.placementRules.overlap;
     }
 
     addItem(item){
@@ -52,6 +54,7 @@ class Prop {
     getPosition() {return this.#position; }
     getOffset() {return this.#offset;}
     getScale() { return this.#scale; }
+    getOverlap() {return this.overlap;}
 
     getName() { return this.name; }
     getDesc() { return this.desc; }
@@ -83,6 +86,8 @@ class Prop {
         if (!(scale instanceof Point)) throw new Error("Scale must be provided as Point.");
         this.#scale = scale;
     }
+
+    setOverlap(overlap) { this.overlap = overlap;}
     
     toString() {
         let result = "";

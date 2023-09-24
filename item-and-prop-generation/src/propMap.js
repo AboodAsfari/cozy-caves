@@ -6,9 +6,10 @@ const seedrandom = require('seedrandom');
 class PropMap {
     #populatedRoom = new Map();
     #room;
-    #propSet;
+    #propSetGen;
     #propList;
     #seed;
+    #validPos = new Map();
     #randomGen;
 
     constructor (room, seed) {
@@ -17,8 +18,8 @@ class PropMap {
 
         this.#room = room;
         this.#randomGen = seedrandom(this.#seed);
-        this.#propSet = new PropSet(this.#randomGen());
-        this.#propList = this.#propSet.getPropSet(this.#getMaxProp());
+        this.#propSetGen = new PropSet(this.#randomGen());
+        this.#propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
         this.#populatePropMap();
     }
@@ -34,10 +35,18 @@ class PropMap {
         return 15;
     }
 
+    #cloneMap(map) {
+        const temp = new Map();
+        for (const [key, value] of map) {
+            temp.set(key, value);
+        }
+        return temp;
+    }
+
     // with the list of props, look at their placement rules, and decide on position depending on the placement rule
     
     processProps(){
-        const propList = this.#propSet.getPropSet(this.#getMaxProp());
+        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
         // Ensure that you have a valid propSet
         if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
@@ -49,45 +58,101 @@ class PropMap {
             const p = propList[i];
             
             const nearWall = p.getPlacementRules().nearWall;
-            const nearProp = p.getPlacementRules().nearProp;
+            const nearProp = p.getPlacementRules().nearProp; 
             const atCenter = p.getPlacementRules().atCenter;
-            const overlap = p.getPlacementRules().overlap;
 
+            // will store map of possible positons for the prop to choose from
+            const validPosMap = this.#cloneMap(this.#validPos); 
+            const validPositions = [];
+            
+            if (atCenter) {
+                findCenterPositon(p, validPosMap);
+            } 
             if (nearWall !== "none") {
-                findPositionNearWall(p, nearWall); 
+                findPositionNearWall(p, nearWall, validPosMap); 
             }
             if (nearProp !== "none") {
-                findPositionNearProp(p, nearProp);
+                findPositionNearProp(p, nearProp, validPosMap);
             }
-            if (atCenter) {
-                findCenterPositon(p);
+
+            // choose from here and place prop :) add favor later. ie. choose 2 over 1
+            for (const [key, value] of validPosMap) {
+                if (value > 0) {
+                    const position = Point.fromString(key);
+                    validPositions.push(position);
+                } 
             }
+
+            const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
+            const validPosition = validPositions[randomIndex];
+
+            this.#putProp(p, validPosition, propW, propH);
         }
     }
 
-    findPositionNearWall(prop, wall) {
+    findPositionNearWall(prop, wall, map) {
         // implement later
     }
 
-    findPositionNearWall(prop, nextTo) {
+    findPositionNearProp(prop, nextTo, map) {
         // implement later
     }
 
-    findCenterPositon(prop) {
-        // implement later
+    findCenterPositon(prop, map) {
+        const x = this.#room.getDimensions().getX();
+        const y = this.#room.getDimensions().getY();
+        const propW = prop.getSize().w;
+        const propH = prop.getSize().h;
+
+        const midX = Math.round(x/2) - Math.round(propW/2.3);
+        const midY = Math.round(y/2) - Math.round(propH/2.3);
+
+        let pos = new Point(midX, midY); // this will give us the center point
+
+        // explore adjacent spaces
+        for (let i=0; i<5; i++) {
+            for (let j=0; j<5; j++) {
+                const newPos = pos.add(new Point(i, j));
+                if (this.#checkFreeSpace(newPos, propW, propH, false)) {
+                    map.set(newPos.toString(), 1);
+                }
+            }   
+        }
     }
     
     /**
      * Populates the populatedRoom with a set of props based on rarity.
      */
     #populatePropMap() {
-        const propList = this.#propSet.getPropSet(this.#getMaxProp());
+        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
         // Ensure that you have a valid propSet
         if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
 
         this.#placeProps(propList);
         
+    }
+
+    #checkFreeSpace(pos, w, h, wall) {
+        for (let i=0; i<w; i++) {
+            for (let j=0; j<h; j++){
+                if(!this.#checkValidPosition(pos.add(new Point(i, j)), wall)) return false;
+            }
+        }
+        return true;
+    }
+
+    #putProp(prop, pos, w, h) {
+        // claiming space for prop bigger than one tile
+        for (let i=0; i<w; i++) {
+            for (let j=0; j<h; j++){
+                const newPos = pos.add(new Point(i,j));
+                this.#validPos.set(newPos.toString(), 1);
+            }
+        }
+
+        // putting prop in the map
+        this.#populatedRoom.set(pos.toString(), prop);
     }
 
     /**
@@ -153,11 +218,13 @@ class PropMap {
      * @param {Point} pos - Position to be checked 
      * @returns boolean
      */
-    #checkValidPosition(pos){
+    #checkValidPosition(pos, wall){
         const tile = this.#room.getTile(pos);
-        var noFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
-        var noProp = this.getProp(pos) === null || this.getProp(pos) === undefined;
-        if (noFloor || !noProp) return false;
+        const noFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
+        const noProp = this.getProp(pos) === null || this.getProp(pos) === undefined;
+        const noPos = this.checkPos(pos) === 0 || this.checkPos(pos) === undefined || this.checkPos(pos) === null; //TODO: do we need this? check this again later
+        if (!wall && noFloor) return false; // no wall
+        if (!noProp || !noPos) return false;
         return true;
     }
 
@@ -168,8 +235,11 @@ class PropMap {
      */
     #placeProps(propSet) {
         let anchorPos;
+        let count = 0;
         do {
+            if (count === 500) return;
             anchorPos = this.#getRandomPosition();
+            count++;
         } while (anchorPos === null);
 
         propSet[0].setPosition(anchorPos);
@@ -202,11 +272,14 @@ class PropMap {
             x = anchorPos.getX() + xChange;
             y = anchorPos.getY() + yChange;
             newPos = new Point(Math.abs(x), Math.abs(y));
-        } while (!this.#checkValidPosition(newPos));
+        } while (!this.#checkValidPosition(newPos, false));
 
         return newPos;
     }
 
+    checkPos(pos) {
+        return this.#validPos.get(pos.toString()); // 0 or 1
+    }
     // Getters
     getProp(pos) {
         return this.#populatedRoom.get(pos.toString());
