@@ -142,7 +142,7 @@ function generateHallways(rooms, w, h) {
 
 
     for(hallway of finalHallways) {
-        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(Math.random()))));
+        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway, seedrandom(Math.random()))));
     }
 }
 

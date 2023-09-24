@@ -1,4 +1,5 @@
 const { defaultFloorTiler, defaultWallTiler } = require("./tilers/defaultTiler");
+const { hallwayWallTiler } = require("./tilers/hallwayTiler");
 
 /**
  * Represents a map of tile getters, accessible by preset tile types.
@@ -34,7 +35,8 @@ const tilerChooser = {
         if (!tiler || this.hasOwnProperty(tiler.toString())) return defaultTiler;
         return this[tiler.toString() + "Tiler"];
     }, 
-    defaultTiler: new TilerLogic(defaultFloorTiler, defaultWallTiler)
+    defaultTiler: new TilerLogic(defaultFloorTiler, defaultWallTiler),
+    hallwayTiler: new TilerLogic(defaultFloorTiler, hallwayWallTiler),
 }
 
 module.exports = { tilerChooser };
