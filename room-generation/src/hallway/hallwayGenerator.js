@@ -94,7 +94,6 @@ function mergeHallways(hallways, hallwayMap) {
     for (key in hallways) {
         let parent = disjointSet.findSet(key);
         if (mergedHallways.has(parent)) {
-            console.log(parent);
             let currentList = mergedHallways.get(parent);
             currentList.push(hallways[key]);
             mergedHallways.set(parent, currentList);
@@ -108,7 +107,6 @@ function mergeHallways(hallways, hallwayMap) {
 }
 
 function generateHallways(rooms, w, h) {
-    console.log(rooms);
     midPoints = { };
     roomToRoomConnections = [];
     hallways = [];
@@ -121,14 +119,11 @@ function generateHallways(rooms, w, h) {
         midpoints.push(point.getX());
         midpoints.push(point.getY());
     }
-    console.log(midpoints);
     const delaunay = new Delaunator.default(midpoints);
     let triangles = delaunay.triangles;
 
     mapConnections(triangles);
-    console.log(roomToRoomConnections);
     let mst = minimumSpanningTree(rooms);
-    console.log(mst);
     for (key in mst) {
         createHallway(mst[key], rooms);
     }   
@@ -137,15 +132,17 @@ function generateHallways(rooms, w, h) {
     let hallwayMap = [...Array(w)].map(e => Array(h).fill(-1));
     let toMergeMap = mergeHallways(hallways, hallwayMap);
 
-    toMergeMap.forEach((value) => {
-        //TODO Merge
-        console.log(value);
+    let finalHallways = [];
+    toMergeMap.forEach((hallwayArray) => {
+        let hallway = hallwayArray[0];
+        if (hallwayArray.length > 1) hallway = hallwayArray[0].merge(hallwayArray.slice(1));
+        rooms.push(hallway);
+        finalHallways.push(hallway);
     });
 
 
-    for(hallway of hallways) {
-        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(2))));
-        rooms.push(hallway);
+    for(hallway of finalHallways) {
+        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(Math.random()))));
     }
 }
 
@@ -174,8 +171,6 @@ function minimumSpanningTree(rooms) {
     for (const room in rooms) {
         disjointSet.makeSet(room);
     }
-
-    console.log(disjointSet);
 
     for (const conn of roomToRoomConnections) {
 
@@ -211,10 +206,7 @@ function createHallway(conn, rooms) {
     let relativeY = checkYPlane(fromY, fromHeight, toY, toHeight);
 
     let shape = determineShape(relativeX, relativeY, conn.from, toRoom);
-
-    console.log(shape);
     
-    console.log("From:" + conn.from + " To:" + conn.to);
     createHallwayFromShape(shape, fromRoom, toRoom);
 }
 
@@ -237,7 +229,6 @@ function checkYPlane (fromY, fromHeight, toY, toHeight) {
 }
 
 function determineShape(relativeX, relativeY, fromKey, toRoom) {
-    console.log("SHAPE!");
     if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.UP) {
         return HallwayShapes.RIGHT_TOP;
         //other options can be randomly done later    console.log(conn.to);
@@ -245,7 +236,6 @@ function determineShape(relativeX, relativeY, fromKey, toRoom) {
         return HallwayShapes.LEFT_TOP;
         //other options can be randomly done later
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.UP) {
-        console.log("UP");
         //requires more calculation
         // let fromPos = midPoints[fromKey];
         // if (fromPos.getX() < toRoom.getPosition().getX()) {
@@ -270,7 +260,6 @@ function determineShape(relativeX, relativeY, fromKey, toRoom) {
         return HallwayShapes.LEFT_RIGHT;
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.OVERLAP) {
         //rooms are touching
-        console.log("touching");
         return HallwayShapes.null;
     } 
 }
@@ -393,8 +382,7 @@ function createHallwayFromShape(shape, from, to) {
 
 function createFromEntryExit(fromPos, toPos, shape) {
     //0,0 should be start of hallway so maybe some issues.
-    console.log(shape);
-    let startingX = fromPos.getX();
+    let startingX = fromPos.getX(); 
     let toX = toPos.getX();
     let startingY = fromPos.getY();
     let toY = toPos.getY();
@@ -413,7 +401,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         yCompensation = 3;
     }
 
-    let hallway = new Room(new Point(diffX+xCompensation+2, diffY+yCompensation+2));
+    let hallway = new Room();
 
     if (shape == HallwayShapes.RIGHT_TOP) {
         hallway.setPosition(new Point(startingX, startingY-1));
@@ -476,7 +464,6 @@ function createFromEntryExit(fromPos, toPos, shape) {
         return;
     }
 
-    console.log(hallway.toString());
     hallways.push(hallway);
 }
 
