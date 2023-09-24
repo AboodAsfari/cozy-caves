@@ -39,6 +39,8 @@ class Room {
         return finalRoom;
     }
 
+    // openTiles()
+
     getRightEdges() { return this.#edgeFetcher(true, false); }
     getLeftEdges() { return this.#edgeFetcher(false, false); }
     getTopEdges() { return this.#edgeFetcher(false, true); }
@@ -78,6 +80,7 @@ class Room {
         let height = maxEncountered.getY() - minEncountered.getY() + 1;
         this.#dimensions = new Point(width, height);
     }
+
     getTile(pos) { return this.#tiles.get(pos.toString()); }
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }
     getPosition() { return this.#position; }
