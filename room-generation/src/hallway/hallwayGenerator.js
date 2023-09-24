@@ -1,5 +1,5 @@
 const Delaunator = require('delaunator');
-const Room = require('../room/room');
+const Hallway = require('./hallway');
 const Point = require("@cozy-caves/utils").Point;
 const DisjointSet = require("./disjointSet");
 const Tile = require("../tile/tile");
@@ -42,6 +42,8 @@ var midPoints = {};
 
 var hallways = [];
 
+var rooms = [];
+
 var map;
 
 function getmidPoint(room) {
@@ -55,7 +57,7 @@ function getmidPoint(room) {
     return midpoint;
 }
 
-function generateCurrentMap(rooms) {
+function generateCurrentMap() {
     for (room of rooms) {
         let roomPos = room.getPosition();
         let roomX = roomPos.getX();
@@ -75,7 +77,7 @@ function mergeHallways(hallways, hallwayMap) {
     }
 
     for (key in hallways) {
-        let hallway = hallways[key];
+        let hallway = hallways[key].room;
         let hallwayPos = hallway.getPosition();
         for (let tile of hallway.getTiles()) {
             let tileX = tile.getPosition().getX() + hallwayPos.getX();
@@ -95,10 +97,10 @@ function mergeHallways(hallways, hallwayMap) {
         let parent = disjointSet.findSet(key);
         if (mergedHallways.has(parent)) {
             let currentList = mergedHallways.get(parent);
-            currentList.push(hallways[key]);
+            currentList.push(hallways[key].room);
             mergedHallways.set(parent, currentList);
         } else {
-            let list = [hallways[key]];
+            let list = [hallways[key].room];
             mergedHallways.set(parent, list);
         }
     }
@@ -106,13 +108,14 @@ function mergeHallways(hallways, hallwayMap) {
     return mergedHallways;
 }
 
-function generateHallways(rooms, w, h) {
+function generateHallways(roomsList, w, h) {
     midPoints = { };
     roomToRoomConnections = [];
     hallways = [];
+    rooms = roomsList;
     const midpoints = [];
     map = [...Array(w)].map(e => Array(h).fill(-1));
-    generateCurrentMap(rooms);
+    generateCurrentMap();
     for (let key in rooms) {
         point = getmidPoint(rooms[key]);
         midPoints[key] = point;
@@ -123,9 +126,9 @@ function generateHallways(rooms, w, h) {
     let triangles = delaunay.triangles;
 
     mapConnections(triangles);
-    let mst = minimumSpanningTree(rooms);
+    let mst = minimumSpanningTree();
     for (key in mst) {
-        createHallway(mst[key], rooms);
+        createHallway(mst[key]);
     }   
 
 
@@ -142,6 +145,7 @@ function generateHallways(rooms, w, h) {
 
 
     for(hallway of finalHallways) {
+        hallway.getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway, seedrandom(Math.random())));
         hallway.getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway, seedrandom(Math.random())));
         hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway, seedrandom(Math.random()))));
     }
@@ -165,7 +169,7 @@ function addToConnections(room, otherRoom) {
     });
 }
 
-function minimumSpanningTree(rooms) {
+function minimumSpanningTree() {
     const mst = [];
     const disjointSet = new DisjointSet();
 
@@ -189,7 +193,7 @@ function minimumSpanningTree(rooms) {
     throw new Error("MST Failed");
 }
 
-function createHallway(conn, rooms) {
+function createHallway(conn) {
     let fromRoom = rooms[conn.from];
     let fromX = fromRoom.getPosition().getX();
     let fromY = fromRoom.getPosition().getY();
@@ -402,64 +406,62 @@ function createFromEntryExit(fromPos, toPos, shape) {
         yCompensation = 3;
     }
 
-    let hallway = new Room();
+    let hallway = new Hallway();
 
     if (shape == HallwayShapes.RIGHT_TOP) {
-        hallway.setPosition(new Point(startingX, startingY-1));
-        addTilesWall(1, diffX+1, hallway, true, 1);
-        addTilesWall(1, diffY, hallway, false, diffX);
+        hallway.room.setPosition(new Point(startingX, startingY-1));
         addTilesFloor(1, diffX, hallway, true, 1);
         addTilesFloor(1, diffY, hallway, false, diffX);
+        addTilesWall(0, diffX + 1, hallway, true, 1);
+        addTilesWall(1, diffY + 1, hallway, false, diffX);
     } 
     
     else if (shape == HallwayShapes.DOWN_LEFT) {
-        hallway.setPosition(new Point(startingX-1, startingY));
-        addTilesWall(1, diffY+1, hallway, false, 1);
-        addTilesWall(1, diffX, hallway, true, diffY);
+        hallway.room.setPosition(new Point(startingX-1, startingY));
         addTilesFloor(1, diffY, hallway, false, 1);
         addTilesFloor(1, diffX, hallway, true, diffY);
+        addTilesWall(1, diffY+1, hallway, false, 1);
+        addTilesWall(1, diffX + 1, hallway, true, diffY);
     }
 
     else if (shape == HallwayShapes.RIGHT_DOWN) {
-        hallway.setPosition(new Point(startingX, toY));
-        addTilesWall(1, diffX+1, hallway, true, diffY);
-        addTilesWall(1, diffY, hallway, false, diffX);
+        hallway.room.setPosition(new Point(startingX, toY));
         addTilesFloor(1, diffX, hallway, true, diffY);
-        addTilesFloor(1, diffY, hallway, false, diffX);
-
+        addTilesFloor(diffY, 1, hallway, false, diffX);
+        addTilesWall(0, diffX, hallway, true, diffY);
+        addTilesWall(diffY + 1, 0, hallway, false, diffX);
     }
 
     else if (shape == HallwayShapes.TOP_LEFT) {
-        hallway.setPosition(new Point(startingX-1, toY-1));
-        addTilesWall(0, diffY, hallway, false, 1);
-        addTilesWall(1, diffX, hallway, true, 1);
-        addTilesFloor(1, diffY, hallway, false, 1);
+        hallway.room.setPosition(new Point(startingX-1, toY-1));
+        addTilesFloor(diffY, 1, hallway, false, 1);
         addTilesFloor(1, diffX, hallway, true, 1);
+        addTilesWall(diffY + 1, 0, hallway, false, 1);
+        addTilesWall(1, diffX + 1, hallway, true, 1);
     } 
     
     else if (shape == HallwayShapes.LEFT_RIGHT) {
         if (diffX == 1) {
-            hallway.addTile(new Tile("floor", new Point(0, 0)));
-            hallway.addTile(new Tile("floor", new Point(1, 0)));
-            hallway.setPosition(new Point(toX, startingY));
+            hallway.room.addTile(new Tile("floor", new Point(0, 0)));
+            hallway.room.addTile(new Tile("floor", new Point(1, 0)));
+            hallway.room.setPosition(new Point(toX, startingY));
         } else {
-            hallway.setPosition(new Point(toX, startingY-1));
-            addTilesWall(1, diffX-1, hallway, true, 1);
+            hallway.room.setPosition(new Point(toX, startingY-1));
             addTilesFloor(1, diffX-1, hallway, true, 1);
-            
+            addTilesWall(0, diffX, hallway, true, 1);
         }
         
     } 
     
     else if (shape == HallwayShapes.TOP_DOWN) {
         if (diffY == 1) {
-            hallway.addTile(new Tile("floor", new Point(1, 0)));
-            hallway.addTile(new Tile("floor", new Point(1, 1)));
-            hallway.setPosition(new Point(startingX-1, toY));
+            hallway.room.addTile(new Tile("floor", new Point(1, 0)));
+            hallway.room.addTile(new Tile("floor", new Point(1, 1)));
+            hallway.room.setPosition(new Point(startingX-1, toY));
         } else {
-            hallway.setPosition(new Point(startingX-1, toY));
-            addTilesWall(1, diffY-1, hallway, false, 1);
+            hallway.room.setPosition(new Point(startingX-1, toY));
             addTilesFloor(1, diffY-1, hallway, false, 1);
+            addTilesWall(0, diffY, hallway, false, 1);
         }
     } else {
         return;
@@ -469,26 +471,84 @@ function createFromEntryExit(fromPos, toPos, shape) {
 }
 
 function addTilesWall(start, end, hallway, isOnX, floorPos) {
-    for (let i = start; i <= end; i++) {
-        let point = isOnX ? new Point(i, floorPos-1) : new Point(floorPos - 1, i);
-        let otherPoint = isOnX ? new Point(i, floorPos+1) : new Point(floorPos+1, i);
+    if(start < end) {
+        for (let i = start; i <= end; i++) {
+            let floorPoint = isOnX ? new Point(i, floorPos) : new Point(floorPos, i);
+            let previousFloor = isOnX ? new Point(i - 1, floorPos) : new Point(floorPos, i - 1);
+            let nextFloor = isOnX ? new Point(i + 1, floorPos) : new Point(floorPos, i + 1);
+            let point = isOnX ? new Point(i, floorPos-1) : new Point(floorPos - 1, i);
+            let otherPoint = isOnX ? new Point(i, floorPos+1) : new Point(floorPos+1, i);
 
-        addTileHallway(hallway, new Tile("wall", point));
-        addTileHallway(hallway, new Tile("wall", otherPoint));
+            let anchors = [floorPoint];
+            if (i !== end) anchors.push(nextFloor);
+            if (i !== start) anchors.push(previousFloor);
+
+            addTileHallway(hallway, new Tile("wall", point), anchors);
+            addTileHallway(hallway, new Tile("wall", otherPoint), anchors);
+        }
+    } else {
+        for (let i = start; i >= end; i--) {
+            let floorPoint = isOnX ? new Point(i, floorPos) : new Point(floorPos, i);
+            let previousFloor = isOnX ? new Point(i + 1, floorPos) : new Point(floorPos, i + 1);
+            let nextFloor = isOnX ? new Point(i - 1, floorPos) : new Point(floorPos, i - 1);
+            let point = isOnX ? new Point(i, floorPos-1) : new Point(floorPos - 1, i);
+            let otherPoint = isOnX ? new Point(i, floorPos+1) : new Point(floorPos+1, i);
+
+            let anchors = [floorPoint];
+            if (i !== end) anchors.push(nextFloor);
+            if (i !== start) anchors.push(previousFloor);
+
+            addTileHallway(hallway, new Tile("wall", point), anchors);
+            addTileHallway(hallway, new Tile("wall", otherPoint), anchors);
+        }
     }
 }
 
 function addTilesFloor(start, end, hallway, isOnX, floorPos) {
-    for (let i = start; i <= end; i++) {
-        let point = isOnX ? new Point(i, floorPos) : new Point(floorPos, i);
-        addTileHallway(hallway, new Tile("floor", point));
+    if(start < end) {
+        for (let i = start; i <= end; i++) {
+            let point = isOnX ? new Point(i, floorPos) : new Point(floorPos, i);
+            addTileHallway(hallway, new Tile("floor", point));
+        }
+    } else {
+        for (let i = start; i >= end; i--) {
+            let point = isOnX ? new Point(i, floorPos) : new Point(floorPos, i);
+            addTileHallway(hallway, new Tile("floor", point));
+        }
     }
 }
 
-function addTileHallway(hallway, tile) {
-    let hallwayPos = hallway.getPosition();
-    if (map[tile.getPosition().getX() + hallwayPos.getX()][tile.getPosition().getY() + hallwayPos.getY()] < 0) {
-        hallway.addTile(tile);
+function addTileHallway(hallway, tile, tileAnchorPositions) {
+    let hallwayPos = hallway.room.getPosition();
+    let tileGlobalPos = tile.getPosition().add(hallwayPos);
+    let roomIndex = map[tileGlobalPos.getX()][tileGlobalPos.getY()];
+
+    if (tileAnchorPositions) {
+        let foundAnchor = false;
+        for (let tileAnchorPos of tileAnchorPositions) {
+            let tileAnchor = hallway.room.getTile(tileAnchorPos);
+            if (tileAnchor) foundAnchor = true;
+        }
+
+        if (!foundAnchor) return;
+
+        if (roomIndex < 0) {
+            hallway.room.addTile(tile);
+        } 
+    } else {
+        if (roomIndex < 0 && hallway.overlappingRoom) {
+            let roomMinimumPos = hallway.overlappingRoom.getPosition();
+            let roomMaximumPos = roomMinimumPos.add(hallway.overlappingRoom.getDimensions()).subtract(new Point(1, 1));
+            let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
+            let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
+            if(!overlappingX || !overlappingY) hallway.overlappingRoom = undefined;
+        }
+    
+        if (roomIndex < 0 && !hallway.overlappingRoom) {
+            hallway.room.addTile(tile);
+        } else if (roomIndex > 0) {
+            hallway.overlappingRoom = rooms[roomIndex];   
+        }
     }
 }
 
