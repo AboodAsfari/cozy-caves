@@ -396,7 +396,7 @@ function createHallwayFromShape(shape, from, to) {
 function createFromEntryExit(fromPos, toPos, shape) {
     //0,0 should be start of hallway so maybe some issues.
     console.log(shape);
-    let startingX = fromPos.getX();
+    let startingX = fromPos.getX(); 
     let toX = toPos.getX();
     let startingY = fromPos.getY();
     let toY = toPos.getY();

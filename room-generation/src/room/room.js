@@ -4,7 +4,7 @@ const Point = require("@cozy-caves/utils").Point;
 
 class Room {
     #tiles = new Map();
-    #dimensions;
+    #dimensions = new Point(0, 0);
     #position;
     #propMap;
 
