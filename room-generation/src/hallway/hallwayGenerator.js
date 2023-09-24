@@ -137,15 +137,17 @@ function generateHallways(rooms, w, h) {
     let hallwayMap = [...Array(w)].map(e => Array(h).fill(-1));
     let toMergeMap = mergeHallways(hallways, hallwayMap);
 
-    toMergeMap.forEach((value) => {
-        //TODO Merge
-        console.log(value);
+    let finalHallways = [];
+    toMergeMap.forEach((hallwayArray) => {
+        let hallway = hallwayArray[0];
+        if (hallwayArray.length > 1) hallway = hallwayArray[0].merge(hallwayArray.slice(1));
+        rooms.push(hallway);
+        finalHallways.push(hallway);
     });
 
 
-    for(hallway of hallways) {
-        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(2))));
-        rooms.push(hallway);
+    for(hallway of finalHallways) {
+        hallway.getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("default").getID(tile, hallway, seedrandom(Math.random()))));
     }
 }
 
