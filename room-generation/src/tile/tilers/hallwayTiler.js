@@ -48,13 +48,21 @@ const hallwayWallTiler = (tile, room, numGen) => {
         }, TileID.INNER_WALL, numGen));
     } 
 
-    if (isWall(rightNeighbor) && isWall(leftNeighbor)) {
-        if (isWall(topNeighbor)) {
+    if (!isFloor(rightNeighbor) && !isFloor(leftNeighbor) && topNeighbor && bottomNeighbor) {
+        if (!isFloor(topNeighbor)) {
             tile.setRotation(90);
             return getEdgeWall(TileSpacialType.TOP_EDGE_WALL);
         } else if (isWall(bottomNeighbor)) {
             tile.setRotation(-90);
             return getEdgeWall(TileSpacialType.BOTTOM_EDGE_WALL);
+        }
+    } else if (!isFloor(topNeighbor) && !isFloor(bottomNeighbor) && leftNeighbor && rightNeighbor) {
+        if (!isFloor(leftNeighbor)) {
+            tile.setScale(new Point(1, 1));
+            return getEdgeWall(TileSpacialType.LEFT_EDGE_WALL);
+        } else if (isWall(rightNeighbor)) {
+            tile.setScale(new Point(-1, 1));
+            return getEdgeWall(TileSpacialType.RIGHT_EDGE_WALL);
         }
     }
 
