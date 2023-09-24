@@ -31,6 +31,11 @@ class Point {
     getY() { return this.#y; }
 
     toString() { return this.#x + "," + this.#y; }
+    
+    fromString(str) { 
+        const point = str.split(',');
+        return new Point(point[0], point[1]);
+    }
 
     clone() { return new Point(this.#x, this.#y); }
 }
