@@ -21,7 +21,7 @@ class PropMap {
         this.#propSetGen = new PropSet(this.#randomGen());
         this.#propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
-        this.#populatePropMap();
+     //   this.#populatePropMap();
     }
 
     #getMaxProp() {
@@ -110,13 +110,13 @@ class PropMap {
         let pos = new Point(midX, midY); // this will give us the center point
 
         // explore adjacent spaces
-        for (let i=0; i<5; i++) {
-            for (let j=0; j<5; j++) {
+        for (let i=-1; i<=1; i++) {
+            for (let j=-1; j<=1; j++) {
                 const newPos = pos.add(new Point(i, j));
                 if (this.#checkFreeSpace(newPos, propW, propH, false)) {
                     map.set(newPos.toString(), 1);
                 }
-            }   
+            }
         }
     }
     

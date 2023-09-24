@@ -99,7 +99,7 @@ test('Testing Prop Generation', () => {
 
 test('Testing Center Position', () => {
     log("TESTING CENTER POSITION\n");
-    const seed = "0";
+    const seed = null;
     const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
     const propMap = populateRoom(room, seed);
     
