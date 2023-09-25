@@ -99,7 +99,7 @@ test('Testing Prop Generation', () => {
 
 test('Testing Center Position', () => {
     log("TESTING CENTER POSITION\n");
-    const seed = null;
+    const seed = "0";
     const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
     const propMap = populateRoom(room, seed);
     
@@ -120,7 +120,7 @@ test('Testing Center Position', () => {
             let prop = map.get(pos.toString());
 
             if (prop !== null && prop !== undefined) {
-                roomArray[i] += "P";
+                roomArray[i] += prop;
             }
             else if (!tile) roomArray[i] += "X";
             else if (tile.getTileType() === "floor") roomArray[i] += "-";
@@ -130,6 +130,18 @@ test('Testing Center Position', () => {
     }
     let finalRoom = roomArray.join("\n");
     log(finalRoom);
+    log("-------------------------------");
+
+});
+
+test('Testing Position Near Prop', () => {
+    log("TESTING POSITION NEAR PROP\n");
+    const seed = "abood";
+    const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
+    const propMap = populateRoom(room, seed);
+    
+    propMap.processProps();
+    log(propMap.toString());
     log("-------------------------------");
 
 });

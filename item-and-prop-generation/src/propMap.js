@@ -43,59 +43,40 @@ class PropMap {
         return temp;
     }
 
-    // with the list of props, look at their placement rules, and decide on position depending on the placement rule
-    
-    processProps(){
-        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
-
-        // Ensure that you have a valid propSet
-        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
-
-        console.log("PROPLIST___________________");
-    
-        // parse data
-        for (let i = 0; i < propList.length; i++) {
-            const p = propList[i];
-            
-            const nearWall = p.getPlacementRules().nearWall;
-            const nearProp = p.getPlacementRules().nearProp; 
-            const atCenter = p.getPlacementRules().atCenter;
-
-            // will store map of possible positons for the prop to choose from
-            const validPosMap = this.#cloneMap(this.#validPos); 
-            const validPositions = [];
-            
-            if (atCenter) {
-                findCenterPositon(p, validPosMap);
-            } 
-            if (nearWall !== "none") {
-                findPositionNearWall(p, nearWall, validPosMap); 
-            }
-            if (nearProp !== "none") {
-                findPositionNearProp(p, nearProp, validPosMap);
-            }
-
-            // choose from here and place prop :) add favor later. ie. choose 2 over 1
-            for (const [key, value] of validPosMap) {
-                if (value > 0) {
-                    const position = Point.fromString(key);
-                    validPositions.push(position);
-                } 
-            }
-
-            const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
-            const validPosition = validPositions[randomIndex];
-
-            this.#putProp(p, validPosition, propW, propH);
-        }
-    }
-
     findPositionNearWall(prop, wall, map) {
         // implement later
     }
 
-    findPositionNearProp(prop, nextTo, map) {
-        // implement later
+    findPositionNearProp(prop, adjProp, map) {
+        // if the adj prop is not already in the room
+        if (!adjProp) {
+            console.log("Prop does not exist in map");
+            // find a random position
+        }
+
+        const propW = prop.getSize().w;
+        const propH = prop.getSize().h;
+        let pos = adjProp.getPosition();
+        let xRange = adjProp.getSize().w + 1;
+        let yRange = adjProp.getSize().h + 1;
+
+        let found = false;
+        // explore adjacent spaces
+        for (let i=(-1)*(xRange + propW); i<=xRange; i++) {
+            for (let j=(-1)*(yRange + propH); j<=yRange; j++) {
+                const newPos = pos.add(new Point(i, j));
+                if (this.#checkFreeSpace(newPos, propW, propH, false)) {
+                    const value = map.get(newPos.toString());
+                    found = true;
+                    if (!value) {
+                        map.set(newPos.toString(), 1);
+                    } else {
+                        map.set(newPos.toString(), value + 1);
+                    }
+                }
+            }
+        }
+        if (found) console.log("possible position found");
     }
 
     findCenterPositon(prop, map) {
@@ -110,13 +91,71 @@ class PropMap {
         let pos = new Point(midX, midY); // this will give us the center point
 
         // explore adjacent spaces
-        for (let i=-1; i<=1; i++) {
-            for (let j=-1; j<=1; j++) {
+        for (let i=-1; i<=0; i++) {
+            for (let j=-1; j<=0; j++) {
                 const newPos = pos.add(new Point(i, j));
                 if (this.#checkFreeSpace(newPos, propW, propH, false)) {
-                    map.set(newPos.toString(), 1);
+                    const value = map.get(newPos.toString());
+                    if (!value) {
+                        map.set(newPos.toString(), 1);
+                    } else {
+                        map.set(newPos.toString(), value + 1);
+                    }
                 }
             }
+        }
+    }
+
+
+    processProps(){
+        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
+
+        // Ensure that you have a valid propSet
+        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
+
+        // parse data
+        for (let i = 0; i < propList.length; i++) {
+            const p = propList[i];
+
+            // will store map of possible positons for the prop to choose from
+            const validPosMap = this.#cloneMap(this.#validPos); 
+            const validPositions = [];
+            
+            const nearWall = p.getPlacementRules().nearWall; //str
+            const nearProp = p.getPlacementRules().nearProp; //str prop name
+            const atCenter = p.getPlacementRules().atCenter; //boolean
+            
+            if (atCenter) {
+                this.findCenterPositon(p, validPosMap);
+            } 
+            if (nearWall !== "none") {
+                this.findPositionNearWall(p, nearWall, validPosMap); 
+            }
+            if (nearProp !== "none") {
+                // prop already exist in the map
+                const propExist = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
+                // if prop exist in the set list
+                if (propList.some((p) => p.getName() === nearProp)) {
+                    // process prop. This method can be broken down into two. one main and other one just takes a prop arugment
+                }
+                this.findPositionNearProp(p, propExist, validPosMap);
+            }
+
+            // if unable to find any valid position for a prop, what to do? TODO
+            if (validPosMap.size === 0) return; 
+
+            // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
+            for (const [key, value] of validPosMap) {
+                if (value > 0) {
+                    const position = Point.fromString(key);
+                    validPositions.push(position);
+                } 
+            }
+
+            const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
+            const validPosition = validPositions[randomIndex];
+            //console.log("POSITIONN" + validPosition.toString());
+            this.#putProp(p, validPosition);
         }
     }
     
@@ -142,10 +181,10 @@ class PropMap {
         return true;
     }
 
-    #putProp(prop, pos, w, h) {
+    #putProp(prop, pos) {
         // claiming space for prop bigger than one tile
-        for (let i=0; i<w; i++) {
-            for (let j=0; j<h; j++){
+        for (let i=0; i<prop.getSize().w; i++) {
+            for (let j=0; j<prop.getSize().h; j++){
                 const newPos = pos.add(new Point(i,j));
                 this.#validPos.set(newPos.toString(), 1);
             }
