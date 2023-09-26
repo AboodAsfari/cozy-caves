@@ -46,11 +46,12 @@ class PropMap {
         // implement later
     }
 
-    findPositionNearProp(prop, adjProp, map) {
+    findPositionNearProp(prop, nearProp, map) {
+        // prop already exist in the map
+        const adjProp = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
         // if the adj prop is not already in the room
         if (!adjProp) {
-            console.log("Prop does not exist in map");
-            // find a random position
+            this.findRandomValidPosition(prop, map);
             return;
         }
 
@@ -106,6 +107,32 @@ class PropMap {
         }
     }
 
+    findRandomValidPosition(prop, map) {
+        const x = this.#room.getDimensions().getX();
+        const y = this.#room.getDimensions().getY();
+        const propW = prop.getSize().w;
+        const propH = prop.getSize().h;
+        
+        const tries = 100; // to avoid infinite loop
+        for (let i=0; i<tries; i++) {
+            const randomX = Math.floor(this.#randomGen() * x);
+            const randomY = Math.floor(this.#randomGen() * y);
+            const randomPos = new Point(randomX, randomY);
+
+            // if the randomly generated position is valid
+            if (this.#checkFreeSpace(randomPos, propW, propH, false)) {
+                const value = map.get(randomPos.toString());
+                if (!value) {
+                    map.set(randomPos.toString(), 1);
+                } else {
+                    map.set(randomPos.toString(), value + 1);
+                }
+                return;
+            }
+        }
+        console.log("Valid random position not found after " + tries + " tries");
+    }
+
     processSet(){
         // parse set data
         for (let i = 0; i < this.#propList.length; i++) {
@@ -116,32 +143,23 @@ class PropMap {
 
     processProp(prop) {
         // will store map of possible positons for the prop to choose from
-        const validPosMap = this.#cloneMap(this.#validPos); 
+        const validPosMap = new Map(); //this.#cloneMap(this.#validPos); 
         const validPositions = [];
         
         const nearWall = prop.getPlacementRules().nearWall; //str
         const nearProp = prop.getPlacementRules().nearProp; //str prop name
         const atCenter = prop.getPlacementRules().atCenter; //boolean
         
-        if (atCenter) {
-            this.findCenterPositon(prop, validPosMap);
-        } 
-        if (nearWall !== "none") {
-            this.findPositionNearWall(prop, nearWall, validPosMap); 
-        }
-        if (nearProp !== "none") {
-            // prop already exist in the map
-            const propExist = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
-            // if prop exist in the set list
-            if (this.#propList.some((p) => p.getName() === nearProp)) {
-                // process prop. This method can be broken down into two. one main and other one just takes a prop arugment
-            }
-            this.findPositionNearProp(prop, propExist, validPosMap);
-        }
+        if (atCenter) this.findCenterPositon(prop, validPosMap);
+        if (nearWall !== "none") this.findPositionNearWall(prop, nearWall, validPosMap); 
+        if (nearProp !== "none") this.findPositionNearProp(prop, nearProp, validPosMap);
+        if (!atCenter && nearProp === "none" && nearWall === "none") this.findRandomValidPosition(prop, validPosMap);
 
         // if unable to find any valid position for a prop, what to do? TODO
-        if (validPosMap.size === 0) return; 
-
+        if (validPosMap.size === 0) {
+            console.log("could not find any valid positon for " + prop.getName());
+            return; 
+        }
         // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
         for (const [key, value] of validPosMap) {
             if (value > 0) {
@@ -152,14 +170,14 @@ class PropMap {
 
         const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
         const validPosition = validPositions[randomIndex];
-        //console.log("POSITIONN" + validPosition.toString());
-        this.#putProp(p, validPosition);
+        this.#putProp(prop, validPosition);
     }
 
     #checkFreeSpace(pos, w, h, wall) {
         for (let i=0; i<w; i++) {
             for (let j=0; j<h; j++){
-                if(!this.#checkValidPosition(pos.add(new Point(i, j)), wall)) return false;
+                const newPos = pos.add(new Point(i, j));
+                if(!this.#checkValidPosition(newPos, wall)) return false;
             }
         }
         return true;
@@ -241,13 +259,13 @@ class PropMap {
      * @param {Point} pos - Position to be checked 
      * @returns boolean
      */
-    #checkValidPosition(pos, wall){
+    #checkValidPosition(pos, acceptWall){
         const tile = this.#room.getTile(pos);
-        const noFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
-        const noProp = this.getProp(pos) === null || this.getProp(pos) === undefined;
-        const noPos = this.checkPos(pos) === 0 || this.checkPos(pos) === undefined || this.checkPos(pos) === null; //TODO: do we need this? check this again later
-        if (!wall && noFloor) return false; // no wall
-        if (!noProp || !noPos) return false;
+        const notFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
+        const noPropExist = this.getProp(pos) === null || this.getProp(pos) === undefined;
+        const notFree = this.checkPos(pos) === 1;
+        if (notFloor && !acceptWall) return false; // no wall
+        if (!noPropExist || notFree) return false;
         return true;
     }
 
@@ -330,8 +348,8 @@ class PropMap {
                     propInfo  += pos.toString() + ": " + prop.name + "\n";
                 }
                 else if (!tile) roomArray[i] += "X";
-                else if (tile.getTileType() === "floor") roomArray[i] += "O";
-                else roomArray[i] += "I";
+                else if (tile.getTileType() === "floor") roomArray[i] += "-";
+                else roomArray[i] += "w";
                 roomArray[i] += "  ";
             }
         }
