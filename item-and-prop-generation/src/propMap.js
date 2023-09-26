@@ -6,7 +6,6 @@ const seedrandom = require('seedrandom');
 class PropMap {
     #populatedRoom = new Map();
     #room;
-    #propSetGen;
     #propList;
     #seed;
     #validPos = new Map();
@@ -15,13 +14,13 @@ class PropMap {
     constructor (room, seed) {
         if (seed) this.#seed = seed;
         else this.#seed = Math.random();
-
         this.#room = room;
         this.#randomGen = seedrandom(this.#seed);
-        this.#propSetGen = new PropSet(this.#randomGen());
-        this.#propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
-     //   this.#populatePropMap();
+        // generating a set
+        this.propSetGen = new PropSet(this.#randomGen());
+        this.#propList = this.propSetGen.getPropSet(this.#getMaxProp());
+        if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
     }
 
     #getMaxProp() {
@@ -52,6 +51,7 @@ class PropMap {
         if (!adjProp) {
             console.log("Prop does not exist in map");
             // find a random position
+            return;
         }
 
         const propW = prop.getSize().w;
@@ -106,70 +106,54 @@ class PropMap {
         }
     }
 
-
-    processProps(){
-        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
-
-        // Ensure that you have a valid propSet
-        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
-
-        // parse data
-        for (let i = 0; i < propList.length; i++) {
-            const p = propList[i];
-
-            // will store map of possible positons for the prop to choose from
-            const validPosMap = this.#cloneMap(this.#validPos); 
-            const validPositions = [];
-            
-            const nearWall = p.getPlacementRules().nearWall; //str
-            const nearProp = p.getPlacementRules().nearProp; //str prop name
-            const atCenter = p.getPlacementRules().atCenter; //boolean
-            
-            if (atCenter) {
-                this.findCenterPositon(p, validPosMap);
-            } 
-            if (nearWall !== "none") {
-                this.findPositionNearWall(p, nearWall, validPosMap); 
-            }
-            if (nearProp !== "none") {
-                // prop already exist in the map
-                const propExist = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
-                // if prop exist in the set list
-                if (propList.some((p) => p.getName() === nearProp)) {
-                    // process prop. This method can be broken down into two. one main and other one just takes a prop arugment
-                }
-                this.findPositionNearProp(p, propExist, validPosMap);
-            }
-
-            // if unable to find any valid position for a prop, what to do? TODO
-            if (validPosMap.size === 0) return; 
-
-            // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
-            for (const [key, value] of validPosMap) {
-                if (value > 0) {
-                    const position = Point.fromString(key);
-                    validPositions.push(position);
-                } 
-            }
-
-            const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
-            const validPosition = validPositions[randomIndex];
-            //console.log("POSITIONN" + validPosition.toString());
-            this.#putProp(p, validPosition);
+    processSet(){
+        // parse set data
+        for (let i = 0; i < this.#propList.length; i++) {
+            const p = this.#propList[i];
+            this.processProp(p);
         }
     }
-    
-    /**
-     * Populates the populatedRoom with a set of props based on rarity.
-     */
-    #populatePropMap() {
-        const propList = this.#propSetGen.getPropSet(this.#getMaxProp());
 
-        // Ensure that you have a valid propSet
-        if (!Array.isArray(propList) || propList.length === 0) throw new Error("Empty prop set");
-
-        this.#placeProps(propList);
+    processProp(prop) {
+        // will store map of possible positons for the prop to choose from
+        const validPosMap = this.#cloneMap(this.#validPos); 
+        const validPositions = [];
         
+        const nearWall = prop.getPlacementRules().nearWall; //str
+        const nearProp = prop.getPlacementRules().nearProp; //str prop name
+        const atCenter = prop.getPlacementRules().atCenter; //boolean
+        
+        if (atCenter) {
+            this.findCenterPositon(prop, validPosMap);
+        } 
+        if (nearWall !== "none") {
+            this.findPositionNearWall(prop, nearWall, validPosMap); 
+        }
+        if (nearProp !== "none") {
+            // prop already exist in the map
+            const propExist = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
+            // if prop exist in the set list
+            if (this.#propList.some((p) => p.getName() === nearProp)) {
+                // process prop. This method can be broken down into two. one main and other one just takes a prop arugment
+            }
+            this.findPositionNearProp(prop, propExist, validPosMap);
+        }
+
+        // if unable to find any valid position for a prop, what to do? TODO
+        if (validPosMap.size === 0) return; 
+
+        // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
+        for (const [key, value] of validPosMap) {
+            if (value > 0) {
+                const position = Point.fromString(key);
+                validPositions.push(position);
+            } 
+        }
+
+        const randomIndex = Math.floor(this.#randomGen() * validPositions.length);
+        const validPosition = validPositions[randomIndex];
+        //console.log("POSITIONN" + validPosition.toString());
+        this.#putProp(p, validPosition);
     }
 
     #checkFreeSpace(pos, w, h, wall) {
