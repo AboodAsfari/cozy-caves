@@ -134,6 +134,7 @@ class PropMap {
     }
 
     processSet(){
+        console.log(this.#propList);
         // parse set data
         for (let i = 0; i < this.#propList.length; i++) {
             const p = this.#propList[i];
