@@ -32,9 +32,9 @@ class Point {
 
     toString() { return this.#x + "," + this.#y; }
     
-    fromString(str) { 
+    static fromString(str) { 
         const point = str.split(',');
-        return new Point(point[0], point[1]);
+        return new Point(parseInt(point[0]), parseInt(point[1]));
     }
 
     clone() { return new Point(this.#x, this.#y); }
