@@ -34,6 +34,7 @@ const HallwayShapes = Object.freeze({
     DOWN_TOP : 'DT',
     DOWN_RIGHT : 'DR',
     DOWN_LEFT : 'DL',
+    MERGED: 'M',
 })
 
 var roomToRoomConnections = [];
@@ -138,7 +139,10 @@ function generateHallways(roomsList, w, h) {
     let finalHallways = [];
     toMergeMap.forEach((hallwayArray) => {
         let hallway = hallwayArray[0];
-        if (hallwayArray.length > 1) hallway = hallwayArray[0].merge(hallwayArray.slice(1));
+        if (hallwayArray.length > 1) { 
+            hallway = hallwayArray[0].merge(hallwayArray.slice(1));
+            hallway.setShape(HallwayShapes.MERGED);
+        }
         rooms.push(hallway.getRoom());
         finalHallways.push(hallway);
     });
@@ -243,7 +247,7 @@ function checkYPlane (fromY, fromHeight, toY, toHeight) {
 function determineShape(relativeX, relativeY, fromKey, toRoom) {
     if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.UP) {
         return HallwayShapes.RIGHT_TOP;
-        //other options can be randomly done later    console.log(conn.to);
+        //other options can be randomly done later
     } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.UP) {
         return HallwayShapes.LEFT_TOP;
         //other options can be randomly done later
@@ -422,6 +426,8 @@ function createFromEntryExit(fromPos, toPos, shape) {
         addTilesWall(1, diffY + 1, hallway, false, diffX);
         openPositions(hallway, fromPos, 1, false);
         openPositions(hallway, toPos, -1, true);
+        hallway.setShape(HallwayShapes.RIGHT_TOP);
+        
     } 
     
     else if (shape == HallwayShapes.DOWN_LEFT) {
@@ -432,6 +438,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         addTilesWall(1, diffX + 1, hallway, true, diffY);
         openPositions(hallway, fromPos, 1, true);
         openPositions(hallway, toPos, -1, false);
+        hallway.setShape(HallwayShapes.DOWN_LEFT);
     }
 
     else if (shape == HallwayShapes.RIGHT_DOWN) {
@@ -442,6 +449,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         addTilesWall(diffY + 1, 0, hallway, false, diffX);
         openPositions(hallway, fromPos, 1, false);
         openPositions(hallway, toPos, 1, true);
+        hallway.setShape(HallwayShapes.RIGHT_DOWN);
     }
 
     else if (shape == HallwayShapes.TOP_LEFT) {
@@ -452,6 +460,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
         addTilesWall(1, diffX + 1, hallway, true, 1);
         openPositions(hallway, fromPos, -1, true);
         openPositions(hallway, toPos, -1, false);
+        hallway.setShape(HallwayShapes.TOP_LEFT);
     } 
     
     else if (shape == HallwayShapes.LEFT_RIGHT) {
@@ -467,7 +476,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
             openPositions(hallway, fromPos, -1, false);
             openPositions(hallway, toPos, 1, false);
         }
-        
+        hallway.setShape(HallwayShapes.LEFT_RIGHT);
     } 
     
     else if (shape == HallwayShapes.TOP_DOWN) {
@@ -483,6 +492,7 @@ function createFromEntryExit(fromPos, toPos, shape) {
             openPositions(hallway, fromPos, -1, true);
             openPositions(hallway, toPos, 1, true);
         }
+        hallway.setShape(HallwayShapes.TOP_DOWN);
     } else {
         return;
     }
@@ -513,20 +523,20 @@ function openPositions(hallway, pos, offset, horizontal) {
         let indexAbove = map[pointAbove.getX()][pointAbove.getY()];
         let indexAt = map[pointAt.getX()][pointAt.getY()];
         let indexBelow = map[pointBelow.getX()][pointBelow.getY()];
-        if (indexAbove > 0) { 
+        if (indexAbove >= 0) { 
             roomPositions.push(pointAbove);
         } else {
             hallwayPositions.push(pointAbove);
         }
-        if (indexAt > 0) {
+        if (indexAt >= 0) {
             roomPositions.push(pointAt);
         } else {
             hallwayPositions.push(pointAt);
         }
-        if (indexBelow > 0) {
+        if (indexBelow >= 0) {
             roomPositions.push(pointBelow);
         } else {
-            roomPositions.push(pointBelow);
+            hallwayPositions.push(pointBelow);
         }
     }
     hallway.addTilesToOpen(roomIndex, {
