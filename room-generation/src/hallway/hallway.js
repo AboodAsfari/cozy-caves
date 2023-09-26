@@ -35,6 +35,16 @@ class Hallway
         this.#room = this.#room.merge(hallways.map((hallway) => {
             return hallway.getRoom();
         }));
+        hallways.forEach(hallway => {
+            let otherTilesToOpen = hallway.getTilesToOpen();
+             for (const [key, value] of otherTilesToOpen.entries()) {
+                 if (this.#tilesToOpen.has(key)) {
+                   this.#tilesToOpen.get(key).push(...value);
+                 } else {
+                   this.#tilesToOpen.set(key, [...value]);
+                 }
+               }
+        });
         return this;
     }
 
