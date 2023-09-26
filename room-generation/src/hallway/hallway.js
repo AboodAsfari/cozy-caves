@@ -6,14 +6,17 @@ class Hallway
     #possibleTiles = [];
     #tilesToOpen = new Map();
     #room = new Room();
+    #shape;
 
     setOverlappingRoom(room) { this.#overlappingRoom = room; }
     setRoom(room) { this.#room = room; }
+    setShape(shape) { this.#shape = shape; }
 
     getOverlappingRoom() { return this.#overlappingRoom; }
     getPossibleTiles() { return this.#possibleTiles; }
     getTilesToOpen() { return this.#tilesToOpen; }
     getRoom() { return this.#room; }
+    getShape() { return this.#shape; }
     
     addPossibleTile(tile) { this.#possibleTiles.push(tile); }
 
@@ -33,6 +36,10 @@ class Hallway
             return hallway.getRoom();
         }));
         return this;
+    }
+
+    toString() {
+        return this.#room.toString();
     }
 }
 
