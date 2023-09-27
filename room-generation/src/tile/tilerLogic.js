@@ -25,10 +25,10 @@ class TilerLogic {
     }
 
     // Getters.
-    getID(tile, room, numGen) {
+    getID(tile, room, numGen, adjacentRoom, adjacentTileGlobalPositions) {
         let tileType = tile.getTileType();
         if (!this.#tileGetters.hasOwnProperty(tileType.toString())) throw new Error(`Tile type ${tileType} not found.`); 
-        return this.#tileGetters[tileType.toString()](tile, room, numGen); 
+        return this.#tileGetters[tileType.toString()](tile, room, numGen, adjacentRoom, adjacentTileGlobalPositions); 
     }
 
     updateTile(tile, room, numGen) {
