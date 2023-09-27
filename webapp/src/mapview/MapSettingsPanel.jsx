@@ -87,8 +87,8 @@ const MapSettingsPanel = (props) => {
         if (!widthValid || !heightValid || !roomSizeValid || !coverageValid) return;
         const newSettings = {
             preset: presetSelected,
-            width: width,
-            height: height,
+            width: Math.max(roomSize, width),
+            height: Math.max(roomSize, height),
             roomSize: roomSize,
             totalCoverage: totalCoverage,
             seed: seed
@@ -104,8 +104,8 @@ const MapSettingsPanel = (props) => {
                 <Typography sx={{ color: "white", fontSize: 25, userSelect: "none" }}> Preset: {presetSelected} </Typography>
             </Button>
 
-            <SettingsSlider name="Width" value={width} setValue={setWidth} min={5} max={200} setValid={setWidthValid} declareEdited={declareEdited} />
-            <SettingsSlider name="Height" value={height} setValue={setHeight} min={5} max={200} setValid={setHeightValid} declareEdited={declareEdited} />
+            <SettingsSlider name="Width" value={Math.max(roomSize, width)} setValue={setWidth} min={5} max={200} setValid={setWidthValid} declareEdited={declareEdited} />
+            <SettingsSlider name="Height" value={Math.max(roomSize, height)} setValue={setHeight} min={5} max={200} setValid={setHeightValid} declareEdited={declareEdited} />
             <SettingsSlider name="Room Size" value={roomSize} setValue={setRoomSize} min={6} max={15} setValid={setRoomSizeValid} declareEdited={declareEdited} />
             <SettingsSlider name="Room Density" value={totalCoverage} setValue={setTotalCoverage} min={0} max={100} setValid={setCoverageValid} declareEdited={declareEdited} />
             <Stack direction="row" className="settings-text-field">
