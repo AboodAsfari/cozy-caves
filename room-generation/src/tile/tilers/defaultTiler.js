@@ -67,10 +67,10 @@ const defaultWallTiler = (tile, room, numGen, adjacentRoom, adjacentTileGlobalPo
         }, TileID.INNER_WALL, numGen));
     } 
 
-    if (isWall(rightNeighbor) && isWall(topNeighbor) && ((isFloor(bottomLeftNeighbor) && bottomRightNeighbor && topLeftNeighbor) || !topRightNeighbor)) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_INNER_WALL);
-    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && ((isFloor(topLeftNeighbor) && topRightNeighbor && bottomLeftNeighbor) || !bottomRightNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_INNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(topNeighbor) && ((isFloor(bottomRightNeighbor) && bottomLeftNeighbor && topRightNeighbor) || !topLeftNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_INNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && ((isFloor(topRightNeighbor) && topLeftNeighbor && bottomRightNeighbor) || !bottomLeftNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_INNER_WALL);
+    if (isWall(rightNeighbor) && isWall(topNeighbor) && ((bottomLeftNeighbor && bottomRightNeighbor && topLeftNeighbor) || !topRightNeighbor) && !(isWall(bottomRightNeighbor) && isWall(bottomNeighbor))) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_INNER_WALL);
+    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && ((topLeftNeighbor && topRightNeighbor && bottomLeftNeighbor) || !bottomRightNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(topNeighbor) && ((bottomRightNeighbor && bottomLeftNeighbor && topRightNeighbor) || !topLeftNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && ((topRightNeighbor && topLeftNeighbor && bottomRightNeighbor) || !bottomLeftNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_INNER_WALL);
 
     if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return getCornerWall(new Point(1, 1), TileSpacialType.TOP_LEFT_CORNER_WALL);
     else if (isWall(leftNeighbor) && isWall(bottomNeighbor)) return getCornerWall(new Point(-1, 1), TileSpacialType.TOP_RIGHT_CORNER_WALL);
