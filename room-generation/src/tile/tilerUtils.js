@@ -1,5 +1,16 @@
-const getNeighbor = (pos, room, posChange) => {
-    let neighbor = room.getTile(pos.add(posChange));
+const getNeighbor = (pos, room, posChange, adjacentRoom, adjacentTileGlobalPositions) => {
+    let targetPos = pos.add(posChange);
+    if (adjacentTileGlobalPositions && adjacentRoom) {
+        for (let adjacentPos of adjacentTileGlobalPositions) {
+            let localPos = adjacentPos.subtract(room.getPosition());
+            if (localPos.toString() !== targetPos.toString()) continue;
+            let localAdjacentPos = adjacentPos.subtract(adjacentRoom.getPosition());
+            let adjacentTile = adjacentRoom.getTile(localAdjacentPos);
+            if (adjacentTile) return adjacentTile;
+        }
+    }
+
+    let neighbor = room.getTile(targetPos);
     if (neighbor) return neighbor;
     return null;
 }
