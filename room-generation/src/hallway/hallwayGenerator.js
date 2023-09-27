@@ -511,11 +511,9 @@ function createFromEntryExit(fromPos, toPos, shape) {
 }
 
 function openPositions(hallway, pos, offset, horizontal) {
-    let roomIndex = map[pos.getX()][pos.getY()];
-    let roomPositions = [];
+    let roomsMap = new Map();
     let hallwayPositions = [];
     
-
     for (let i = 0; i <= 1; i++) {
         let pointAbove;
         let pointAt;
@@ -533,26 +531,40 @@ function openPositions(hallway, pos, offset, horizontal) {
         let indexAbove = map[pointAbove.getX()][pointAbove.getY()];
         let indexAt = map[pointAt.getX()][pointAt.getY()];
         let indexBelow = map[pointBelow.getX()][pointBelow.getY()];
-        if (indexAbove >= 0) { 
-            roomPositions.push(pointAbove);
+        if (indexAbove >= 0) {
+            if (!roomsMap.get(indexAbove)) {
+                roomsMap.set(indexAbove, [pointAbove]);
+            } else {
+                roomsMap.get(indexAbove).push(pointAbove);
+            }
         } else {
             hallwayPositions.push(pointAbove);
         }
         if (indexAt >= 0) {
-            roomPositions.push(pointAt);
+            if (!roomsMap.get(indexAt)) {
+                roomsMap.set(indexAt, [pointAt]);
+            } else {
+                roomsMap.get(indexAt).push(pointAt);
+            }
         } else {
             hallwayPositions.push(pointAt);
         }
         if (indexBelow >= 0) {
-            roomPositions.push(pointBelow);
+            if (!roomsMap.get(indexBelow)) {
+                roomsMap.set(indexBelow, [pointBelow]);
+            } else {
+                roomsMap.get(indexBelow).push(pointBelow);
+            }
         } else {
             hallwayPositions.push(pointBelow);
         }
     }
-    hallway.addTilesToOpen(roomIndex, {
-        roomTilesToOpen: roomPositions,
-        hallwayTilesToOpen: hallwayPositions,
-    });    
+    for(let [key, value] of roomsMap.entries()) {    
+        hallway.addTilesToOpen(key, {
+            roomTilesToOpen: value,
+            hallwayTilesToOpen: hallwayPositions,
+        });
+    }    
 }
 
 function addTilesWall(start, end, hallway, isOnX, floorPos) {
