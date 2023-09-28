@@ -190,7 +190,17 @@ function minimumSpanningTree() {
             }
         }
     }
-    throw new Error("MST Failed");
+    mstFailHandler(mst);
+    return mst;
+}
+
+function mstFailHandler(mst) {
+    for (let i = 0; i < rooms.length-1; i++) {
+        mst.push({
+            from: i,
+            to: i+1
+        });
+    }
 }
 
 function createHallway(conn) {
