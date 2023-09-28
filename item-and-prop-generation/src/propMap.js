@@ -22,6 +22,8 @@ class PropMap {
         this.propSetGen = new PropSet(this.#randomGen());
         this.#propList = this.propSetGen.getPropSet(this.#getMaxProp());
         if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
+
+        this.processSet(this.#propList);
     }
 
     /**
@@ -120,8 +122,6 @@ class PropMap {
                 let xOffset = 0;
                 let yOffset = 0;
                 
-                console.log(xModifier + "," + yModifier);
-
                 if (xModifier === -1) xOffset = (propW-1) * xModifier;
                 if (yModifier === -1) yOffset = (propH-1) * yModifier;
                 randomPos = randomPos.add(new Point(xOffset, yOffset));
@@ -254,11 +254,10 @@ class PropMap {
      *
      * @returns {void}
      */
-    processSet(){
-        console.log(this.#propList);
+    processSet(propList){
         // parse set data
-        for (let i = 0; i < this.#propList.length; i++) {
-            const p = this.#propList[i];
+        for (let i = 0; i < propList.length; i++) {
+            const p = propList[i];
             this.processProp(p);
         }
     }
@@ -271,7 +270,7 @@ class PropMap {
      */
     processProp(prop) {
         // will store map of possible positons for the prop to choose from
-        const validPosMap = new Map(); //this.#cloneMap(this.#validPos); 
+        const validPosMap = new Map();
         const validPositions = [];
         
         const nearWall = prop.getPlacementRules().nearWall; //str

@@ -140,7 +140,7 @@ test('Testing PropSet Gen', () => {
     const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
     const propMap = populateRoom(room, seed);
     
-    propMap.processSet();
+    //propMap.processSet();
     log(propMap.toString());
     log("-------------------------------");
 
