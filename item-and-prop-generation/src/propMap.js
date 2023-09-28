@@ -24,6 +24,11 @@ class PropMap {
         if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
     }
 
+    /**
+     * Calculates and returns the maximum number of props allowed based on the room dimensions.
+     *
+     * @returns {number} The maximum number of props.
+     */
     #getMaxProp() {
         let x = this.#room.getDimensions().getX();
         let y = this.#room.getDimensions().getY();
@@ -35,6 +40,14 @@ class PropMap {
         return 15;
     }
 
+    /**
+     * Finds a position on a specified wall type within the map.
+     *
+     * @param {Prop} prop - The prop to find a position near the wall.
+     * @param {string} wallType - The type of wall to find a position near (e.g., "edgeWall", "cornerWall", "innerWall").
+     * @param {Map<string, number>} map - A map to keep track of available positions.
+     * @returns {void}
+     */
     findPositionNearWall(prop, wallType, map) {
         // wall type maping
         const wallTypes = {
@@ -109,17 +122,13 @@ class PropMap {
                 
                 console.log(xModifier + "," + yModifier);
 
-                if (xModifier === -1) xOffset = propW * xModifier;
-                if (yModifier === -1) yOffset = propH * yModifier;
-
-                console.log("Pos before: " + randomPos);
+                if (xModifier === -1) xOffset = (propW-1) * xModifier;
+                if (yModifier === -1) yOffset = (propH-1) * yModifier;
                 randomPos = randomPos.add(new Point(xOffset, yOffset));
-                console.log("Pos after: " + randomPos);
             }
 
             // if the randomly generated position is valid
             if (this.#checkFreeSpace(randomPos, propW, propH, true)) {
-                console.log("free space found!!!");
                 const value = map.get(randomPos.toString());
                 if (!value) {
                     map.set(randomPos.toString(), 1);
@@ -131,6 +140,14 @@ class PropMap {
         }
     }
 
+    /**
+     * Finds a position near a specified prop within the map.
+     *
+     * @param {Prop} prop - The prop to find a position for.
+     * @param {string} nearProp - The name of the prop near which to find a position.
+     * @param {Map<string, number>} map - A map to keep track of available positions.
+     * @returns {void}
+     */
     findPositionNearProp(prop, nearProp, map) {
         // prop already exist in the map
         const adjProp = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
@@ -165,6 +182,13 @@ class PropMap {
         if (found) console.log("possible position found");
     }
 
+    /**
+     * Finds a central position for placing a prop within the map.
+     *
+     * @param {Prop} prop - The prop to be placed at the center position.
+     * @param {Map<string, number>} map - A map to keep track of available positions.
+     * @returns {void}
+     */
     findCenterPositon(prop, map) {
         const x = this.#room.getDimensions().getX();
         const y = this.#room.getDimensions().getY();
@@ -192,6 +216,13 @@ class PropMap {
         }
     }
 
+    /**
+     * Finds a random position where a prop can be placed.
+     *
+     * @param {Prop} prop - The prop to be randomly placed.
+     * @param {Map<string, number>} map - A map to keep track of available positions.
+     * @returns {void}
+     */
     findRandomValidPosition(prop, map) {
         const x = this.#room.getDimensions().getX();
         const y = this.#room.getDimensions().getY();
@@ -218,6 +249,11 @@ class PropMap {
         console.log("Valid random position not found after " + tries + " tries");
     }
 
+    /**
+     * Processes the set data and places the props within the map.
+     *
+     * @returns {void}
+     */
     processSet(){
         console.log(this.#propList);
         // parse set data
@@ -227,6 +263,12 @@ class PropMap {
         }
     }
 
+    /**
+     * Processes a specific prop and determines its placement within the map.
+     *
+     * @param {Prop} prop - The prop to be processed and placed.
+     * @returns {void}
+     */
     processProp(prop) {
         // will store map of possible positons for the prop to choose from
         const validPosMap = new Map(); //this.#cloneMap(this.#validPos); 
@@ -259,6 +301,15 @@ class PropMap {
         this.#putProp(prop, validPosition);
     }
 
+    /**
+     * Checks if a specified position and dimensions are free for placing a prop.
+     *
+     * @param {Point} pos - The position to check.
+     * @param {number} w - The width of the prop.
+     * @param {number} h - The height of the prop.
+     * @param {boolean} wall - Indicates if the prop can be placed near a wall.
+     * @returns {boolean} - True if the space is free; otherwise, false.
+     */
     #checkFreeSpace(pos, w, h, wall) {
         for (let i=0; i<w; i++) {
             for (let j=0; j<h; j++){
@@ -269,6 +320,13 @@ class PropMap {
         return true;
     }
 
+    /**
+     * Places a prop within the map at the specified position, claiming the necessary space as unavailable.
+     *
+     * @param {Prop} prop - The prop to be placed.
+     * @param {Point} pos - The position at which to place the prop.
+     * @returns {void}
+     */
     #putProp(prop, pos) {
         // claiming space for prop bigger than one tile
         for (let i=0; i<prop.getSize().w; i++) {
@@ -283,67 +341,10 @@ class PropMap {
     }
 
     /**
-     * Looks for a valid random poisiton in the room so that a prop can be placed.
-     *
-     * @returns Point position.
-     */
-    #getRandomPosition(){
-        const roomDimensions = this.#room.getDimensions();
-        let count = 0;
-
-        // Limiting the number of attempts to avoid an infinite loop. This should not happen in a normal scenerio.
-        while (count < 1000) {
-            const i = Math.floor(this.#randomGen() * roomDimensions.getX());
-            const j = Math.floor(this.#randomGen() * roomDimensions.getY());
-
-            const pos = new Point(i, j);
-            
-            const tile = this.#room.getTile(pos);
-            const prop = this.getProp(pos);
-
-            // checking if the tile exist in this position and making sure it is a floor tile
-            if (tile === null || tile === undefined) continue;
-            if (!(prop === null || prop === undefined)) continue;
-            if (tile.getTileType() === "floor") return pos;
-
-            count++;
-        }
-        return null;
-    }
-
-    #nearWall(prop) {
-        const w = prop.getSize().w;
-        const h = prop.getSize().h;
-
-        
-
-        let dimensions = this.#room.getDimensions();
-
-        // getting all the wall tiles
-        const walls = [];
-        for (let i = 0; i < dimensions.getY(); i++) {
-            for (let j = 0; j < dimensions.getX(); j++) {
-                let pos = new Point(j, i);
-                let tile = this.#room.getTile(pos);
-                if (tile.getTileType() === "wall") walls.push(pos);
-            }
-        }
-
-        let left = new Point(-1,0);
-        let right = new Point(1,0);
-        let top = new Point(0,-1);
-        let bottom = new Point(0,1);
-
-        const edgeWallValues = [left.toString(), right.toString(), top.toString(), bottom.toString()];
-        const allEdgeWalls = walls.filter((pos) => edgeWallValues.includes(pos.toString()));
-        
-    }
-
-    /**
      * Checks whether or not the position provided is a free space to put prop in.
      * 
      * @param {Point} pos - Position to be checked 
-     * @returns boolean
+     * @returns {Boolean} True if position is valid, false otherwise.
      */
     #checkValidPosition(pos, acceptWall){
         const tile = this.#room.getTile(pos);
@@ -355,57 +356,8 @@ class PropMap {
         return true;
     }
 
-    /**
-     * Places the props in the prop set near each other using an anchor point.
-     * 
-     * @param {Array} propSet - the set of props.
-     */
-    #placeProps(propSet) {
-        let anchorPos;
-        let count = 0;
-        do {
-            if (count === 500) return;
-            anchorPos = this.#getRandomPosition();
-            count++;
-        } while (anchorPos === null);
-
-        propSet[0].setPosition(anchorPos);
-        this.#populatedRoom.set(anchorPos.toString(), propSet[0]);
-        let range = this.#room.getDimensions().getX()-3;
-        for (var i=1; i<propSet.length; i++) {
-            const prop = propSet[i];
-            const relativePos = this.#calculateRelativePos(anchorPos, range);
-
-            if (relativePos === null) continue;
-
-            prop.setPosition(relativePos);
-            this.#populatedRoom.set(relativePos.toString(), prop);
-        }
-    }
-    
-    /**
-     * This calculates a random position relative to the given anchor position. 
-     * 
-     * @param {Point} anchorPos - Position of the anchor point.
-     * @param {number} range - How far the new position can be from the anchor point.
-     * @returns Position.
-     */
-    #calculateRelativePos(anchorPos, range){
-        let xChange, yChange, x, y, newPos;
-
-        do {
-            xChange = Math.floor(this.#randomGen() * (2 * range + 1)) - range;
-            yChange = Math.floor(this.#randomGen() * (2 * range + 1)) - range;
-            x = anchorPos.getX() + xChange;
-            y = anchorPos.getY() + yChange;
-            newPos = new Point(Math.abs(x), Math.abs(y));
-        } while (!this.#checkValidPosition(newPos, false));
-
-        return newPos;
-    }
-
     checkPos(pos) {
-        return this.#validPos.get(pos.toString()); // 0 or 1
+        return this.#validPos.get(pos.toString()); // return have number if it is valid
     }
     // Getters
     getProp(pos) {

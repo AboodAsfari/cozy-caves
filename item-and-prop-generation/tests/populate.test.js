@@ -136,7 +136,7 @@ test('Testing Center Position', () => {
 
 test('Testing PropSet Gen', () => {
     log("TESTING PROPSET GEN\n");
-    const seed = "hello";
+    const seed = "aboo";
     const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
     const propMap = populateRoom(room, seed);
     
