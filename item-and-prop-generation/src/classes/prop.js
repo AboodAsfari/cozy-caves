@@ -40,6 +40,11 @@ class Prop {
         this.size = size;
 
         this.overlap = this.placementRules.overlap;
+        
+        const xOffset = (this.size.w > 1) ? this.size.w/2 : this.size.w;
+        const yOffset = (this.size.h > 1) ? this.size.h/2 : this.size.h;
+
+        this.#offset = new Point(Math.floor(xOffset), Math.floor(yOffset));
     }
 
     addItem(item){
