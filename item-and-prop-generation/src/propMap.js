@@ -1,4 +1,5 @@
 const Point = require('@cozy-caves/utils').Point;
+const TileSpacialType = require('@cozy-caves/utils').TileSpacialType;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropSet = require('./propSet.js');
 const seedrandom = require('seedrandom');
@@ -34,16 +35,94 @@ class PropMap {
         return 15;
     }
 
-    #cloneMap(map) {
-        const temp = new Map();
-        for (const [key, value] of map) {
-            temp.set(key, value);
-        }
-        return temp;
-    }
+    findPositionNearWall(prop, wallType, map) {
+        // wall type maping
+        const wallTypes = {
+            edgeWall: [TileSpacialType.LEFT_EDGE_WALL, TileSpacialType.RIGHT_EDGE_WALL, TileSpacialType.TOP_EDGE_WALL, TileSpacialType.BOTTOM_EDGE_WALL],
+            cornerWall: [
+                TileSpacialType.TOP_LEFT_CORNER_WALL, TileSpacialType.TOP_RIGHT_CORNER_WALL,
+                TileSpacialType.BOTTOM_LEFT_CORNER_WALL, TileSpacialType.BOTTOM_RIGHT_CORNER_WALL
+            ],
+            innerWall: [
+                TileSpacialType.TOP_LEFT_INNER_WALL, TileSpacialType.TOP_RIGHT_INNER_WALL,
+                TileSpacialType.BOTTOM_LEFT_INNER_WALL, TileSpacialType.BOTTOM_RIGHT_INNER_WALL
+            ]
+        };
 
-    findPositionNearWall(prop, wall, map) {
-        // implement later
+        // wall orentation mapping
+        const wallOrientation = {
+            [TileSpacialType.LEFT_EDGE_WALL]: { x: -1, y: 0 },
+            [TileSpacialType.RIGHT_EDGE_WALL]: { x: 1, y: 0 },
+            [TileSpacialType.TOP_EDGE_WALL]: { x: 0, y: -1 },
+            [TileSpacialType.BOTTOM_EDGE_WALL]: { x: 0, y: 1 },
+            [TileSpacialType.TOP_LEFT_CORNER_WALL]: { x: -1, y: -1 },
+            [TileSpacialType.TOP_RIGHT_CORNER_WALL]: { x: 1, y: -1 },
+            [TileSpacialType.BOTTOM_LEFT_CORNER_WALL]: { x: -1, y: 1 },
+            [TileSpacialType.BOTTOM_RIGHT_CORNER_WALL]: { x: 1, y: 1 },
+            [TileSpacialType.TOP_LEFT_INNER_WALL]: { x: -1, y: -1 },
+            [TileSpacialType.TOP_RIGHT_INNER_WALL]: { x: 1, y: -1 },
+            [TileSpacialType.BOTTOM_LEFT_INNER_WALL]: { x: -1, y: 1 },
+            [TileSpacialType.BOTTOM_RIGHT_INNER_WALL]: { x: 1, y: 1 },
+        };
+
+        const matchingWalls = new Map();
+        // Iterate through the room to find all the matching walls
+        for (const tile of this.#room.getTiles()) {
+            const pos = tile.getPosition().toString();
+            const tileType = tile.getTileSpacialType();
+            
+            if (wallTypes[wallType].includes(tileType)) {
+                matchingWalls.set(pos, tile);
+            }
+        }
+
+        // this should never happen with a normal room but just for saftey checks
+        if (matchingWalls.size === 0) {
+            this.findRandomValidPosition(prop, map);
+            return;
+        }
+
+        const propW = prop.getSize().w;
+        const propH = prop.getSize().h;
+        const tries = 100; // to avoid infinite loop if there are no valid positions
+
+        // Try to find a random position near the wall that is valid
+        for (let i=0; i<tries; i++) {
+            const possibleWalls = Array.from(matchingWalls.entries());
+            const randomIndex = Math.floor(this.#randomGen() * possibleWalls.length);
+            const randomWall = possibleWalls[randomIndex];
+            const [ pos, wall ] = randomWall;
+            let randomPos = Point.fromString(pos);
+            const wallType = wall.getTileSpacialType();
+
+            // Retrieve the wall orientation using the WallOrientation mapping
+            const orientation = wallOrientation[wallType];
+
+            // This will change the position the search should extend towards
+            if (orientation) {
+                const xModifier = orientation.x;
+                const yModifier = orientation.y;
+
+                let xOffset = 0;
+                let yOffset = 0;
+
+                if (xModifier !== 0) xOffset = propW * xModifier;
+                if (yModifier !== 0) yOffset = propH * yModifier;
+
+                randomPos = randomPos.add(new Point(xOffset, yOffset));
+            }
+
+            // if the randomly generated position is valid
+            if (this.#checkFreeSpace(randomPos, propW, propH, false)) {
+                const value = map.get(randomPos.toString());
+                if (!value) {
+                    map.set(randomPos.toString(), 1);
+                } else {
+                    map.set(randomPos.toString(), value + 1);
+                }
+                return;
+            }
+        }
     }
 
     findPositionNearProp(prop, nearProp, map) {
