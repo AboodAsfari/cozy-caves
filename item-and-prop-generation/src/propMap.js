@@ -51,18 +51,18 @@ class PropMap {
 
         // wall orentation mapping
         const wallOrientation = {
-            [TileSpacialType.LEFT_EDGE_WALL]: { x: -1, y: 0 },
-            [TileSpacialType.RIGHT_EDGE_WALL]: { x: 1, y: 0 },
-            [TileSpacialType.TOP_EDGE_WALL]: { x: 0, y: -1 },
-            [TileSpacialType.BOTTOM_EDGE_WALL]: { x: 0, y: 1 },
-            [TileSpacialType.TOP_LEFT_CORNER_WALL]: { x: -1, y: -1 },
-            [TileSpacialType.TOP_RIGHT_CORNER_WALL]: { x: 1, y: -1 },
-            [TileSpacialType.BOTTOM_LEFT_CORNER_WALL]: { x: -1, y: 1 },
-            [TileSpacialType.BOTTOM_RIGHT_CORNER_WALL]: { x: 1, y: 1 },
-            [TileSpacialType.TOP_LEFT_INNER_WALL]: { x: -1, y: -1 },
-            [TileSpacialType.TOP_RIGHT_INNER_WALL]: { x: 1, y: -1 },
-            [TileSpacialType.BOTTOM_LEFT_INNER_WALL]: { x: -1, y: 1 },
-            [TileSpacialType.BOTTOM_RIGHT_INNER_WALL]: { x: 1, y: 1 },
+            [TileSpacialType.LEFT_EDGE_WALL]: { x: 1, y: 0 },
+            [TileSpacialType.RIGHT_EDGE_WALL]: { x: -1, y: 0 },
+            [TileSpacialType.TOP_EDGE_WALL]: { x: 0, y: 1 },
+            [TileSpacialType.BOTTOM_EDGE_WALL]: { x: 0, y: -1 },
+            [TileSpacialType.TOP_LEFT_CORNER_WALL]: { x: 1, y: 1 },
+            [TileSpacialType.TOP_RIGHT_CORNER_WALL]: { x: -1, y: 1 },
+            [TileSpacialType.BOTTOM_LEFT_CORNER_WALL]: { x: 1, y: -1 },
+            [TileSpacialType.BOTTOM_RIGHT_CORNER_WALL]: { x: -1, y: -1 },
+            [TileSpacialType.TOP_LEFT_INNER_WALL]: { x: 1, y: 1 },
+            [TileSpacialType.TOP_RIGHT_INNER_WALL]: { x: -1, y: 1 },
+            [TileSpacialType.BOTTOM_LEFT_INNER_WALL]: { x: 1, y: -1 },
+            [TileSpacialType.BOTTOM_RIGHT_INNER_WALL]: { x: -1, y: -1 },
         };
 
         const matchingWalls = new Map();
@@ -78,6 +78,7 @@ class PropMap {
 
         // this should never happen with a normal room but just for saftey checks
         if (matchingWalls.size === 0) {
+            console.log("No matching walls found.");
             this.findRandomValidPosition(prop, map);
             return;
         }
@@ -105,15 +106,20 @@ class PropMap {
 
                 let xOffset = 0;
                 let yOffset = 0;
+                
+                console.log(xModifier + "," + yModifier);
 
-                if (xModifier !== 0) xOffset = propW * xModifier;
-                if (yModifier !== 0) yOffset = propH * yModifier;
+                if (xModifier === -1) xOffset = propW * xModifier;
+                if (yModifier === -1) yOffset = propH * yModifier;
 
+                console.log("Pos before: " + randomPos);
                 randomPos = randomPos.add(new Point(xOffset, yOffset));
+                console.log("Pos after: " + randomPos);
             }
 
             // if the randomly generated position is valid
-            if (this.#checkFreeSpace(randomPos, propW, propH, false)) {
+            if (this.#checkFreeSpace(randomPos, propW, propH, true)) {
+                console.log("free space found!!!");
                 const value = map.get(randomPos.toString());
                 if (!value) {
                     map.set(randomPos.toString(), 1);
