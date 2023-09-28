@@ -91,7 +91,7 @@ const Options = (props) => {
 
             props.setDungeon(new DungeonBuilder()
                 .setSeed(seed.toString())
-                .setSize(Number(width), Number(height))
+                .setSize(Number(Math.max(roomSize, width)), Number(Math.max(roomSize, height)))
                 .setMinRoomSize(Number(roomSize))
                 .setTotalCoverage(Number(totalCoverage))
                 .build()
@@ -118,9 +118,9 @@ const Options = (props) => {
             <DialogContent sx={{ mb: 1.5 }}>
                 <Stack direction="row" spacing={5} sx={{ justifyContent: "center" }}>
                     <Stack>
-                        <SettingsSlider name="Width" value={width} setValue={setWidth} min={5} max={200} setValid={setWidthValid} declareEdited={declareEdited} />
-                        <SettingsSlider name="Height" value={height} setValue={setHeight} min={5} max={200} setValid={setHeightValid} declareEdited={declareEdited} />
-                        <SettingsSlider name="Room Size" value={roomSize} setValue={setRoomSize} min={6} max={15} setValid={setRoomSizeValid} declareEdited={declareEdited} />
+                        <SettingsSlider name="Width" value={Math.max(roomSize, width)} setValue={setWidth} min={5} max={200} setValid={setWidthValid} declareEdited={declareEdited}/>
+                        <SettingsSlider name="Height" value={Math.max(roomSize, height)} setValue={setHeight} min={5} max={200} setValid={setHeightValid} declareEdited={declareEdited}/>
+                        <SettingsSlider name="Room Size" value={roomSize} setValue={setRoomSize} min={5} max={15} setValid={setRoomSizeValid} declareEdited={declareEdited} />
                         <SettingsSlider name="Room Density" value={totalCoverage} setValue={setTotalCoverage} min={0} max={100} setValid={setCoverageValid} declareEdited={declareEdited} />
                     </Stack>
 
