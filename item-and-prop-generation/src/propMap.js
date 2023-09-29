@@ -24,6 +24,7 @@ class PropMap {
         if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
 
         this.processSet(this.#propList);
+        console.log(this.showPosMap());
     }
 
     /**
@@ -74,9 +75,9 @@ class PropMap {
             [TileSpacialType.TOP_RIGHT_CORNER_WALL]: { x: -1, y: 1 },
             [TileSpacialType.BOTTOM_LEFT_CORNER_WALL]: { x: 1, y: -1 },
             [TileSpacialType.BOTTOM_RIGHT_CORNER_WALL]: { x: -1, y: -1 },
-            [TileSpacialType.TOP_LEFT_INNER_WALL]: { x: 1, y: 1 },
-            [TileSpacialType.TOP_RIGHT_INNER_WALL]: { x: -1, y: 1 },
-            [TileSpacialType.BOTTOM_LEFT_INNER_WALL]: { x: 1, y: -1 },
+            [TileSpacialType.TOP_LEFT_INNER_WALL]: { x: -1, y: -1 },
+            [TileSpacialType.TOP_RIGHT_INNER_WALL]: { x: -1, y: -1 },
+            [TileSpacialType.BOTTOM_LEFT_INNER_WALL]: { x: -1, y: -1 },
             [TileSpacialType.BOTTOM_RIGHT_INNER_WALL]: { x: -1, y: -1 },
         };
 
@@ -119,12 +120,38 @@ class PropMap {
                 const xModifier = orientation.x;
                 const yModifier = orientation.y;
 
+
+                let xScale = 1;
+                let yScale = 1;
+
                 let xOffset = 0;
                 let yOffset = 0;
                 
-                if (xModifier === -1) xOffset = (propW-1) * xModifier;
-                if (yModifier === -1) yOffset = (propH-1) * yModifier;
-                randomPos = randomPos.add(new Point(xOffset, yOffset));
+                if (xModifier === -1) {
+                    xOffset = (propW-1) * xModifier;
+                    xScale = -1;
+                }
+                if (yModifier === -1) {
+                    yOffset = (propH-1) * yModifier;
+                    yScale = -1;
+                }
+                
+                let newPos = new Point(xOffset, yOffset);
+
+                // left and right wall
+                if (xModifier !== 0 && yModifier === 0) {
+                    prop.setRotation(90);
+
+                    const ratio = prop.getSize().h/prop.getSize().w;
+                    if (ratio !== 1) {
+                        prop.setOffset(ratio);
+                    }
+
+                    newPos = new Point(yOffset, xOffset);
+                }
+                
+                prop.setScale(new Point(xScale, yScale));
+                randomPos = randomPos.add(newPos);
             }
 
             // if the randomly generated position is valid
@@ -160,8 +187,8 @@ class PropMap {
         const propW = prop.getSize().w;
         const propH = prop.getSize().h;
         let pos = adjProp.getPosition();
-        let xRange = adjProp.getSize().w + 1;
-        let yRange = adjProp.getSize().h + 1;
+        let xRange = adjProp.getSize().w;
+        let yRange = adjProp.getSize().h;
 
         let found = false;
         // explore adjacent spaces
@@ -179,7 +206,6 @@ class PropMap {
                 }
             }
         }
-        if (found) console.log("possible position found");
     }
 
     /**
@@ -328,13 +354,16 @@ class PropMap {
      */
     #putProp(prop, pos) {
         // claiming space for prop bigger than one tile
-        for (let i=0; i<prop.getSize().w; i++) {
-            for (let j=0; j<prop.getSize().h; j++){
-                const newPos = pos.add(new Point(i,j));
-                this.#validPos.set(newPos.toString(), 1);
+        if (!prop.getOverlap()) {
+            for (let i=0; i<prop.getSize().w; i++) {
+                for (let j=0; j<prop.getSize().h; j++){
+                    const newPos = pos.add(new Point(i,j));
+                    this.#validPos.set(newPos.toString(), 1);
+                }
             }
         }
 
+        prop.setPosition(pos);
         // putting prop in the map
         this.#populatedRoom.set(pos.toString(), prop);
     }
@@ -347,10 +376,12 @@ class PropMap {
      */
     #checkValidPosition(pos, acceptWall){
         const tile = this.#room.getTile(pos);
-        const notFloor = tile === null || tile === undefined || tile.getTileType() !== "floor";
+        const invalid = tile === null || tile === undefined;
+        if (invalid) return false;
         const noPropExist = this.getProp(pos) === null || this.getProp(pos) === undefined;
+        const isWall = tile.getTileType() !== "floor";
         const notFree = this.checkPos(pos) === 1;
-        if (notFloor && !acceptWall) return false; // no wall
+        if (isWall && !acceptWall) return false; // no wall
         if (!noPropExist || notFree) return false;
         return true;
     }
@@ -381,8 +412,42 @@ class PropMap {
                 let prop = this.getProp(pos);
 
                 if (prop !== null && prop !== undefined) {
-                    roomArray[i] += "P";
+                    roomArray[i] += prop.getName().substring(0,1);
                     propInfo  += pos.toString() + ": " + prop.name + "\n";
+                }
+                else if (!tile) roomArray[i] += "X";
+                else if (tile.getTileType() === "floor") roomArray[i] += "-";
+                else roomArray[i] += "w";
+                roomArray[i] += "  ";
+            }
+        }
+        let finalRoom = roomArray.join("\n");
+        let finalString = finalRoom.substring(0, finalRoom.length - 1) + "\n\n" + propInfo;
+        return finalString;
+    }
+
+    showPosMap() {
+        let roomArray = [];
+        let dimensions = this.#room.getDimensions();
+        let propInfo = "";
+
+        for (let i = 0; i < dimensions.getY(); i++) {
+            roomArray.push("");
+            for (let j = 0; j < dimensions.getX(); j++) {
+                let pos = new Point(j, i);
+                let tile = this.#room.getTile(pos);
+                if (tile === null || tile === undefined) continue; 
+                let prop = this.getProp(pos); 
+                let value = this.checkPos(pos); 
+
+                if (value !== null && value !== undefined) {
+                    if (prop !== null && prop !== undefined) {
+                        roomArray[i] += prop.getName().substring(0,1);
+                        propInfo  += pos.toString() + ": " + prop.name + ", w:" + prop.getSize().w + " h:" + prop.getSize().h + "\n";
+                    } 
+                    else {
+                        roomArray[i] += value;
+                    }
                 }
                 else if (!tile) roomArray[i] += "X";
                 else if (tile.getTileType() === "floor") roomArray[i] += "-";
