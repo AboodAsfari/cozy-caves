@@ -553,7 +553,10 @@ function openPositions(hallway, pos, offset, horizontal) {
                 roomsMap.get(indexAt).push(pointAt);
             }
         } else {
-            hallwayPositions.push(pointAt);
+            let localHallwayPoint = pointAt.subtract(hallway.getRoom().getPosition());
+            if (hallway.getRoom().getTile(localHallwayPoint)) {
+                hallwayPositions.push(pointAt);
+            }
         }
         if (indexBelow >= 0) {
             if (!roomsMap.get(indexBelow)) {
@@ -573,7 +576,7 @@ function openPositions(hallway, pos, offset, horizontal) {
         let tilesToOpen = {
             roomTilesToOpen: value,
             hallwayTilesToOpen: hallwayPositions,
-        };    
+        };
         hallway.addTilesToOpen(key, tilesToOpen); 
     }    
 }
