@@ -10,6 +10,7 @@ class Hallway
     #previousPosition;
     #enteredRooms = new Set();
     #roomEntryPositions = [];
+    #roomExitPositions = new Map();
 
     setOverlappingRoom(room) { this.#overlappingRoom = room; }
     setRoom(room) { this.#room = room; }
@@ -24,19 +25,20 @@ class Hallway
     getPreviousPosition() { return this.#previousPosition; }
     getEnteredRooms() { return this.#enteredRooms; }
     getRoomEntryPositions() { return this.#roomEntryPositions; }
+    getRoomExitPositions() { return this.#roomExitPositions; }
     
     addPossibleTile(tile) { this.#possibleTiles.push(tile); }
     addEnteredRoomIndex(roomIndex) { this.#enteredRooms.add(roomIndex); }
     addRoomEntryPosition(position) { this.#roomEntryPositions.push(position); }
+    addRoomExitPosition(index, position) { this.#roomExitPositions.set(index, position); }
 
     clearPossibleTiles() { this.#possibleTiles = []; }
 
-    addTilesToOpen(roomIndex, worldPositions) {
+    addTilesToOpen(roomIndex, tilesToOpen) {
         if (this.#tilesToOpen.has(roomIndex)) {
-            let updatedArray = this.#tilesToOpen.get(roomIndex).push(worldPositions);
-            this.#tilesToOpen.set(roomIndex, updatedArray);
+            this.#tilesToOpen.get(roomIndex).push(tilesToOpen);
         } else {
-            this.#tilesToOpen.set(roomIndex, [worldPositions]);
+            this.#tilesToOpen.set(roomIndex, [tilesToOpen]);
         }
     }
 
