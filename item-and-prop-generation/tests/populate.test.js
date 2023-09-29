@@ -96,3 +96,52 @@ test('Testing Prop Generation', () => {
     log("-------------------------------");
 
 });
+
+test('Testing Center Position', () => {
+    log("TESTING CENTER POSITION\n");
+    const seed = "0";
+    const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
+    const propMap = populateRoom(room, seed);
+    
+    const generator = new PropGenerator();
+    const prop = generator.getPropByName("Table");
+
+    const map = new Map();
+    propMap.findCenterPositon(prop, map);
+
+    let roomArray = [];
+    let dimensions = room.getDimensions();
+    for (let i = 0; i < dimensions.getY(); i++) {
+        roomArray.push("");
+        for (let j = 0; j < dimensions.getX(); j++) {
+            let pos = new Point(j, i);
+            let tile = room.getTile(pos);
+            if (tile === null || tile === undefined) continue; 
+            let prop = map.get(pos.toString());
+
+            if (prop !== null && prop !== undefined) {
+                roomArray[i] += prop;
+            }
+            else if (!tile) roomArray[i] += "X";
+            else if (tile.getTileType() === "floor") roomArray[i] += "-";
+            else roomArray[i] += "w";
+            roomArray[i] += "  ";
+        }
+    }
+    let finalRoom = roomArray.join("\n");
+    log(finalRoom);
+    log("-------------------------------");
+
+});
+
+test('Testing PropSet Gen', () => {
+    log("TESTING PROPSET GEN\n");
+    const seed = "aboo";
+    const room = new RoomBuilder(seed).setSize(new Point(10,7)).setLeniency(new Point(0,0)).build();
+    const propMap = populateRoom(room, seed);
+    
+    //propMap.processSet();
+    log(propMap.toString());
+    log("-------------------------------");
+
+});
