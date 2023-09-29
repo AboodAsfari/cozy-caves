@@ -6,6 +6,7 @@ const Tile = require("../tile/tile");
 const { TileID } = require('@cozy-caves/utils');
 const { tilerChooser } = require("../tile/tilerLogic");
 const seedrandom = require('seedrandom');
+const { hallwayTileUpdater } = require('../tile/tilers/hallwayTiler');
 
 //fromRoom relative to toRoom
 const RelativePosX = Object.freeze({
@@ -154,8 +155,6 @@ function generateHallways(roomsList, w, h) {
         hallway.getTilesToOpen().forEach((value, key) => {
             value.forEach((item) => {
                 rooms[key].openTiles(item.roomTilesToOpen, item.hallwayTilesToOpen, hallway, seedrandom(Math.random()));
-                // console.log(item.roomTilesToOpen);
-                // console.log(item.hallwayTilesToOpen);
             });
         });
     }
@@ -417,51 +416,55 @@ function createFromEntryExit(fromPos, toPos, shape) {
     let hallway = new Hallway();
 
     if (shape == HallwayShapes.RIGHT_TOP) {
+        hallway.setShape(HallwayShapes.RIGHT_TOP);
         hallway.getRoom().setPosition(new Point(startingX, startingY-1));
+        hallway.setPreviousPosition(new Point(0, 1));
         addTilesFloor(1, diffX, hallway, true, 1);
-        addTilesFloor(1, diffY, hallway, false, diffX);
+        addTilesFloor(2, diffY, hallway, false, diffX);
         addTilesWall(0, diffX + 1, hallway, true, 1);
         addTilesWall(1, diffY + 1, hallway, false, diffX);
         openPositions(hallway, fromPos, 1, false);
         openPositions(hallway, toPos, -1, true);
-        hallway.setShape(HallwayShapes.RIGHT_TOP);
-        
     } 
     
     else if (shape == HallwayShapes.DOWN_LEFT) {
+        hallway.setShape(HallwayShapes.DOWN_LEFT);
         hallway.getRoom().setPosition(new Point(startingX-1, startingY));
+        hallway.setPreviousPosition(new Point(1, 0));
         addTilesFloor(1, diffY, hallway, false, 1);
-        addTilesFloor(1, diffX, hallway, true, diffY);
+        addTilesFloor(2, diffX, hallway, true, diffY);
         addTilesWall(0, diffY + 1, hallway, false, 1);
         addTilesWall(1, diffX + 1, hallway, true, diffY);
         openPositions(hallway, fromPos, 1, true);
         openPositions(hallway, toPos, -1, false);
-        hallway.setShape(HallwayShapes.DOWN_LEFT);
     }
 
     else if (shape == HallwayShapes.RIGHT_DOWN) {
+        hallway.setShape(HallwayShapes.RIGHT_DOWN);
         hallway.getRoom().setPosition(new Point(startingX, toY));
+        hallway.setPreviousPosition(new Point(0, diffY));
         addTilesFloor(1, diffX, hallway, true, diffY);
-        addTilesFloor(diffY, 1, hallway, false, diffX);
+        addTilesFloor(diffY-1, 1, hallway, false, diffX);
         addTilesWall(0, diffX, hallway, true, diffY);
         addTilesWall(diffY + 1, 0, hallway, false, diffX);
         openPositions(hallway, fromPos, 1, false);
         openPositions(hallway, toPos, 1, true);
-        hallway.setShape(HallwayShapes.RIGHT_DOWN);
     }
 
     else if (shape == HallwayShapes.TOP_LEFT) {
+        hallway.setShape(HallwayShapes.TOP_LEFT);
         hallway.getRoom().setPosition(new Point(startingX-1, toY-1));
+        hallway.setPreviousPosition(new Point(1, diffY+1));
         addTilesFloor(diffY, 1, hallway, false, 1);
-        addTilesFloor(1, diffX, hallway, true, 1);
+        addTilesFloor(2, diffX, hallway, true, 1);
         addTilesWall(diffY + 1, 0, hallway, false, 1);
         addTilesWall(1, diffX + 1, hallway, true, 1);
         openPositions(hallway, fromPos, -1, true);
         openPositions(hallway, toPos, -1, false);
-        hallway.setShape(HallwayShapes.TOP_LEFT);
     } 
     
     else if (shape == HallwayShapes.LEFT_RIGHT) {
+        hallway.setShape(HallwayShapes.LEFT_RIGHT);
         if (diffX == 1) {
             hallway.getRoom().addTile(new Tile("floor", new Point(0, 0)));
             hallway.getRoom().addTile(new Tile("floor", new Point(1, 0)));
@@ -469,15 +472,16 @@ function createFromEntryExit(fromPos, toPos, shape) {
             //special open positions 
         } else {
             hallway.getRoom().setPosition(new Point(toX, startingY-1));
+            hallway.setPreviousPosition(new Point(diffX, 1));
             addTilesFloor(diffX-1, 1, hallway, true, 1);
             addTilesWall(diffX, 0, hallway, true, 1);
             openPositions(hallway, fromPos, -1, false);
             openPositions(hallway, toPos, 1, false);
         }
-        hallway.setShape(HallwayShapes.LEFT_RIGHT);
     } 
     
     else if (shape == HallwayShapes.TOP_DOWN) {
+        hallway.setShape(HallwayShapes.TOP_DOWN);
         if (diffY == 1) {
             hallway.getRoom().addTile(new Tile("floor", new Point(1, 0)));
             hallway.getRoom().addTile(new Tile("floor", new Point(1, 1)));
@@ -485,16 +489,21 @@ function createFromEntryExit(fromPos, toPos, shape) {
             //special open positions
         } else {
             hallway.getRoom().setPosition(new Point(startingX-1, toY));
+            hallway.setPreviousPosition(new Point(1, diffY));
             addTilesFloor(diffY-1, 1, hallway, false, 1);
             addTilesWall(diffY, 0, hallway, false, 1);
             openPositions(hallway, fromPos, -1, true);
             openPositions(hallway, toPos, 1, true);
         }
-        hallway.setShape(HallwayShapes.TOP_DOWN);
     } else {
         return;
     }
-
+    for(entryPosition of hallway.getRoomEntryPositions()) {
+        let globalPosition = entryPosition.position.add(hallway.getRoom().getPosition());
+        let direction = entryPosition.direction.getX() == 0 ? entryPosition.direction.getY() : entryPosition.direction.getX();
+        let horizontal = entryPosition.direction.getX() == 0;
+        openPositions(hallway, globalPosition, direction, horizontal);
+    }
     hallways.push(hallway);
 }
 
@@ -553,6 +562,9 @@ function openPositions(hallway, pos, offset, horizontal) {
             }
         }
     }
+
+    
+
     for(let [key, value] of roomsMap.entries()) {    
         hallway.addTilesToOpen(key, {
             roomTilesToOpen: value,
@@ -625,7 +637,18 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
         if (roomIndex < 0) hallway.getRoom().addTile(tile);
     } else {
         if (roomIndex < 0) hallway.addPossibleTile(tile);
-        else hallway.clearPossibleTiles();
+        else {
+            // Check if the room index is stored -> return
+            // Store the room index
+            if (hallway.getEnteredRooms().has(roomIndex)) {
+                //return;
+            } else {
+                hallway.addEnteredRoomIndex(roomIndex);
+                hallway.addRoomEntryPosition({position:tile.getPosition(), direction:hallway.getPreviousPosition().subtract(tile.getPosition())});
+                hallway.getRoom().addTile(new Tile('floor', tile.getPosition()));
+            }
+            hallway.clearPossibleTiles();
+        }
 
         if (roomIndex < 0 && hallway.getOverlappingRoom()) {
             let roomMinimumPos = hallway.getOverlappingRoom().getPosition();
@@ -633,13 +656,15 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
             let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
             let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
             if(!overlappingX || !overlappingY) {
+                //exit room
                 hallway.setOverlappingRoom(undefined);
                 hallway.getPossibleTiles().forEach(tile => hallway.getRoom().addTile(tile));
             }
-        } 
+        }
         
         if (roomIndex < 0 && !hallway.getOverlappingRoom()) hallway.getRoom().addTile(tile);
-        else if (roomIndex > 0) hallway.setOverlappingRoom(rooms[roomIndex]);   
+        else if (roomIndex > 0) hallway.setOverlappingRoom(rooms[roomIndex]);
+        hallway.setPreviousPosition(tile.getPosition());
     }
 }
 
