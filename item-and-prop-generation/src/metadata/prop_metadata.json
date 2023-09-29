@@ -2,7 +2,7 @@
 	"Table": {
         "information": {
             "desc": "Found in taverns, inns, or dining areas, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": false,
@@ -10,7 +10,7 @@
                 "nearWall": "none",
                 "nearProp": "Chair",
                 "atCenter": true,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 3, "h": 2 }
         }
@@ -26,7 +26,7 @@
                 "nearWall": "none",
                 "nearProp": "Table",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 1, "h": 1 }
         }
@@ -44,7 +44,7 @@
                 "atCenter": false,
                 "overlap": false
             },
-            "size": { "w": 2, "h": 3 }
+            "size": { "w": 3, "h": 2 }
         }
     },
     "Potted Plants": {
@@ -55,7 +55,7 @@
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
-                "nearWall": "cornerWall",
+                "nearWall": "edgeWall",
                 "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
@@ -79,9 +79,9 @@
             ],
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "none",
+                "nearProp": "Barrel",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 1, "h": 1 }
         }
@@ -89,7 +89,7 @@
     "Bookshelf": {
         "information": {
             "desc": "Can be placed in libraries, wizard towers, or study rooms. May hold valuable books with lore, spells, or hints for quests.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": true,
@@ -112,7 +112,7 @@
     "Cabinet": {
         "information": {
             "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies or loot.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": true,
@@ -135,7 +135,7 @@
     "Crate": {
         "information": {
             "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": true,
@@ -147,10 +147,10 @@
                 "Dungeoneering Supplies"
             ],
             "placement_rules": {
-                "nearWall": "none",
-                "nearProp": "none",
+                "nearWall": "cornerWall",
+                "nearProp": "Crate",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 2, "h": 2 }
         }
@@ -180,7 +180,7 @@
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "cornerWall",
-                "nearProp": "none",
+                "nearProp": "Rubble",
                 "atCenter": false,
                 "overlap": false
             },
@@ -190,14 +190,14 @@
     "Runes": {
         "information": {
             "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
-            "rarity": "common"
+            "rarity": "rare"
         },
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
-                "nearWall": "edgeWall",
-                "nearProp": "none",
-                "atCenter": false,
+                "nearWall": "none",
+                "nearProp": "Glyphs",
+                "atCenter": true,
                 "overlap": true
             },
             "size": { "w": 2, "h": 2 }
@@ -211,8 +211,8 @@
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
-                "nearWall": "edgeWall",
-                "nearProp": "none",
+                "nearWall": "none",
+                "nearProp": "Runes",
                 "atCenter": false,
                 "overlap": false
             },
@@ -230,7 +230,7 @@
                 "nearWall": "edgeWall",
                 "nearProp": "Banners",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 1, "h": 1 }
         }
@@ -244,14 +244,14 @@
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "Banners",
+                "nearProp": "none",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 2, "h": 1 }
         }
     },
-    "Candles": {
+    "Torch": {
         "information": {
             "desc": "Candles placed in decorative holders, providing both illumination and ambiance to the surroundings.",
             "rarity": "common"
@@ -259,7 +259,7 @@
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
-                "nearWall": "none",
+                "nearWall": "cornerWall",
                 "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
@@ -270,7 +270,7 @@
     "Fireplace": {
         "information": {
             "desc": "Provides warmth and ambiance in cold environments. Players can gather around for comfort or strategic planning.",
-            "rarity": "common"
+            "rarity": "rare"
         },
         "render_rules": {
             "contains_item": false,
@@ -286,7 +286,7 @@
     "Statues": {
         "information": {
             "desc": "Statues covered in rubble, which players can clean to reveal hidden passages or items.",
-            "rarity": "rare"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": false,
@@ -294,7 +294,7 @@
                 "nearWall": "edgeWall",
                 "nearProp": "Rubble",
                 "atCenter": false,
-                "overlap": true
+                "overlap": false
             },
             "size": { "w": 2, "h": 2 }
         }
@@ -302,7 +302,7 @@
     "Jeweled Chest": {
         "information": {
             "desc": "An elaborate chest filled with valuable treasures, guarded by monsters or traps.",
-            "rarity": "uncommon"
+            "rarity": "rare"
         },
         "render_rules": {
             "contains_item": true,
@@ -319,22 +319,21 @@
             },
             "size": { "w": 2, "h": 1 }
         }
-    },
-    "Golden Altar": {
+    }, 
+    "Rug": {
         "information": {
-            "desc": "An altar adorned with gold and gems that require offerings or rituals to gain rewards.",
-            "rarity": "uncommon"
+            "desc": "Decorative rugs that add warmth and style to rooms.",
+            "rarity": "rare"
         },
         "render_rules": {
-            "contains_item": true,
-            "item_categories": ["Quest-related Items", "Epic and Legendary Items"],
+            "contains_item": false,
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "none",
-                "atCenter": true,
+                "atCenter": false,
                 "overlap": true
             },
-            "size": { "w": 3, "h": 1 }
+            "size": { "w": 2, "h": 2 }
         }
     }
 }

@@ -211,13 +211,12 @@ const RendererCanvas = (props) => {
 	}
 
 	const getProp = (prop) => {
-		let anchorX = 1 / (prop.getSize().w * 2);
-		let anchorY = 1 / (prop.getSize().h * 2);
-		const xPos = (prop.getPosition().getX() + prop.getOffset().getX()) * size;
-		const yPos = (prop.getPosition().getY() + prop.getOffset().getY()) * size;
+		const xPos = (prop.getPosition().getX() + prop.getOffset().x) * size;
+		const yPos = (prop.getPosition().getY() + prop.getOffset().y) * size;
 
 		let sprite = Sprite.from("resources/props/" + prop.getPathName() + ".png");
-		sprite.anchor.set(anchorX, anchorY);
+		sprite.anchor.set(0.5, 0.5);
+		sprite.scale.set(prop.getScale().getX(), prop.getScale().getY());	
 		sprite.position.set(xPos, yPos);
 		sprite.angle = prop.getRotation();
 		sprite.eventMode = "dynamic";
