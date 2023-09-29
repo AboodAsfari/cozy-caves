@@ -69,7 +69,7 @@ function generateCurrentMap() {
         }
     }
 }
-function mergeHallways(hallways, hallwayMap) {
+function findHallwayOverlap(hallways, hallwayMap) {
 
     let disjointSet = new DisjointSet();
 
@@ -83,7 +83,6 @@ function mergeHallways(hallways, hallwayMap) {
         for (let tile of hallway.getTiles()) {
             let tileX = tile.getPosition().getX() + hallwayPos.getX();
             let tileY = tile.getPosition().getY() + hallwayPos.getY();
-            
             if (hallwayMap[tileX][tileY] < 0) {
                 hallwayMap[tileX][tileY] = key;
             } else {
@@ -134,7 +133,7 @@ function generateHallways(roomsList, w, h) {
 
 
     let hallwayMap = [...Array(w)].map(e => Array(h).fill(-1));
-    let toMergeMap = mergeHallways(hallways, hallwayMap);
+    let toMergeMap = findHallwayOverlap(hallways, hallwayMap);
 
     let finalHallways = [];
     toMergeMap.forEach((hallwayArray) => {
@@ -415,17 +414,6 @@ function createFromEntryExit(fromPos, toPos, shape) {
     let diffX = Math.abs(toX - startingX);
     let diffY = Math.abs(toY - startingY);
 
-    let xCompensation = 0;
-    let yCompensation = 0;
-
-    if (diffX < 3) {
-        xCompensation = 3;
-    }
-
-    if (diffY < 3) {
-        yCompensation = 3;
-    }
-
     let hallway = new Hallway();
 
     if (shape == HallwayShapes.RIGHT_TOP) {
@@ -538,7 +526,10 @@ function openPositions(hallway, pos, offset, horizontal) {
                 roomsMap.get(indexAbove).push(pointAbove);
             }
         } else {
-            hallwayPositions.push(pointAbove);
+            let localHallwayPoint = pointAbove.subtract(hallway.getRoom().getPosition());
+            if (hallway.getRoom().getTile(localHallwayPoint)) { 
+                hallwayPositions.push(pointAbove);
+            }
         }
         if (indexAt >= 0) {
             if (!roomsMap.get(indexAt)) {
@@ -556,7 +547,10 @@ function openPositions(hallway, pos, offset, horizontal) {
                 roomsMap.get(indexBelow).push(pointBelow);
             }
         } else {
-            hallwayPositions.push(pointBelow);
+            let localHallwayPoint = pointBelow.subtract(hallway.getRoom().getPosition());
+            if (hallway.getRoom().getTile(localHallwayPoint)) {
+                hallwayPositions.push(pointBelow); 
+            }
         }
     }
     for(let [key, value] of roomsMap.entries()) {    
