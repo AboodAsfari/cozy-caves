@@ -499,16 +499,16 @@ function createFromEntryExit(fromPos, toPos, shape) {
         return;
     }
     for(let entryPosition of hallway.getRoomEntryPositions()) {
-        let globalPosition = entryPosition.position.add(hallway.getRoom().getPosition());
+        let position = entryPosition.position;
         let direction = entryPosition.direction.getX() == 0 ? entryPosition.direction.getY() : entryPosition.direction.getX();
         let horizontal = entryPosition.direction.getX() == 0;
-        openPositions(hallway, globalPosition, direction, horizontal);
+        openPositions(hallway, position, direction, horizontal);
     }
     for(let exitPosition of hallway.getRoomExitPositions().values()) {
-        let globalPosition = exitPosition.position.add(hallway.getRoom().getPosition());
+        let position = exitPosition.position;
         let direction = exitPosition.direction.getX() == 0 ? exitPosition.direction.getY() : exitPosition.direction.getX();
         let horizontal = exitPosition.direction.getX() == 0;
-        openPositions(hallway, globalPosition, direction, horizontal);
+        openPositions(hallway, position, direction, horizontal);
     }
     hallways.push(hallway);
 }
@@ -650,7 +650,7 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
             // Store the room index
             if (!hallway.getEnteredRooms().has(roomIndex)) {
                 hallway.addEnteredRoomIndex(roomIndex);
-                hallway.addRoomEntryPosition({position:tile.getPosition(), direction:hallway.getPreviousPosition().subtract(tile.getPosition())});
+                hallway.addRoomEntryPosition({position:tile.getPosition().add(hallway.getRoom().getPosition()), direction:hallway.getPreviousPosition().subtract(tile.getPosition())});
             }
             hallway.clearPossibleTiles();
         }
@@ -664,7 +664,7 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
             let previousPositionGlobal = hallway.getPreviousPosition().add(hallwayPos);
             let previousPositionRoomIndex = map[previousPositionGlobal.getX()][previousPositionGlobal.getY()];
             if (previousPositionRoomIndex >= 0) {
-                hallway.addRoomExitPosition(previousPositionRoomIndex, {position:hallway.getPreviousPosition(), direction:tile.getPosition().subtract(hallway.getPreviousPosition())});
+                hallway.addRoomExitPosition(previousPositionRoomIndex, {position:previousPositionGlobal, direction:tile.getPosition().subtract(hallway.getPreviousPosition())});
             }
             
             if(!overlappingX || !overlappingY) {
