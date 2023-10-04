@@ -644,44 +644,37 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
         if (!foundAnchor) return;
         if (roomIndex < 0) hallway.getRoom().addTile(tile);
     } else {
-        if (roomIndex < 0) hallway.addPossibleTile(tile);
+        if (roomIndex < 0) {
+            hallway.addPossibleTile(tile);
+            
+            let previousPositionGlobal = hallway.getPreviousPosition().add(hallwayPos);
+            let previousPositionRoomIndex = map[previousPositionGlobal.getX()][previousPositionGlobal.getY()];
+            let previousPositionVector = tile.getPosition().subtract(hallway.getPreviousPosition());
+            if (previousPositionRoomIndex >= 0) hallway.addRoomExitPosition(previousPositionRoomIndex, {position:previousPositionGlobal, direction:previousPositionVector});
+            
+            if (hallway.getOverlappingRoom()) {
+                let roomMinimumPos = hallway.getOverlappingRoom().getPosition();
+                let roomMaximumPos = roomMinimumPos.add(hallway.getOverlappingRoom().getDimensions()).subtract(new Point(1, 1));
+                let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
+                let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
+
+                if(!overlappingX || !overlappingY) {
+                    hallway.setOverlappingRoom(undefined);
+                    hallway.getPossibleTiles().forEach(tile => hallway.getRoom().addTile(tile));
+                }
+            } 
+            else {
+                hallway.getRoom().addTile(tile);
+            }
+        }
         else {
-            // Check if the room index is stored -> return
-            // Store the room index
             if (!hallway.getEnteredRooms().has(roomIndex)) {
                 hallway.addEnteredRoomIndex(roomIndex);
                 hallway.addRoomEntryPosition({position:tile.getPosition().add(hallway.getRoom().getPosition()), direction:hallway.getPreviousPosition().subtract(tile.getPosition())});
             }
             hallway.clearPossibleTiles();
+            hallway.setOverlappingRoom(rooms[roomIndex]);
         }
-
-        if (roomIndex < 0 && hallway.getOverlappingRoom()) {
-            let roomMinimumPos = hallway.getOverlappingRoom().getPosition();
-            let roomMaximumPos = roomMinimumPos.add(hallway.getOverlappingRoom().getDimensions()).subtract(new Point(1, 1));
-            let overlappingX = tileGlobalPos.getX() >= roomMinimumPos.getX() && tileGlobalPos.getX() <= roomMaximumPos.getX();
-            let overlappingY = tileGlobalPos.getY() >= roomMinimumPos.getY() && tileGlobalPos.getY() <= roomMaximumPos.getY();
-            
-            let previousPositionGlobal = hallway.getPreviousPosition().add(hallwayPos);
-            let previousPositionRoomIndex = map[previousPositionGlobal.getX()][previousPositionGlobal.getY()];
-            if (previousPositionRoomIndex >= 0) {
-                hallway.addRoomExitPosition(previousPositionRoomIndex, {position:previousPositionGlobal, direction:tile.getPosition().subtract(hallway.getPreviousPosition())});
-            }
-            
-            if(!overlappingX || !overlappingY) {
-                hallway.setOverlappingRoom(undefined);
-                hallway.getPossibleTiles().forEach(tile => hallway.getRoom().addTile(tile));
-            }
-        }
-        
-        if (roomIndex < 0 && !hallway.getOverlappingRoom()) {
-            let previousPositionGlobal = hallway.getPreviousPosition().add(hallwayPos);
-            let previousPositionRoomIndex = map[previousPositionGlobal.getX()][previousPositionGlobal.getY()];
-            if (previousPositionRoomIndex >= 0) {
-                hallway.addRoomExitPosition(previousPositionRoomIndex, {position:previousPositionGlobal, direction:tile.getPosition().subtract(hallway.getPreviousPosition())});
-            }
-            hallway.getRoom().addTile(tile);
-        }
-        else if (roomIndex > 0) hallway.setOverlappingRoom(rooms[roomIndex]);
         hallway.setPreviousPosition(tile.getPosition());
     }
 }
