@@ -673,7 +673,14 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
             }
         }
         
-        if (roomIndex < 0 && !hallway.getOverlappingRoom()) hallway.getRoom().addTile(tile);
+        if (roomIndex < 0 && !hallway.getOverlappingRoom()) {
+            let previousPositionGlobal = hallway.getPreviousPosition().add(hallwayPos);
+            let previousPositionRoomIndex = map[previousPositionGlobal.getX()][previousPositionGlobal.getY()];
+            if (previousPositionRoomIndex >= 0) {
+                hallway.addRoomExitPosition(previousPositionRoomIndex, {position:previousPositionGlobal, direction:tile.getPosition().subtract(hallway.getPreviousPosition())});
+            }
+            hallway.getRoom().addTile(tile);
+        }
         else if (roomIndex > 0) hallway.setOverlappingRoom(rooms[roomIndex]);
         hallway.setPreviousPosition(tile.getPosition());
     }
