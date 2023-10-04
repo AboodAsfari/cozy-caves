@@ -9,7 +9,7 @@
     },
     "Abandoned": {
         "rarity": "uncommon",
-        "props": ["Cobwebs", "Runes", "Glyphs", "Rubble", "Statues"]
+        "props": ["Cobwebs", "Runes", "Glyphs", "Rubble", "Statues", "Blood Stain"]
     },
     "Storage": {
         "rarity": "common",
@@ -21,14 +21,14 @@
     },
     "Decoration": {
         "rarity": "common",
-        "props": ["Banners", "Tapestries", "Torch", "Rug", "Potted Plants"]
+        "props": ["Tapestries", "Torch", "Rug", "Potted Plants"]
     },
     "Treasure Vault": {
         "rarity": "uncommon",
-        "props": ["Jeweled Chest", "Statues", "Glyphs", "Torch", "Rubble"]
+        "props": ["Jeweled Chest", "Statues", "Runes", "Torch", "Rubble"]
     },
     "Statuary": {
         "rarity": "rare",
-        "props": ["Statues", "Rubble", "Cobwebs", "Glyphs", "Banners"]
+        "props": ["Statues", "Rubble", "Cobwebs", "Glyphs"]
     }
 }

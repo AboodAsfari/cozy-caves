@@ -66,7 +66,7 @@
     "Barrel": {
         "information": {
             "desc": "Commonly found in storage areas, warehouses, or dungeons. May contain supplies, loot, or even hidden passages.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": true,
@@ -79,11 +79,11 @@
             ],
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "Barrel",
+                "nearProp": "Crate",
                 "atCenter": false,
                 "overlap": false
             },
-            "size": { "w": 1, "h": 1 }
+            "size": { "w": 2, "h": 2 }
         }
     },
     "Bookshelf": {
@@ -152,7 +152,7 @@
                 "atCenter": false,
                 "overlap": false
             },
-            "size": { "w": 2, "h": 2 }
+            "size": { "w": 1, "h": 1 }
         }
     },
     "Cobwebs": {
@@ -174,20 +174,20 @@
     "Rubble": {
         "information": {
             "desc": "In abandoned areas or long-forgotten chambers, these details set the tone for mystery and neglect.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "cornerWall",
-                "nearProp": "Rubble",
+                "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
             },
             "size": { "w": 2, "h": 2 }
         }
     },
-    "Runes": {
+    "Glyphs": {
         "information": {
             "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
             "rarity": "rare"
@@ -196,14 +196,14 @@
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "none",
-                "nearProp": "Glyphs",
+                "nearProp": "none",
                 "atCenter": true,
                 "overlap": true
             },
             "size": { "w": 2, "h": 2 }
         }
     },
-    "Glyphs": {
+    "Runes": {
         "information": {
             "desc": "Engraved on walls or floors, these symbols can be clues or trigger magical effects when activated.",
             "rarity": "common"
@@ -213,22 +213,6 @@
             "placement_rules": {
                 "nearWall": "none",
                 "nearProp": "Runes",
-                "atCenter": false,
-                "overlap": false
-            },
-            "size": { "w": 1, "h": 1 }
-        }
-    },
-    "Banners": {
-        "information": {
-            "desc": "Decorating the walls of castles, guild halls, or fortresses, these items add character to the locations.",
-            "rarity": "common"
-        },
-        "render_rules": {
-            "contains_item": false,
-            "placement_rules": {
-                "nearWall": "edgeWall",
-                "nearProp": "Banners",
                 "atCenter": false,
                 "overlap": false
             },
@@ -333,7 +317,23 @@
                 "atCenter": false,
                 "overlap": true
             },
-            "size": { "w": 2, "h": 2 }
+            "size": { "w": 3, "h": 2 }
+        }
+    },
+    "Blood Stain": {
+        "information": {
+            "desc": "A grim and unsettling sight, the blood stain appears as a haunting reminder of past events.",
+            "rarity": "rare"
+        },
+        "render_rules": {
+            "contains_item": false,
+            "placement_rules": {
+                "nearWall": "none",
+                "nearProp": "none",
+                "atCenter": false,
+                "overlap": true
+            },
+            "size": { "w": 3, "h": 3 }
         }
     }
 }
