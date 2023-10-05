@@ -1,6 +1,7 @@
 const Point = require('@cozy-caves/utils').Point;
 const TileSpacialType = require('@cozy-caves/utils').TileSpacialType;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
+const PropGenerator = require('./propGenerator.js');
 const PropSet = require('./propSet.js');
 const seedrandom = require('seedrandom');
 
@@ -37,10 +38,10 @@ class PropMap {
         let y = this.#room.getDimensions().getY();
 
         let size = Math.max(x, y);
-        if (size <= 7) return 4;
-        else if (size <= 12) return 7;
-        else if (size <= 15) return 10;
-        return 15;
+        if (size <= 7) return 7;
+        else if (size <= 12) return 10;
+        else if (size <= 15) return 14;
+        return 17;
     }
 
     /**
@@ -177,10 +178,18 @@ class PropMap {
      */
     findPositionNearProp(prop, nearProp, map) {
         // prop already exist in the map
-        const adjProp = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
+        let adjProp = [...this.#populatedRoom.values()].find(p => p.getName() === nearProp);
+
         // if the adj prop is not already in the room
         if (!adjProp) {
-            this.findRandomValidPosition(prop, map);
+            if (prop.getName() === nearProp) {
+                this.findRandomValidPosition(prop, map);
+            } else {
+                // create and put the adjacent prop in the room !!Improtant. Please avoid circular dependency
+                const propGen = new PropGenerator(this.#randomGen());
+                adjProp = propGen.getPropByName(nearProp);
+                this.processProp(adjProp);
+            }
             return;
         }
 
@@ -191,9 +200,10 @@ class PropMap {
         let yRange = adjProp.getSize().h;
 
         let found = false;
+
         // explore adjacent spaces
-        for (let i=(-1)*(xRange + propW); i<=xRange; i++) {
-            for (let j=(-1)*(yRange + propH); j<=yRange; j++) {
+        for (let i=(-1)*(propW); i<=(xRange+propW -1); i++) {
+            for (let j=(-1)*(propH); j<=(yRange+propH -1); j++) {
                 const newPos = pos.add(new Point(i, j));
                 if (this.#checkFreeSpace(newPos, propW, propH, false)) {
                     const value = map.get(newPos.toString());
@@ -454,7 +464,7 @@ class PropMap {
                 if (value !== null && value !== undefined) {
                     if (prop !== null && prop !== undefined) {
                         roomArray[i] += prop.getName().substring(0,1);
-                        propInfo  += pos.toString() + ": " + prop.name + ", w:" + prop.getSize().w + " h:" + prop.getSize().h + ", ";
+                        propInfo  += pos.toString() + ": " + prop.name + ", w:" + prop.getSize().w + " h:" + prop.getSize().h + "\n";
                         // propInfo += "Spacial type: " + tile.getTileSpacialType().toString() + "\n";
                     } 
                     else {

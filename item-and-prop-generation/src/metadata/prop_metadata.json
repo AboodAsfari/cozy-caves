@@ -125,7 +125,7 @@
             ],
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "Bed",
+                "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
             },
@@ -269,14 +269,14 @@
     },
     "Statues": {
         "information": {
-            "desc": "Statues covered in rubble, which players can clean to reveal hidden passages or items.",
+            "desc": "Statues covered in vines, which players can clean to reveal hidden passages or items.",
             "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "Rubble",
+                "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
             },
@@ -329,7 +329,7 @@
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "none",
-                "nearProp": "none",
+                "nearProp": "Statues",
                 "atCenter": false,
                 "overlap": true
             },

@@ -1,7 +1,7 @@
 {
     "Room": {
         "rarity": "common",
-        "props": ["Table", "Chair", "Bed", "Bookshelf", "Potted Plants", "Cabinet", "Rug"]
+        "props": ["Table", "Bed", "Bookshelf", "Potted Plants", "Cabinet", "Rug"]
     },
     "Fireplace": {
         "rarity": "rare",
@@ -17,18 +17,53 @@
     },
     "Library": {
         "rarity": "common",
-        "props": ["Bookshelf", "Table", "Chair"]
+        "props": ["Bookshelf", "Table", "Chair", "Cabinet"]
     },
     "Decoration": {
         "rarity": "common",
         "props": ["Tapestries", "Torch", "Rug", "Potted Plants"]
     },
     "Treasure Vault": {
-        "rarity": "uncommon",
+        "rarity": "rare",
         "props": ["Jeweled Chest", "Statues", "Runes", "Torch", "Rubble"]
     },
     "Statuary": {
         "rarity": "rare",
         "props": ["Statues", "Rubble", "Cobwebs", "Glyphs"]
+    }, "Alchemist's Lab": {
+        "rarity": "uncommon",
+        "props": ["Table", "Potted Plants", "Cabinet", "Bookshelf", "Barrel"]
+    },
+    "Dining Hall": {
+        "rarity": "common",
+        "props": ["Table", "Chair", "Torch", "Rug", "Fireplace"]
+    },
+    "Hidden Chamber": {
+        "rarity": "uncommon",
+        "props": ["Cobwebs", "Runes", "Glyphs", "Rubble", "Blood Stain", "Torch"]
+    },
+    "Wizard's Study": {
+        "rarity": "common",
+        "props": ["Bookshelf", "Table", "Chair", "Torch", "Runes"]
+    },
+    "Tavern": {
+        "rarity": "common",
+        "props": ["Table", "Chair", "Torch", "Barrel", "Rug", "Fireplace"]
+    },
+    "Abandoned Library": {
+        "rarity": "rare",
+        "props": ["Bookshelf", "Cobwebs", "Runes", "Glyphs", "Rubble"]
+    },
+    "Castle Courtyard": {
+        "rarity": "uncommon",
+        "props": ["Torch", "Statues", "Rug", "Potted Plants"]
+    },
+    "Cursed Chamber": {
+        "rarity": "rare",
+        "props": ["Blood Stain", "Glyphs", "Rubble", "Cobwebs", "Torch"]
+    },
+    "Treasure Hoard": {
+        "rarity": "uncommon",
+        "props": ["Jeweled Chest", "Barrel", "Statues", "Rug", "Torch"]
     }
 }
