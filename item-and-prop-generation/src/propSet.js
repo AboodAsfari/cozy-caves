@@ -38,7 +38,7 @@ class PropSet {
 
         const propMap = new Map();
         const propSet = [];
-        const propList = metadata[setList[index]].props;
+        let propList = metadata[setList[index]].props;
         
         let tries = 0;
         do {
@@ -49,6 +49,9 @@ class PropSet {
             
             if (propMap.get(propName) <= this.#allowedDuplicate(prop.getRarity())) {
                 propSet.push(prop);
+            }  else {
+                // Remove the prop from propList
+                propList = propList.filter(item => item !== prop);
             }
 
             if (propMap.has(propName)) {

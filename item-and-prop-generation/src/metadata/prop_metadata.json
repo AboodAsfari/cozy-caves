@@ -8,7 +8,7 @@
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "none",
-                "nearProp": "Chair",
+                "nearProp": "none",
                 "atCenter": true,
                 "overlap": false
             },
@@ -34,13 +34,13 @@
     "Bed": {
         "information": {
             "desc": "Found in taverns, inns, or bedrooms, these items create spaces for role-playing interactions, resting, or tactical positioning during combat encounters.",
-            "rarity": "common"
+            "rarity": "uncommon"
         },
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
                 "nearWall": "edgeWall",
-                "nearProp": "none",
+                "nearProp": "Cabinet",
                 "atCenter": false,
                 "overlap": false
             },
