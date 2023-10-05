@@ -235,18 +235,18 @@ function createHallway(conn) {
 }
 
 function checkXPlane(fromX, fromWidth, toX, toWidth) {
-    if (fromX + fromWidth-1 < toX) {
+    if (fromX + fromWidth-2 < toX+1) {
         return RelativePosX.LEFT;
-    } else if (fromX > toX + toWidth-1) {
+    } else if (fromX+1 > toX + toWidth-2) {
         return RelativePosX.RIGHT;
     }
     return RelativePosX.OVERLAP;
 }
 
 function checkYPlane (fromY, fromHeight, toY, toHeight) {
-    if (fromY + fromHeight-1 < toY) {
+    if (fromY + fromHeight-2 < toY+1) {
         return RelativePosY.UP;
-    } else if(fromY > toY + toHeight-1) {
+    } else if(fromY+1 > toY + toHeight-2) {
         return RelativePosY.DOWN;
     }
     return RelativePosY.OVERLAP;
