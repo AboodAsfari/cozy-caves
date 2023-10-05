@@ -642,7 +642,7 @@ function addTileHallway(hallway, tile, tileAnchorPositions) {
         }
 
         if (!foundAnchor) return;
-        if (roomIndex < 0) hallway.getRoom().addTile(tile);
+        if (roomIndex < 0 && !hallway.getRoom().getTile(tile.getPosition())) hallway.getRoom().addTile(tile);
     } else {
         if (roomIndex < 0) {
             hallway.addPossibleTile(tile);
