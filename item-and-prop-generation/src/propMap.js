@@ -302,6 +302,17 @@ class PropMap {
         const nearWall = prop.getPlacementRules().nearWall; //str
         const nearProp = prop.getPlacementRules().nearProp; //str prop name
         const atCenter = prop.getPlacementRules().atCenter; //boolean
+
+
+        // Allow rotation
+        if (prop.getSize().w === 1 && prop.getSize().h === 1
+         && nearWall === "none") {
+            // give random rotation to either 90, 180 or 270 degrees
+            const rotations = [90, 180, 270];
+            const randomRotation = rotations[Math.floor(this.#randomGen() * rotations.length)];
+            prop.setRotation(randomRotation);
+        }
+
         
         if (atCenter) this.findCenterPositon(prop, validPosMap);
         if (nearWall !== "none") this.findPositionNearWall(prop, nearWall, validPosMap); 
@@ -436,14 +447,15 @@ class PropMap {
             for (let j = 0; j < dimensions.getX(); j++) {
                 let pos = new Point(j, i);
                 let tile = this.#room.getTile(pos);
-                if (tile === null || tile === undefined) continue; 
+                if (tile === null || tile === undefined) continue;
                 let prop = this.getProp(pos); 
                 let value = this.checkPos(pos); 
 
                 if (value !== null && value !== undefined) {
                     if (prop !== null && prop !== undefined) {
                         roomArray[i] += prop.getName().substring(0,1);
-                        propInfo  += pos.toString() + ": " + prop.name + ", w:" + prop.getSize().w + " h:" + prop.getSize().h + "\n";
+                        propInfo  += pos.toString() + ": " + prop.name + ", w:" + prop.getSize().w + " h:" + prop.getSize().h + ", ";
+                        // propInfo += "Spacial type: " + tile.getTileSpacialType().toString() + "\n";
                     } 
                     else {
                         roomArray[i] += value;
