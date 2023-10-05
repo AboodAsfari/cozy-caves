@@ -111,10 +111,10 @@ class PropMap {
             const randomWall = possibleWalls[randomIndex];
             const [ pos, wall ] = randomWall;
             let randomPos = Point.fromString(pos);
-            const wallType = wall.getTileSpacialType();
+            const wallTypeNumber = wall.getTileSpacialType();
 
             // Retrieve the wall orientation using the WallOrientation mapping
-            const orientation = wallOrientation[wallType];
+            const orientation = wallOrientation[wallTypeNumber];
 
             // This will change the position the search should extend towards
             if (orientation) {
@@ -156,7 +156,7 @@ class PropMap {
             }
 
             // if the randomly generated position is valid
-            if (this.#checkFreeSpace(randomPos, propW, propH, true)) {
+            if (this.#checkFreeSpace(randomPos, propW, propH, wallType)) {
                 const value = map.get(randomPos.toString());
                 if (!value) {
                     map.set(randomPos.toString(), 1);
@@ -205,7 +205,7 @@ class PropMap {
         for (let i=(-1)*(propW); i<=(xRange+propW -1); i++) {
             for (let j=(-1)*(propH); j<=(yRange+propH -1); j++) {
                 const newPos = pos.add(new Point(i, j));
-                if (this.#checkFreeSpace(newPos, propW, propH, false)) {
+                if (this.#checkFreeSpace(newPos, propW, propH, "none")) {
                     const value = map.get(newPos.toString());
                     found = true;
                     if (!value) {
@@ -240,7 +240,7 @@ class PropMap {
         for (let i=-1; i<=0; i++) {
             for (let j=-1; j<=0; j++) {
                 const newPos = pos.add(new Point(i, j));
-                if (this.#checkFreeSpace(newPos, propW, propH, false)) {
+                if (this.#checkFreeSpace(newPos, propW, propH, "none")) {
                     const value = map.get(newPos.toString());
                     if (!value) {
                         map.set(newPos.toString(), 1);
@@ -272,7 +272,7 @@ class PropMap {
             const randomPos = new Point(randomX, randomY);
 
             // if the randomly generated position is valid
-            if (this.#checkFreeSpace(randomPos, propW, propH, false)) {
+            if (this.#checkFreeSpace(randomPos, propW, propH, "none")) {
                 const value = map.get(randomPos.toString());
                 if (!value) {
                     map.set(randomPos.toString(), 1);
@@ -353,7 +353,7 @@ class PropMap {
      * @param {Point} pos - The position to check.
      * @param {number} w - The width of the prop.
      * @param {number} h - The height of the prop.
-     * @param {boolean} wall - Indicates if the prop can be placed near a wall.
+     * @param {boolean} wall - Indicates if the type of wall.
      * @returns {boolean} - True if the space is free; otherwise, false.
      */
     #checkFreeSpace(pos, w, h, wall) {
@@ -393,17 +393,24 @@ class PropMap {
      * Checks whether or not the position provided is a free space to put prop in.
      * 
      * @param {Point} pos - Position to be checked 
-     * @returns {Boolean} True if position is valid, false otherwise.
+     * @returns {String} type of the wall.
      */
-    #checkValidPosition(pos, acceptWall){
+    #checkValidPosition(pos, wallType){
         const tile = this.#room.getTile(pos);
         const invalid = tile === null || tile === undefined;
         if (invalid) return false;
         const noPropExist = this.getProp(pos) === null || this.getProp(pos) === undefined;
         const isWall = tile.getTileType() !== "floor";
         const notFree = this.checkPos(pos) === 1;
-        if (isWall && !acceptWall) return false; // no wall
+        if (isWall && wallType==="none") return false; // no wall
         if (!noPropExist || notFree) return false;
+        console.log("wall: " + wallType);
+        // corner walls
+        const cornerWall = tile.getTileSpacialType() === TileSpacialType.BOTTOM_LEFT_CORNER_WALL 
+            || tile.getTileSpacialType() === TileSpacialType.TOP_LEFT_CORNER_WALL
+            || tile.getTileSpacialType() === TileSpacialType.BOTTOM_RIGHT_CORNER_WALL
+            || tile.getTileSpacialType() === TileSpacialType.TOP_RIGHT_CORNER_WALL;
+        if (cornerWall && wallType==="edgeWall") return false; // does not allow corner walls on prop with edge wall
         return true;
     }
 

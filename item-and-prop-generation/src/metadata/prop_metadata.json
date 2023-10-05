@@ -259,7 +259,7 @@
         "render_rules": {
             "contains_item": false,
             "placement_rules": {
-                "nearWall": "edgeWall",
+                "nearWall": "none",
                 "nearProp": "none",
                 "atCenter": false,
                 "overlap": false
