@@ -49,7 +49,7 @@ class Room {
             let floorsFound = 0;
             let wallsFound = 0;
             for (let hallTileGlobalPos of hallwayTileGlobalPositions) {
-                let room = hallway.getRoom();
+                let room = hallway;
                 let hallTile = room.getTile(hallTileGlobalPos.subtract(room.getPosition()));
                 if (!hallTile) throw new Error("Cannot open nonexistent tile in hallway " + room.getPosition().toString());
                 if ((tileGlobalPos.getX() === hallTileGlobalPos.getX() && Math.abs(tileGlobalPos.getY() - hallTileGlobalPos.getY()) === 1) || 
@@ -66,11 +66,11 @@ class Room {
             let tile = this.getTile(tileGlobalPos.subtract(this.getPosition()));
             if (!tile) continue;
             if (!tile) throw new Error("Cannot open nonexistent tile in room " + this.getPosition().toString());
-            tile.setTileID(tilerChooser.getTiler("default").getID(tile, this, numGen, hallway.getRoom(), hallwayTileGlobalPositions));
+            tile.setTileID(tilerChooser.getTiler("default").getID(tile, this, numGen, hallway, hallwayTileGlobalPositions));
         }
 
         for (let hallTileGlobalPos of hallwayTileGlobalPositions) {
-            let room = hallway.getRoom();
+            let room = hallway;
             let hallTile = room.getTile(hallTileGlobalPos.subtract(room.getPosition()));
             if (!hallTile) throw new Error("Cannot open nonexistent tile in hallway " + room.getPosition().toString());
             hallTile.setTileID(tilerChooser.getTiler("hallway").getID(hallTile, room, numGen, this, roomTileGlobalPositions));

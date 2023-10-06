@@ -11,11 +11,13 @@ class Hallway
     #enteredRooms = new Set();
     #roomEntryPositions = [];
     #roomExitPositions = new Map();
+    #extraIndex = -1;
 
     setOverlappingRoom(room) { this.#overlappingRoom = room; }
     setRoom(room) { this.#room = room; }
     setShape(shape) { this.#shape = shape; }
     setPreviousPosition(position) { this.#previousPosition = position; }
+    setExtraIndex(index) { this.#extraIndex = index; }
 
     getOverlappingRoom() { return this.#overlappingRoom; }
     getRoom() { return this.#room; }
@@ -26,6 +28,8 @@ class Hallway
     getEnteredRooms() { return this.#enteredRooms; }
     getRoomEntryPositions() { return this.#roomEntryPositions; }
     getRoomExitPositions() { return this.#roomExitPositions; }
+    getExtraIndex() { return this.#extraIndex; }
+
     
     addPossibleTile(tile) { this.#possibleTiles.push(tile); }
     addEnteredRoomIndex(roomIndex) { this.#enteredRooms.add(roomIndex); }
