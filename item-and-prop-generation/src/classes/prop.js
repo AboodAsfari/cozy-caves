@@ -12,9 +12,10 @@ class Prop {
 
     // Rendering elements.
     #position = new Point(0, 0); //this is where it will be rendered from
-    #offset = new Point(0, 0);
+    #offset = {x:0, y:0};
     #rotation = 0;
-    #scale = new Point(0,0);
+    #scale = new Point(1,1);
+    #depth = 0;
 
     /**
      * Constructs a tile based on the metadata provided.
@@ -38,6 +39,14 @@ class Prop {
         this.possibleItems = possibleItems;
         this.placementRules = placementRules;
         this.size = size;
+
+        this.overlap = this.placementRules.overlap;
+        if (this.overlap) this.#depth = -1;
+        
+        const xOffset = (this.size.w > 1) ? (this.size.w-1)/2 : 0;
+        const yOffset = (this.size.h > 1) ? (this.size.h-1)/2 : 0;
+
+        this.setOffset(xOffset, yOffset);
     }
 
     addItem(item){
@@ -52,6 +61,7 @@ class Prop {
     getPosition() {return this.#position; }
     getOffset() {return this.#offset;}
     getScale() { return this.#scale; }
+    getDepth() {return this.#depth;}
 
     getName() { return this.name; }
     getDesc() { return this.desc; }
@@ -61,6 +71,8 @@ class Prop {
     getPlacementRules() { return this.placementRules; }
     getPossibleItems() { return this.possibleItems; }
     getSize() { return this.size;}
+    getOverlap() {return this.overlap;}
+    
 
     getPathName() { 
         return this.name.split(" ").join("_").toLowerCase();
@@ -71,18 +83,23 @@ class Prop {
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#position = position;
     }
-    setOffset(offset){
-        if (!(offset instanceof Point)) throw new Error("Offset must be provided as Point.");
-        this.#offset = offset;
+    setOffset(x, y){
+        this.#offset.x = x;
+        this.#offset.y = y;
     }
     setRotation(rotation) { 
         this.#rotation = rotation; 
     }
-
     setScale(scale) {
         if (!(scale instanceof Point)) throw new Error("Scale must be provided as Point.");
         this.#scale = scale;
     }
+
+    setDepth(depth){
+        this.#depth = depth;
+    }
+
+    setOverlap(overlap) { this.overlap = overlap;}
     
     toString() {
         let result = "";
