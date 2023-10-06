@@ -154,7 +154,11 @@ function generateHallways(roomsList, w, h) {
         hallway.getRoom().getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway.getRoom(), seedrandom(Math.random()))));
         hallway.getTilesToOpen().forEach((value, key) => {
             value.forEach((item) => {
-                rooms[key].openTiles(item.roomTilesToOpen, item.hallwayTilesToOpen, hallway, seedrandom(Math.random()));
+                let roomToOpen = hallway.getRoom();
+                if (item.otherIndex >= 0) {
+                    roomToOpen = rooms[item.otherIndex];
+                }
+                rooms[key].openTiles(item.roomTilesToOpen, item.hallwayTilesToOpen, roomToOpen, seedrandom(Math.random()));
             });
         });
     }
@@ -534,18 +538,7 @@ function openPositions(hallway, pos, offset, horizontal) {
         let indexAbove = map[pointAbove.getX()][pointAbove.getY()];
         let indexAt = map[pointAt.getX()][pointAt.getY()];
         let indexBelow = map[pointBelow.getX()][pointBelow.getY()];
-        if (indexAbove >= 0) {
-            if (!roomsMap.get(indexAbove)) {
-                roomsMap.set(indexAbove, [pointAbove]);
-            } else {
-                roomsMap.get(indexAbove).push(pointAbove);
-            }
-        } else {
-            let localHallwayPoint = pointAbove.subtract(hallway.getRoom().getPosition());
-            if (hallway.getRoom().getTile(localHallwayPoint)) { 
-                hallwayPositions.push(pointAbove);
-            }
-        }
+
         if (indexAt >= 0) {
             if (!roomsMap.get(indexAt)) {
                 roomsMap.set(indexAt, [pointAt]);
@@ -556,6 +549,18 @@ function openPositions(hallway, pos, offset, horizontal) {
             let localHallwayPoint = pointAt.subtract(hallway.getRoom().getPosition());
             if (hallway.getRoom().getTile(localHallwayPoint)) {
                 hallwayPositions.push(pointAt);
+            }
+        }
+        if (indexAbove >= 0) {
+            if (!roomsMap.get(indexAbove)) {
+                roomsMap.set(indexAbove, [pointAbove]);
+            } else {
+                roomsMap.get(indexAbove).push(pointAbove);
+            }
+        } else {
+            let localHallwayPoint = pointAbove.subtract(hallway.getRoom().getPosition());
+            if (hallway.getRoom().getTile(localHallwayPoint)) { 
+                hallwayPositions.push(pointAbove);
             }
         }
         if (indexBelow >= 0) {
@@ -572,13 +577,37 @@ function openPositions(hallway, pos, offset, horizontal) {
         }
     }
 
-    for(let [key, value] of roomsMap.entries()) {
+    if (hallwayPositions.length == 0) {
+        let entries = Array.from(roomsMap.entries());
+        let key = entries[0][0];
+        let value = entries[0][1];
+        let key1 = entries[1][0];
+        let value1 = entries[1][1];
+        let tile = new Tile("floor", value[0].subtract(rooms[key].getPosition()));
+        tile.setTileID(TileID.FLOOR);
+        let tile1 = new Tile("floor", value1[0].subtract(rooms[key1].getPosition()));
+        tile1.setTileID(TileID.FLOOR);
+        rooms[key].addTile(tile);
+        rooms[key1].addTile(tile1);
         let tilesToOpen = {
             roomTilesToOpen: value,
-            hallwayTilesToOpen: hallwayPositions,
+            hallwayTilesToOpen: value1,
+            otherIndex: key1
         };
-        hallway.addTilesToOpen(key, tilesToOpen); 
-    }    
+        hallway.addTilesToOpen(key, tilesToOpen);
+
+    } else {
+        for(let [key, value] of roomsMap.entries()) {
+            let tilesToOpen = {
+                roomTilesToOpen: value,
+                hallwayTilesToOpen: hallwayPositions,
+                otherIndex: -1
+            };
+            hallway.addTilesToOpen(key, tilesToOpen); 
+        }   
+    }
+
+ 
 }
 
 function addTilesWall(start, end, hallway, isOnX, floorPos) {
