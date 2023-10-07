@@ -259,27 +259,14 @@ function checkYPlane (fromY, fromHeight, toY, toHeight) {
 function determineShape(relativeX, relativeY, fromKey, toRoom) {
     if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.UP) {
         return HallwayShapes.RIGHT_TOP;
-        //other options can be randomly done later
     } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.UP) {
         return HallwayShapes.LEFT_TOP;
-        //other options can be randomly done later
-    } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.UP) {
-        //requires more calculation
-        // let fromPos = midPoints[fromKey];
-        // if (fromPos.getX() < toRoom.getPosition().getX()) {
-        //      return HallwayShapes.DOWN_LEFT;
-        // } else if (fromPos.getX() > toRoom.getPosition().getX()) {
-        //     return HallwayShapes.DOWN_RIGHT;
-        // } else {
-        //     return HallwayShapes.DOWN_TOP;
-        // }
+    } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.UP) { 
         return HallwayShapes.DOWN_TOP;
     } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.DOWN) {
         return HallwayShapes.RIGHT_DOWN;
-        //other options can be randomly done later
     } else if (relativeX == RelativePosX.RIGHT && relativeY == RelativePosY.DOWN) {
         return HallwayShapes.LEFT_DOWN;
-        //other options can be randomly done later
     } else if (relativeX == RelativePosX.OVERLAP && relativeY == RelativePosY.DOWN) {
         return HallwayShapes.TOP_DOWN;
     } else if (relativeX == RelativePosX.LEFT && relativeY == RelativePosY.OVERLAP) {
@@ -299,7 +286,6 @@ function createHallwayFromShape(shape, from, to) {
 
     let swapped = false;
 
-    //can definitely optimise this code
     if (shape == HallwayShapes.RIGHT_TOP) {
         fromEdges = from.getRightEdges();
         toEdges = to.getTopEdges();
@@ -351,12 +337,6 @@ function createHallwayFromShape(shape, from, to) {
     } else {
         return;
     }
-    
-    //FOR CORNER CONNECTIONS
-    // fromEdges.splice(0, 1);
-    // fromEdges.splice(fromEdges.length-1, 1);
-    // toEdges.splice(0, 1);
-    // toEdges.splice(toEdges.length-1, 1);
 
     if (swapped) {
         let temp = from;
@@ -408,7 +388,6 @@ function createHallwayFromShape(shape, from, to) {
 }
 
 function createFromEntryExit(fromPos, toPos, shape) {
-    //0,0 should be start of hallway so maybe some issues.
     let startingX = fromPos.getX(); 
     let toX = toPos.getX();
     let startingY = fromPos.getY();
@@ -470,16 +449,13 @@ function createFromEntryExit(fromPos, toPos, shape) {
     else if (shape == HallwayShapes.LEFT_RIGHT) {
         hallway.setShape(HallwayShapes.LEFT_RIGHT);
         if (diffX == 1) {
-            hallway.getRoom().addTile(new Tile("floor", new Point(0, 0)));
-            hallway.getRoom().addTile(new Tile("floor", new Point(1, 0)));
             hallway.getRoom().setPosition(new Point(toX, startingY));
-            //special open positions 
+            openPositions(hallway, toPos, 1, false);
         } else {
             hallway.getRoom().setPosition(new Point(toX, startingY-1));
             hallway.setPreviousPosition(new Point(diffX, 1));
             addTilesFloor(diffX-1, 1, hallway, true, 1);
             addTilesWall(diffX, 0, hallway, true, 1);
-            openPositions(hallway, fromPos, -1, false);
             openPositions(hallway, toPos, 1, false);
         }
     } 
@@ -487,10 +463,8 @@ function createFromEntryExit(fromPos, toPos, shape) {
     else if (shape == HallwayShapes.TOP_DOWN) {
         hallway.setShape(HallwayShapes.TOP_DOWN);
         if (diffY == 1) {
-            hallway.getRoom().addTile(new Tile("floor", new Point(1, 0)));
-            hallway.getRoom().addTile(new Tile("floor", new Point(1, 1)));
             hallway.getRoom().setPosition(new Point(startingX-1, toY));
-            //special open positions
+            openPositions(hallway, fromPos, -1, true);
         } else {
             hallway.getRoom().setPosition(new Point(startingX-1, toY));
             hallway.setPreviousPosition(new Point(1, diffY));
@@ -585,7 +559,7 @@ function openPositions(hallway, pos, offset, horizontal) {
         let key = entries[0][0];
         let value = entries[0][1];
         let key1 = entries[1][0];
-        let value1 = entries[1][1];
+        let value1 = entries[1][1];        
         let tile = new Tile("floor", value[0].subtract(rooms[key].getPosition()));
         tile.setTileID(TileID.FLOOR);
         let tile1 = new Tile("floor", value1[0].subtract(rooms[key1].getPosition()));
