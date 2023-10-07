@@ -579,6 +579,9 @@ function openPositions(hallway, pos, offset, horizontal) {
 
     if (hallwayPositions.length == 0) {
         let entries = Array.from(roomsMap.entries());
+        if(!entries[1]) {
+            return;
+        }
         let key = entries[0][0];
         let value = entries[0][1];
         let key1 = entries[1][0];
