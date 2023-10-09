@@ -23,7 +23,6 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import CenterFocusStrongSharpIcon from '@mui/icons-material/CenterFocusStrongSharp';
 import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -176,7 +175,6 @@ export default function ToolBar(props) {
 
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
-        info: { name: "Info", icon: <InfoOutlinedIcon />, method: () => { } },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
         share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
