@@ -2,19 +2,23 @@ const Point = require("@cozy-caves/utils").Point;
 const TileID = require("@cozy-caves/utils").TileID;
 const TileSpacialType = require("@cozy-caves/utils").TileSpacialType;
 
+const Tile = require("../tile");
 const { getNeighbor, isWall, isFloor, chooseRandom } = require("../tilerUtils");
 const { defaultFloorTiler } = require("./defaultTiler");
 
-const hallwayWallTiler = (tile, room, numGen) => {
+const hallwayWallTiler = (tile, room, numGen, adjacentRoom, adjacentTileGlobalPositions) => {
+    tile.setRotation(0);
+    tile.setScale(new Point(1, 1));
+
     let pos = tile.getPosition();
-    let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0));
-    let rightNeighbor = getNeighbor(pos, room, new Point(1, 0));
-    let topNeighbor = getNeighbor(pos, room, new Point(0, -1));
-    let bottomNeighbor = getNeighbor(pos, room, new Point(0, 1)); 
-    let topRightNeighbor = getNeighbor(pos, room, new Point(1, -1));
-    let topLeftNeighbor = getNeighbor(pos, room, new Point(-1, -1));
-    let bottomRightNeighbor = getNeighbor(pos, room, new Point(1, 1));
-    let bottomLeftNeighbor = getNeighbor(pos, room, new Point(-1, 1));
+    let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0), adjacentRoom, adjacentTileGlobalPositions);
+    let rightNeighbor = getNeighbor(pos, room, new Point(1, 0), adjacentRoom, adjacentTileGlobalPositions);
+    let topNeighbor = getNeighbor(pos, room, new Point(0, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomNeighbor = getNeighbor(pos, room, new Point(0, 1), adjacentRoom, adjacentTileGlobalPositions); 
+    let topRightNeighbor = getNeighbor(pos, room, new Point(1, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let topLeftNeighbor = getNeighbor(pos, room, new Point(-1, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomRightNeighbor = getNeighbor(pos, room, new Point(1, 1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomLeftNeighbor = getNeighbor(pos, room, new Point(-1, 1), adjacentRoom, adjacentTileGlobalPositions);
 
     function getEdgeWall(spacialType) {
         tile.setTileSpacialType(spacialType);
@@ -48,7 +52,8 @@ const hallwayWallTiler = (tile, room, numGen) => {
         }, TileID.INNER_WALL, numGen));
     } 
 
-    if (!isFloor(rightNeighbor) && !isFloor(leftNeighbor) && topNeighbor && bottomNeighbor) {
+    if (!isFloor(rightNeighbor) && !isFloor(leftNeighbor) && topNeighbor && bottomNeighbor && (isWall(rightNeighbor) || isWall(leftNeighbor)) &&
+        (isWall(topLeftNeighbor) || isWall(topRightNeighbor) || isWall(bottomLeftNeighbor) || isWall(bottomRightNeighbor))) {
         if (!isFloor(topNeighbor)) {
             tile.setRotation(90);
             return getEdgeWall(TileSpacialType.TOP_EDGE_WALL);
@@ -56,7 +61,8 @@ const hallwayWallTiler = (tile, room, numGen) => {
             tile.setRotation(-90);
             return getEdgeWall(TileSpacialType.BOTTOM_EDGE_WALL);
         }
-    } else if (!isFloor(topNeighbor) && !isFloor(bottomNeighbor) && leftNeighbor && rightNeighbor) {
+    } else if (!isFloor(topNeighbor) && !isFloor(bottomNeighbor) && leftNeighbor && rightNeighbor && (isWall(topNeighbor) || isWall(bottomNeighbor)) &&
+        (isWall(topLeftNeighbor) || isWall(topRightNeighbor) || isWall(bottomLeftNeighbor) || isWall(bottomRightNeighbor))) {
         if (!isFloor(leftNeighbor)) {
             tile.setScale(new Point(1, 1));
             return getEdgeWall(TileSpacialType.LEFT_EDGE_WALL);
@@ -101,7 +107,7 @@ const hallwayWallTiler = (tile, room, numGen) => {
             return getEdgeWall(TileSpacialType.BOTTOM_EDGE_WALL);
         }
     } else {
-        if (!isFloor(rightNeighbor)) {
+        if (!isFloor(rightNeighbor) && (rightNeighbor || (!isFloor(topRightNeighbor) && !isFloor(bottomRightNeighbor)))) {
             tile.setScale(new Point(-1, 1));
             return getEdgeWall(TileSpacialType.LEFT_EDGE_WALL);
         } else {

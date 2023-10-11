@@ -2,6 +2,7 @@ const Point = require("@cozy-caves/utils").Point;
 const TileID = require("@cozy-caves/utils").TileID;
 const TileSpacialType = require("@cozy-caves/utils").TileSpacialType;
 
+const Tile = require("../tile");
 const { getNeighbor, isWall, isFloor, chooseRandom } = require("../tilerUtils");
 
 const defaultFloorTiler = (tile, room, numGen) => {
@@ -20,16 +21,19 @@ const defaultFloorTiler = (tile, room, numGen) => {
     }, TileID.FLOOR, numGen));
 }
 
-const defaultWallTiler = (tile, room, numGen) => {
+const defaultWallTiler = (tile, room, numGen, adjacentRoom, adjacentTileGlobalPositions) => {
+    tile.setRotation(0);
+    tile.setScale(new Point(1, 1));
+
     let pos = tile.getPosition();
-    let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0));
-    let rightNeighbor = getNeighbor(pos, room, new Point(1, 0));
-    let topNeighbor = getNeighbor(pos, room, new Point(0, -1));
-    let bottomNeighbor = getNeighbor(pos, room, new Point(0, 1)); 
-    let topRightNeighbor = getNeighbor(pos, room, new Point(1, -1));
-    let topLeftNeighbor = getNeighbor(pos, room, new Point(-1, -1));
-    let bottomRightNeighbor = getNeighbor(pos, room, new Point(1, 1));
-    let bottomLeftNeighbor = getNeighbor(pos, room, new Point(-1, 1));
+    let leftNeighbor = getNeighbor(pos, room, new Point(-1, 0), adjacentRoom, adjacentTileGlobalPositions);
+    let rightNeighbor = getNeighbor(pos, room, new Point(1, 0), adjacentRoom, adjacentTileGlobalPositions);
+    let topNeighbor = getNeighbor(pos, room, new Point(0, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomNeighbor = getNeighbor(pos, room, new Point(0, 1), adjacentRoom, adjacentTileGlobalPositions); 
+    let topRightNeighbor = getNeighbor(pos, room, new Point(1, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let topLeftNeighbor = getNeighbor(pos, room, new Point(-1, -1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomRightNeighbor = getNeighbor(pos, room, new Point(1, 1), adjacentRoom, adjacentTileGlobalPositions);
+    let bottomLeftNeighbor = getNeighbor(pos, room, new Point(-1, 1), adjacentRoom, adjacentTileGlobalPositions);
 
     function getEdgeWall(spacialType) {
         tile.setTileSpacialType(spacialType);
@@ -63,10 +67,10 @@ const defaultWallTiler = (tile, room, numGen) => {
         }, TileID.INNER_WALL, numGen));
     } 
 
-    if (isWall(rightNeighbor) && isWall(topNeighbor) && isFloor(bottomLeftNeighbor)) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_CORNER_WALL);
-    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && isFloor(topLeftNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_CORNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(topNeighbor) && isFloor(bottomRightNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_CORNER_WALL);
-    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && isFloor(topRightNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_CORNER_WALL);
+    if (isWall(rightNeighbor) && isWall(topNeighbor) && ((bottomLeftNeighbor && bottomRightNeighbor && topLeftNeighbor) || !topRightNeighbor) && !(isWall(bottomRightNeighbor) && isWall(bottomNeighbor))) return getInnerWall(new Point(-1, -1), TileSpacialType.BOTTOM_LEFT_INNER_WALL);
+    else if (isWall(rightNeighbor) && isWall(bottomNeighbor) && ((topLeftNeighbor && topRightNeighbor && bottomLeftNeighbor) || !bottomRightNeighbor)) return getInnerWall(new Point(-1, 1), TileSpacialType.TOP_LEFT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(topNeighbor) && ((bottomRightNeighbor && bottomLeftNeighbor && topRightNeighbor) || !topLeftNeighbor)) return getInnerWall(new Point(1, -1), TileSpacialType.BOTTOM_RIGHT_INNER_WALL);
+    else if (isWall(leftNeighbor) && isWall(bottomNeighbor) && ((topRightNeighbor && topLeftNeighbor && bottomRightNeighbor) || !bottomLeftNeighbor)) return getInnerWall(new Point(1, 1), TileSpacialType.TOP_RIGHT_INNER_WALL);
 
     if (isWall(rightNeighbor) && isWall(bottomNeighbor)) return getCornerWall(new Point(1, 1), TileSpacialType.TOP_LEFT_CORNER_WALL);
     else if (isWall(leftNeighbor) && isWall(bottomNeighbor)) return getCornerWall(new Point(-1, 1), TileSpacialType.TOP_RIGHT_CORNER_WALL);

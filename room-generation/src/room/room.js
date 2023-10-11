@@ -1,6 +1,7 @@
+const { TileID } = require("@cozy-caves/utils");
 const Tile = require("../tile/tile");
-
 const Point = require("@cozy-caves/utils").Point;
+const { tilerChooser } = require("../tile/tilerLogic");
 
 class Room {
     #tiles = new Map();
@@ -39,6 +40,43 @@ class Room {
         return finalRoom;
     }
 
+    openTiles(roomTileGlobalPositions, hallwayTileGlobalPositions, hallway, numGen) {
+        for (let tileGlobalPos of roomTileGlobalPositions) {
+            let tile = this.getTile(tileGlobalPos.subtract(this.getPosition()));
+            if (!tile) continue;
+            if (!tile) throw new Error("Cannot open nonexistent tile in room " + this.getPosition().toString());
+            
+            let floorsFound = 0;
+            let wallsFound = 0;
+            for (let hallTileGlobalPos of hallwayTileGlobalPositions) {
+                let room = hallway;
+                let hallTile = room.getTile(hallTileGlobalPos.subtract(room.getPosition()));
+                if (!hallTile) throw new Error("Cannot open nonexistent tile in hallway " + room.getPosition().toString());
+                if ((tileGlobalPos.getX() === hallTileGlobalPos.getX() && Math.abs(tileGlobalPos.getY() - hallTileGlobalPos.getY()) === 1) || 
+                    (tileGlobalPos.getY() === hallTileGlobalPos.getY() && Math.abs(tileGlobalPos.getX() - hallTileGlobalPos.getX()) === 1)) {
+                    if (hallTile.getTileType() === "wall") wallsFound++;
+                    else floorsFound++;
+                }
+            }
+
+            if (floorsFound === 1 && wallsFound === 0) tile.setTileType("floor");
+        }
+
+        for (let tileGlobalPos of roomTileGlobalPositions) {
+            let tile = this.getTile(tileGlobalPos.subtract(this.getPosition()));
+            if (!tile) continue;
+            if (!tile) throw new Error("Cannot open nonexistent tile in room " + this.getPosition().toString());
+            tile.setTileID(tilerChooser.getTiler("default").getID(tile, this, numGen, hallway, hallwayTileGlobalPositions));
+        }
+
+        for (let hallTileGlobalPos of hallwayTileGlobalPositions) {
+            let room = hallway;
+            let hallTile = room.getTile(hallTileGlobalPos.subtract(room.getPosition()));
+            if (!hallTile) throw new Error("Cannot open nonexistent tile in hallway " + room.getPosition().toString());
+            hallTile.setTileID(tilerChooser.getTiler("hallway").getID(hallTile, room, numGen, this, roomTileGlobalPositions));
+        }
+    }
+
     getRightEdges() { return this.#edgeFetcher(true, false); }
     getLeftEdges() { return this.#edgeFetcher(false, false); }
     getTopEdges() { return this.#edgeFetcher(false, true); }
@@ -64,20 +102,16 @@ class Room {
 
     addTile(tile) { 
         this.#tiles.set(tile.getPosition().toString(), tile); 
-        let maxEncountered = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-        let minEncountered = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 
-        for (let tile of this.#tiles.values()) {
-            if (tile.getPosition().getX() > maxEncountered.getX()) maxEncountered.setX(tile.getPosition().getX());
-            if (tile.getPosition().getX() < minEncountered.getX()) minEncountered.setX(tile.getPosition().getX());
-            if (tile.getPosition().getY() > maxEncountered.getY()) maxEncountered.setY(tile.getPosition().getY());
-            if (tile.getPosition().getY() < minEncountered.getY()) minEncountered.setY(tile.getPosition().getY());
-        }
-
-        let width = maxEncountered.getX() - minEncountered.getX() + 1;
-        let height = maxEncountered.getY() - minEncountered.getY() + 1;
-        this.#dimensions = new Point(width, height);
+        let newWidth = Math.max(this.#dimensions.getX(), tile.getPosition().getX() + 1);
+        let newHeight = Math.max(this.#dimensions.getY(), tile.getPosition().getY() + 1);
+        this.#dimensions = new Point(newWidth, newHeight);
     }
+
+    removeTile(pos) {
+        this.#tiles.delete(pos.toString());
+    }
+
     getTile(pos) { return this.#tiles.get(pos.toString()); }
     getTiles() { return Array.from(this.#tiles.values()).sort((a, b) => a.getDepth() - b.getDepth()); }
     getPosition() { return this.#position; }
