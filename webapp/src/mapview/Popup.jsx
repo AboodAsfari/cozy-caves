@@ -59,7 +59,7 @@ const Popup = (props) => {
 			<Box sx={{ width: "100%", height: "100%", pointerEvents: "none" }}>
 				<Stack direction="row" sx={{ height: "100%", alignItems: "center", justifyContent: "center" }} >
 					<Stack direction="row" spacing={3} sx={{ height: "40%" }} >
-						<Stack sx={{ position: "relative", width: "450px", height: "65%", backgroundColor: "black", pointerEvents: "all", backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))", p: "10px", alignItems: "left" }}>
+						<Stack sx={{ position: "relative", width: "450px", height: "70%", backgroundColor: "black", pointerEvents: "all", backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))", p: "10px", alignItems: "left" }}>
 							<CloseIcon sx={{ position: "absolute", top: "10px", right: "10px", "&:hover": { color: "#4C9553", cursor: "pointer" } }} onClick={handleClose} />
 							<Stack direction="row">
 								<Typography sx={{ fontSize: 35, textAlign: "left" }}> {propInfo && propInfo.name} </Typography>
