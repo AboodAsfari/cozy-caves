@@ -2,7 +2,21 @@ import React, { useState } from 'react';
 import { Box, Typography, Stack, Fade } from '@mui/material';
 
 import Triangle from '@mui/icons-material/PlayArrow';
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+
+// Mapping item categories to icons
+const itemCategoryIcons = {
+	"Potions and Elixirs": "resources/props/item_icons/potions-and-elixirs.png",
+	"Scrolls": "resources/props/item_icons/scrolls.png",
+	"Weapons and Armor": "resources/props/item_icons/weapons-and-armor.png",
+	"Magical Items": "resources/props/item_icons/magical-items.png",
+	"Traps and Tools": "resources/props/item_icons/traps-and-tools.png",
+	"Treasure and Valuables": "resources/props/item_icons/treasure-and-valuables.png",
+	"Key Items": "resources/props/item_icons/key-items.png",
+	"Dungeoneering Supplies": "resources/props/item_icons/dungeoneering-supplies.png",
+	"Cursed Items": "resources/props/item_icons/cursed-items.png",
+	"Quest-related Items": "resources/props/item_icons/quest-related-items.png",
+	"Epic and Legendary Items": "resources/props/item_icons/epic-and-legendary-items.png",
+};
 
 const PropHoverView = (props) => {
     const { 
@@ -55,7 +69,6 @@ const PropHoverView = (props) => {
                     <Stack sx={{backgroundColor: "black", width: viewWidth, height: viewHeight, p: "10px", alignItems: "left" }}>
                         <Stack direction="row">
                             <Typography sx={{ fontSize: 25, textAlign: "left", flexGrow: 1 }}> { propInfo.name } </Typography>
-                            <InsertEmoticonIcon sx={{ mt: 0.5 }}/>
                         </Stack>
                         <Typography sx={{ fontSize: 15, textAlign: "left", mt: -1, color: getRarityColor(getPropRarity()), mb: 2 }}> { getPropRarity() } </Typography>
                         <Typography sx={{ fontSize: 15, textAlign: "left" }}> { propInfo.desc } </Typography>
@@ -63,7 +76,14 @@ const PropHoverView = (props) => {
                         { propInfo.getItems().length > 0 && <>
                             <Typography sx={{ fontSize: 20, textAlign: "left", mt: 2 }}> Contains: </Typography>
                             <Stack direction="row">
-                                { propInfo.getItems().map((item, i) => <InsertEmoticonIcon key={item.name + i} /> ) }
+                                { propInfo.getItems().map((item, i) => (
+                                    <img
+                                    key={item.name + i}
+                                    src={itemCategoryIcons[item.category]}
+                                    alt={item.category}
+                                    style={{ width: "35px", height: "35px", marginLeft: "5px" }}
+                                    />
+                                )) }
                             </Stack>
                         </> }
                     </Stack>
