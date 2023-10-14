@@ -47,6 +47,12 @@ const PropHoverView = (props) => {
         else return mouseY + arrowSize;
     }
 
+    // Function to get the category icon based on the item's category
+	const getCategoryIcon = (item) => {
+		const category = item.getCategory();
+		return itemCategoryIcons[category];
+	};
+
     const getPropRarity = () => propInfo.rarity.charAt(0).toUpperCase() + propInfo.rarity.slice(1);
 
     const getRarityColor = (rarity) => {
@@ -79,7 +85,7 @@ const PropHoverView = (props) => {
                                 { propInfo.getItems().map((item, i) => (
                                     <img
                                     key={item.name + i}
-                                    src={itemCategoryIcons[item.category]}
+                                    src={getCategoryIcon(item)}
                                     alt={item.category}
                                     style={{ width: "35px", height: "35px", marginLeft: "5px" }}
                                     />

@@ -26,6 +26,12 @@ const Popup = (props) => {
 	const [propInfo, setPropInfo] = React.useState(null);
 	const [selectedItem, setSelectedItem] = React.useState(null);
 
+	// Function to get the category icon based on the item's category
+	const getCategoryIcon = (item) => {
+		const category = item.getCategory();
+		return itemCategoryIcons[category];
+	};
+
 	const getPropRarity = () => !propInfo ? "" : (propInfo.rarity || "").charAt(0).toUpperCase() + (propInfo.rarity || "").slice(1);
 	const getSelectedItemRarity = () => !selectedItem ? "" : (selectedItem.rarity || "").charAt(0).toUpperCase() + (selectedItem.rarity || "").slice(1);
 
@@ -96,7 +102,7 @@ const Popup = (props) => {
 								<Stack direction="row">
 									<Typography sx={{ fontSize: 35, textAlign: "left" }}> { selectedItem.name } </Typography>
 									<img
-										src={itemCategoryIcons[selectedItem.category]}
+										src={getCategoryIcon(selectedItem)}
 										alt={selectedItem.name}
 										style={{ width: "35px", height: "35px", marginLeft: "8px", marginTop: "5px" }}
 									/>
