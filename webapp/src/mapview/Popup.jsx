@@ -4,17 +4,17 @@ import CloseIcon from '@mui/icons-material/Close';
 
 // Mapping item categories to icons
 const itemCategoryIcons = {
-	"Potions and Elixirs": "resources/props/potions-and-elixirs.png",
-	"Scrolls": "resources/props/scrolls.png",
-	"Weapons and Armor": "resources/props/weapons-and-armor.png",
-	"Magical Items": "resources/props/magical-items.png",
-	"Traps and Tools": "resources/props/traps-and-tools.png",
-	"Treasure and Valuables": "resources/props/treasure-and-valuables.png",
-	"Key Items": "resources/props/key-items.png",
-	"Dungeoneering Supplies": "resources/props/dungeoneering-supplies.png",
-	"Cursed Items": "resources/props/cursed-items.png",
-	"Quest-related Items": "resources/props/quest-related-items.png",
-	"Epic and Legendary Items": "resources/props/epic-and-legendary-items.png",
+	"Potions and Elixirs": "resources/props/item_icons/potions-and-elixirs.png",
+	"Scrolls": "resources/props/item_icons/scrolls.png",
+	"Weapons and Armor": "resources/props/item_icons/weapons-and-armor.png",
+	"Magical Items": "resources/props/item_icons/magical-items.png",
+	"Traps and Tools": "resources/props/item_icons/traps-and-tools.png",
+	"Treasure and Valuables": "resources/props/item_icons/treasure-and-valuables.png",
+	"Key Items": "resources/props/item_icons/key-items.png",
+	"Dungeoneering Supplies": "resources/props/item_icons/dungeoneering-supplies.png",
+	"Cursed Items": "resources/props/item_icons/cursed-items.png",
+	"Quest-related Items": "resources/props/item_icons/quest-related-items.png",
+	"Epic and Legendary Items": "resources/props/item_icons/epic-and-legendary-items.png",
 };
 
 const Popup = (props) => {
