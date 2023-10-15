@@ -58,6 +58,32 @@ class Item {
         }
     }
 
+    /**
+     * Reads serializable item and converts it
+     * to object.
+     * 
+     * @returns Item.
+     */
+    static fromSerializableItem(serializedItem) {
+        let posArray = serializedItem.position.split(',');
+        let offsetArray = serializedItem.offset.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        let offset = new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1]));
+        let rotation = serializedItem.rotation;
+        let name = serializedItem.name;
+        let desc = serializedItem.desc;
+        let category = serializedItem.category;
+        let rarity = serializedItem.rarity;
+        let properties = serializedItem.properties;
+
+        let item = new Item(name, desc, category, rarity, properties);
+        item.setPosition(pos);
+        item.setOffset(offset);
+        item.setRotation(rotation);
+        
+        return item;
+    }
+
     // Setters.
     setPosition(position) { 
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");

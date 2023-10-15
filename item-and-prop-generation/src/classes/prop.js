@@ -72,6 +72,49 @@ class Prop {
     getPossibleItems() { return this.possibleItems; }
     getSize() { return this.size;}
     getOverlap() {return this.overlap;}
+    getSerializableProp() {
+        return {
+            name: this.name,
+            desc: this.desc,
+            rarity: this.rarity,
+            containsItem: this.containsItem,
+            possibleItems: this.possibleItems,
+            placementRules: this.placementRules,
+            size: this.size,
+            position: this.position.toString(),
+            offset: this.offset.toString(),
+            rotation: this.rotation,
+            scale: this.scale.toString(),
+            depth: this.depth
+        }
+    }
+
+    static fromSerializableProp(serializedProp) {
+        let name = serializedProp.name;
+        let desc = serializedProp.desc;
+        let rarity = serializedProp.rarity;
+        let containsItem = serializedProp.containsItem;
+        let possibleItems = serializedProp.possibleItems;
+        let placementRules = serializedProp.placementRules;
+        let size = serializedProp.size;
+        let posArray = serializedProp.position.split(',');
+        let offsetArray = serializedProp.offset.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        let offset = new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1]));
+        let rotation = serializedProp.rotation;
+        let scaleArray = serializedProp.scale.split(',');
+        let scale = new Point(parseInt(scaleArray[0]), parseInt(scaleArray[1]));
+        let depth = serializedProp.depth;
+
+        let prop = new Prop(name, desc, rarity, containsItem, possibleItems, placementRules, size);
+        prop.setPosition(pos);
+        prop.setOffset(offset);
+        prop.setRotation(rotation);
+        prop.setScale(scale);
+        prop.setDepth(depth);
+
+        return prop;
+    }
     
 
     getPathName() { 
