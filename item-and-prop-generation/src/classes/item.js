@@ -45,6 +45,18 @@ class Item {
     getCategory() { return this.category; }
     getRarity() { return this.rarity; }
     getProperties() { return this.properties; }
+    getSerializableItem() {
+        return {
+            name: this.name,
+            desc: this.desc,
+            category: this.category,
+            rarity: this.rarity,
+            properties: this.properties,
+            position: this.position.toString(),
+            offset: this.offset.toString(),
+            rotation: this.rotation
+        }
+    }
 
     // Setters.
     setPosition(position) { 
