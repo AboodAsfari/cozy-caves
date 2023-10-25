@@ -202,7 +202,7 @@ class DungeonBuilder {
         this.#calculateMaxDepth();
         this.#bsp(0, 0, this.#width, this.#height, this.#maxDepth);
         let map = this.#randomSelection();
-        generateHallways(map, this.#width, this.#height);
+        generateHallways(map, this.#width, this.#height, this.#rng());
         return map;
     }
 
