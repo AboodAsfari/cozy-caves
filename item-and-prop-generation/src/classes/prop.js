@@ -72,6 +72,15 @@ class Prop {
     getPossibleItems() { return this.possibleItems; }
     getSize() { return this.size;}
     getOverlap() {return this.overlap;}
+
+    getSerializedItems() {
+        const serializedItems = [];
+        for (const item of this.items) {
+            serializedItems.push(item.getSerializableItem());
+        }
+        return serializedItems;
+    }
+    
     getSerializableProp() {
         return {
             name: this.name,
@@ -85,7 +94,8 @@ class Prop {
             offset: this.offset.toString(),
             rotation: this.rotation,
             scale: this.scale.toString(),
-            depth: this.depth
+            depth: this.depth,
+            items: this.getSerializedItems()
         }
     }
 
@@ -105,6 +115,12 @@ class Prop {
         let scaleArray = serializedProp.scale.split(',');
         let scale = new Point(parseInt(scaleArray[0]), parseInt(scaleArray[1]));
         let depth = serializedProp.depth;
+        let items = serializedProp.items;
+
+        deserializedItems = [];
+        for (const item of items) {
+            deserializedItems.push(Item.fromSerializableItem(item));
+        }
 
         let prop = new Prop(name, desc, rarity, containsItem, possibleItems, placementRules, size);
         prop.setPosition(pos);
@@ -112,7 +128,7 @@ class Prop {
         prop.setRotation(rotation);
         prop.setScale(scale);
         prop.setDepth(depth);
-
+        prop.setItems(deserializedItems); //items
         return prop;
     }
     
@@ -122,6 +138,8 @@ class Prop {
     }
 
     // Setters.
+    setItems(items) { this.#items = items; }
+
     setPosition(position){
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#position = position;
