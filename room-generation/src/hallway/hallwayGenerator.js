@@ -109,11 +109,12 @@ function findHallwayOverlap(hallways, hallwayMap) {
     return mergedHallways;
 }
 
-function generateHallways(roomsList, w, h) {
+function generateHallways(roomsList, w, h, seed) {
     midPoints = { };
     roomToRoomConnections = [];
     hallways = [];
     rooms = roomsList;
+    let numGen = seedrandom(seed);
     const midpoints = [];
     map = [...Array(w)].map(e => Array(h).fill(-1));
     generateCurrentMap();
@@ -149,16 +150,16 @@ function generateHallways(roomsList, w, h) {
 
 
     for(hallway of finalHallways) {
-        hallway.getRoom().getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway.getRoom(), seedrandom(Math.random())));
-        hallway.getRoom().getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway.getRoom(), seedrandom(Math.random())));
-        hallway.getRoom().getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway.getRoom(), seedrandom(Math.random()))));
+        hallway.getRoom().getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway.getRoom(), numGen));
+        hallway.getRoom().getTiles().forEach(tile => tilerChooser.getTiler("hallway").updateTile(tile, hallway.getRoom(), numGen));
+        hallway.getRoom().getTiles().forEach((tile) => tile.setTileID(tilerChooser.getTiler("hallway").getID(tile, hallway.getRoom(), numGen)));
         hallway.getTilesToOpen().forEach((value, key) => {
-            value.forEach((item) => {
+            value.forEach((item) => { 
                 let roomToOpen = hallway.getRoom();
                 if (item.otherIndex >= 0) {
                     roomToOpen = rooms[item.otherIndex];
                 }
-                rooms[key].openTiles(item.roomTilesToOpen, item.hallwayTilesToOpen, roomToOpen, seedrandom(Math.random()));
+                rooms[key].openTiles(item.roomTilesToOpen, item.hallwayTilesToOpen, roomToOpen, numGen);
             });
         });
     }
