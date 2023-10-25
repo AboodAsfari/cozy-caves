@@ -123,7 +123,7 @@ class Room {
         return {
             position: this.#position.toString(),
             tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile()),
-            propMap: this.#propMap.getSerializedProps(),
+            propMap: this.#propMap ? this.#propMap.getSerializedProps() : null,
         };
     }
 
@@ -132,7 +132,7 @@ class Room {
         let posArray = serializableRoom.position.split(',');
         room.#position = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
         serializableRoom.tiles.forEach(tile => room.addTile(Tile.fromSerializableTile(tile)));
-        room.#propMap = PropList.fromSerializableProps(serializableRoom.propMap);
+        room.#propMap = serializableRoom.propMap ? PropList.fromSerializableProps(serializableRoom.propMap) : null;
         return room;
     }
 
