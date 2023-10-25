@@ -2,7 +2,9 @@ const Point = require('@cozy-caves/utils').Point;
 const TileSpacialType = require('@cozy-caves/utils').TileSpacialType;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropGenerator = require('./propGenerator.js');
+const Prop = require('./classes/prop.js');
 const PropSet = require('./propSet.js');
+const PropList = require('./propList.js');
 const seedrandom = require('seedrandom');
 
 class PropMap {
@@ -23,9 +25,7 @@ class PropMap {
         this.propSetGen = new PropSet(this.#randomGen());
         this.#propList = this.propSetGen.getPropSet(this.#getMaxProp());
         if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
-
         this.processSet(this.#propList);
-        console.log(this.showPosMap());
     }
 
     /**
@@ -492,7 +492,8 @@ class PropMap {
 }
 
 function populateRoom(room, seed) {
-    return new PropMap(room, seed);
+    const propMap = new PropMap(room, seed);
+    return new PropList(propMap.getPropList());
 }
 
 module.exports = populateRoom;
