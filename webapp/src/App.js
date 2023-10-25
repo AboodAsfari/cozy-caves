@@ -19,6 +19,7 @@ function App() {
   const [dungeon, setDungeon ] = React.useState([]);
   const [mapSettings, setMapSettings] = React.useState({});
   const [activePage, setActivePage] = React.useState("home");
+  const [hideProps, setHideProps] = React.useState(false);
 
   const location = useLocation();
 
@@ -29,12 +30,14 @@ function App() {
     const roomSize = query.get("roomSize");
     const totalCoverage = query.get("totalCoverage");
     const seed = query.get("seed");
+    const hidePropsParam = query.get("hideProps");
 
     query.delete("width");
     query.delete("height");
     query.delete("roomSize");
     query.delete("totalCoverage");
     query.delete("seed");
+    query.delete("hideProps");
     window.history.replaceState({}, "", `/`);
 
     if (parseInt(width) < 5 || parseInt(height) < 5 || parseInt(width) > 200 || parseInt(height) > 200) return;
@@ -51,6 +54,7 @@ function App() {
     };
 
     setMapSettings(newSettings);
+    setHideProps(hidePropsParam);
 
     toggleTransitionPanel(() => {
       setMapSettings({
@@ -72,8 +76,7 @@ function App() {
 
       setActivePage("map");
       toggleTransitionPanel();
-  });
-
+    });
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
@@ -86,7 +89,7 @@ function App() {
   const getPage = () => {
     if (activePage === "home" || activePage === "options") return <Homepage setActivePage={setActivePage}/>;
     if (activePage === "map") {
-      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} />;
+      return <MapPage dungeon={dungeon} setDungeon={setDungeon} mapSettings={mapSettings} setMapSettings={setMapSettings} hideProps={hideProps} />;
     }
     return null;
   }

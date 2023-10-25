@@ -3,8 +3,6 @@ import {
     Box,
     Button,
     Collapse,
-    Dialog,
-    DialogTitle,
     Grow,
     Popper,
     Slide,
@@ -31,6 +29,8 @@ import DungeonBuilder from '@cozy-caves/dungeon-generation';
 import MapSettingsPanel from './MapSettingsPanel';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
 import ImageIcon from '@mui/icons-material/Image';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export default function ToolBar(props) {
     const {
@@ -47,12 +47,16 @@ export default function ToolBar(props) {
     const [loadingAnimation, setLoadingAnimation] = React.useState(false);
     const [copiedSnackbar, setCopiedSnackbar] = React.useState(false);
     const [downloadLabel, setDownloadLabel] = React.useState("Download");
+    const [shareLabel, setShareLabel] = React.useState("Share");
 
     const [downloadMenuOpen, setDownloadMenuOpen] = React.useState(false);
     const [downloadMenuAnchor, setDownloadMenuAnchor] = React.useState(null);
     
     const [downloadFileContents, setDownloadFileContents] = React.useState(null);
     const [downloadImageContents, setDownloadImageContents] = React.useState(null);
+
+    const [shareMenuOpen, setShareMenuOpen] = React.useState(false);
+    const [shareMenuAnchor, setShareMenuAnchor] = React.useState(null);
 
     React.useEffect(() => setLoadingAnimation(false), [dungeon]);
 
@@ -134,10 +138,11 @@ export default function ToolBar(props) {
         else setCurrPanel("settings");
     }
 
-    const copyShareLink = () => {
+    const copyShareLink = (showProps) => {
         let url = window.location.href;
         url += "?width=" + mapSettings.width + "&height=" + mapSettings.height + "&roomSize=" + 
             mapSettings.roomSize + "&totalCoverage=" + mapSettings.totalCoverage + "&seed=" + mapSettings.seed;
+        if (!showProps) url += "&hideProps=true";
         navigator.clipboard.writeText(url);
         setCopiedSnackbar(true);
     }
@@ -161,11 +166,15 @@ export default function ToolBar(props) {
             getFileContents(true).then(fileContents => setDownloadImageContents(fileContents));
             setDownloadMenuAnchor(e.currentTarget);
             setDownloadMenuOpen(true);
+        } else if (name === "Share") {
+            setShareMenuAnchor(e.currentTarget);
+            setShareMenuOpen(true);
         }
     }
 
     const toolHoverOut = (e, name) => {
         if (name === "Download") setDownloadMenuOpen(false);
+        else if (name === "Share") setShareMenuOpen(false);
     }
 
     const getToolbarButtonColors = (name) => {
@@ -176,7 +185,7 @@ export default function ToolBar(props) {
     const tools = {
         regenerate: { name: "Regenerate", icon: <LoopIcon />, method: regenerateMap },
         settings: { name: "Settings", icon: <TuneOutlinedIcon />, method: toggleSettings },
-        share: { name: "Share", icon: <ShareOutlinedIcon />, method: copyShareLink },
+        share: { name: "Share", icon: <ShareOutlinedIcon />, method: () => copyShareLink(true) },
         download: { name: "Download", icon: <FileDownloadOutlinedIcon id="download" /> },
         print: { name: "Print", icon: <PrintOutlinedIcon />, method: printMap },
     }
@@ -198,7 +207,7 @@ export default function ToolBar(props) {
                 {open && <Collapse orientation='horizontal'>
                     <Stack className="toolbar">
                         {Object.values(tools).map((tool) => (
-                            <Tooltip key={tool.name} title={tool.name === "Download" ? "" : tool.name} placement="left" className="toolbar-tooltip">
+                            <Tooltip key={tool.name} title={tool.name === "Download" || tool.name === "Share" ? "" : tool.name} placement="left" className="toolbar-tooltip">
                                 <Button className="toolbar-button" disableRipple onMouseEnter={(e) => toolHover(e, tool.name)} onMouseLeave={(e) => toolHoverOut(e, tool.name)}
                                     onClick={tool.method} sx={{ color: getToolbarButtonColors(tool.name) }}> 
                                     {tool.icon}
@@ -236,11 +245,31 @@ export default function ToolBar(props) {
             )}
         </Popper>
 
+        <Popper anchorEl={shareMenuAnchor} open={shareMenuOpen} onMouseEnter={() => setShareMenuOpen(true)} 
+            onMouseLeave={() => setShareMenuOpen(false)} onClose={() => setShareMenuOpen(false)} placement="left" transition>
+            {({ TransitionProps }) => (
+                <Grow {...TransitionProps}>
+                    <Box>
+                        <Box sx={{ width: "calc(50px + 3rem)", height: "30px", backgroundColor: "#4C9553", position: "absolute", top: -40, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <Typography sx={{ fontSize: 17, mb: -0.5, userSelect: "none" }}> { shareLabel } </Typography>
+                        </Box>
+
+                        <Stack direction="row" spacing={1} sx={{ backgroundColor: "#4C9553", height: "31px", width: "50px", mr: 1, justifyContent: "center", alignItems: "center", px: 3, py: 1 }}> 
+                            <VisibilityIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} 
+                                onMouseOver={() => setShareLabel("Show Props")} onMouseOut={() => setShareLabel("Share")} onClick={() => copyShareLink(true)} />
+
+                            <VisibilityOffIcon sx={{ fontSize: 30, color: "white", p: 0.5, "&:hover": { cursor: "pointer", backgroundColor: "#000", borderRadius: "5px" } }} 
+                            onMouseOver={() => setShareLabel("Hide Props")} onMouseOut={() => setShareLabel("Share")} onClick={() => copyShareLink(false)}/>
+                        </Stack>
+                    </Box>
+                </Grow>
+            )}
+        </Popper>
+
         <Snackbar
             sx={{ "& .MuiPaper-root": { fontSize: 20, backgroundColor: "#4C9553", color: "white" } }}
             open={copiedSnackbar}
             autoHideDuration={3000}
-            onClose={() => setCopiedSnackbar(false)}
             message="Link Copied to Clipboard!"
             action={<CloseIcon sx={{ mt: -0.5, "&:hover": { cursor: "pointer", color: "black" } }} onClick={() => setCopiedSnackbar(false)} />}
         />
