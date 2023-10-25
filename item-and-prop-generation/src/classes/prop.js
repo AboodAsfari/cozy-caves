@@ -75,7 +75,7 @@ class Prop {
 
     getSerializedItems() {
         const serializedItems = [];
-        for (const item of this.items) {
+        for (const item of this.#items) {
             serializedItems.push(item.getSerializableItem());
         }
         return serializedItems;
@@ -90,11 +90,11 @@ class Prop {
             possibleItems: this.possibleItems,
             placementRules: this.placementRules,
             size: this.size,
-            position: this.position.toString(),
-            offset: this.offset.toString(),
-            rotation: this.rotation,
-            scale: this.scale.toString(),
-            depth: this.depth,
+            position: this.#position.toString(),
+            offset: this.#offset,
+            rotation: this.#rotation,
+            scale: this.#scale.toString(),
+            depth: this.#depth,
             items: this.getSerializedItems()
         }
     }

@@ -331,7 +331,7 @@ class PropMap {
 
         // if unable to find any valid position for a prop, what to do? TODO
         if (validPosMap.size === 0) {
-            console.log("could not find any valid positon for " + prop.getName());
+            // console.log("could not find any valid positon for " + prop.getName());
             return; 
         }
         // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
@@ -404,7 +404,6 @@ class PropMap {
         const notFree = this.checkPos(pos) === 1;
         if (isWall && wallType==="none") return false; // no wall
         if (!noPropExist || notFree) return false;
-        console.log("wall: " + wallType);
         // corner walls
         const cornerWall = tile.getTileSpacialType() === TileSpacialType.BOTTOM_LEFT_CORNER_WALL 
             || tile.getTileSpacialType() === TileSpacialType.TOP_LEFT_CORNER_WALL

@@ -52,9 +52,9 @@ class Item {
             category: this.category,
             rarity: this.rarity,
             properties: this.properties,
-            position: this.position.toString(),
-            offset: this.offset.toString(),
-            rotation: this.rotation
+            position: this.#position.toString(),
+            offset: this.#offset.toString(),
+            rotation: this.#rotation
         }
     }
 
