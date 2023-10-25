@@ -2,6 +2,7 @@ const { TileID } = require("@cozy-caves/utils");
 const Tile = require("../tile/tile");
 const Point = require("@cozy-caves/utils").Point;
 const { tilerChooser } = require("../tile/tilerLogic");
+const PropList = require("@cozy-caves/item-and-prop-generation").PropList;
 
 class Room {
     #tiles = new Map();
@@ -121,7 +122,8 @@ class Room {
     getSerializableRoom() {
         return {
             position: this.#position.toString(),
-            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile())
+            tiles: Array.from(this.#tiles.values()).map(tile => tile.getSerializableTile()),
+            propMap: this.#propMap ? this.#propMap.getSerializedProps() : null,
         };
     }
 
@@ -130,10 +132,11 @@ class Room {
         let posArray = serializableRoom.position.split(',');
         room.#position = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
         serializableRoom.tiles.forEach(tile => room.addTile(Tile.fromSerializableTile(tile)));
+        room.#propMap = serializableRoom.propMap ? PropList.fromSerializableProps(serializableRoom.propMap) : null;
         return room;
     }
 
-    toString() {
+    toString() {    
         let tileArray = [];
         for (let i = 0; i < this.#dimensions.getY(); i++) {
             tileArray.push("");

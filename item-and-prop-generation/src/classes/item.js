@@ -45,6 +45,44 @@ class Item {
     getCategory() { return this.category; }
     getRarity() { return this.rarity; }
     getProperties() { return this.properties; }
+    getSerializableItem() {
+        return {
+            name: this.name,
+            desc: this.desc,
+            category: this.category,
+            rarity: this.rarity,
+            properties: this.properties,
+            position: this.#position.toString(),
+            offset: this.#offset.toString(),
+            rotation: this.#rotation
+        }
+    }
+
+    /**
+     * Reads serializable item and converts it
+     * to object.
+     * 
+     * @returns Item.
+     */
+    static fromSerializableItem(serializedItem) {
+        let posArray = serializedItem.position.split(',');
+        let offsetArray = serializedItem.offset.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        let offset = new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1]));
+        let rotation = serializedItem.rotation;
+        let name = serializedItem.name;
+        let desc = serializedItem.desc;
+        let category = serializedItem.category;
+        let rarity = serializedItem.rarity;
+        let properties = serializedItem.properties;
+
+        let item = new Item(name, desc, category, rarity, properties);
+        item.setPosition(pos);
+        item.setOffset(offset);
+        item.setRotation(rotation);
+        
+        return item;
+    }
 
     // Setters.
     setPosition(position) { 

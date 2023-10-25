@@ -185,7 +185,7 @@ class DungeonBuilder {
         let roomY = rY + Math.floor(this.#rng() * (rH - roomHgt + 1));
         //Generate room
         this.#roomBuilder = new RoomBuilder(this.#rng());
-        let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(widLeniency, hgtLeniency)).setAllowOvergrow(false).setPopulateWithItems(this.#rng() > .5).build();
+        let room = this.#roomBuilder.setSize(new Point(roomWid, roomHgt)).setLeniency(new Point(widLeniency, hgtLeniency)).setAllowOvergrow(false).setPopulateWithItems(this.#rng() > 0.2).build();
         room.setPosition(new Point(roomX, roomY));
         
         return room;

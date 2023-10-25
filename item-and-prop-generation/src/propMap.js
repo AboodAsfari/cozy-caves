@@ -2,7 +2,9 @@ const Point = require('@cozy-caves/utils').Point;
 const TileSpacialType = require('@cozy-caves/utils').TileSpacialType;
 const Rarity = require('@cozy-caves/utils').PropRarity; // change later when utils is repackaged
 const PropGenerator = require('./propGenerator.js');
+const Prop = require('./classes/prop.js');
 const PropSet = require('./propSet.js');
+const PropList = require('./propList.js');
 const seedrandom = require('seedrandom');
 
 class PropMap {
@@ -23,9 +25,7 @@ class PropMap {
         this.propSetGen = new PropSet(this.#randomGen());
         this.#propList = this.propSetGen.getPropSet(this.#getMaxProp());
         if (!Array.isArray(this.#propList) || this.#propList.length === 0) throw new Error("Empty prop set");   
-
         this.processSet(this.#propList);
-        console.log(this.showPosMap());
     }
 
     /**
@@ -331,7 +331,7 @@ class PropMap {
 
         // if unable to find any valid position for a prop, what to do? TODO
         if (validPosMap.size === 0) {
-            console.log("could not find any valid positon for " + prop.getName());
+            // console.log("could not find any valid positon for " + prop.getName());
             return; 
         }
         // choose from here and place prop :) add favor later. ie. choose 2 over 1. TODO
@@ -404,7 +404,6 @@ class PropMap {
         const notFree = this.checkPos(pos) === 1;
         if (isWall && wallType==="none") return false; // no wall
         if (!noPropExist || notFree) return false;
-        console.log("wall: " + wallType);
         // corner walls
         const cornerWall = tile.getTileSpacialType() === TileSpacialType.BOTTOM_LEFT_CORNER_WALL 
             || tile.getTileSpacialType() === TileSpacialType.TOP_LEFT_CORNER_WALL
@@ -492,7 +491,8 @@ class PropMap {
 }
 
 function populateRoom(room, seed) {
-    return new PropMap(room, seed);
+    const propMap = new PropMap(room, seed);
+    return new PropList(propMap.getPropList());
 }
 
 module.exports = populateRoom;

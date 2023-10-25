@@ -72,6 +72,63 @@ class Prop {
     getPossibleItems() { return this.possibleItems; }
     getSize() { return this.size;}
     getOverlap() {return this.overlap;}
+
+    getSerializedItems() {
+        const serializedItems = [];
+        for (const item of this.#items) {
+            serializedItems.push(item.getSerializableItem());
+        }
+        return serializedItems;
+    }
+    
+    getSerializableProp() {
+        return {
+            name: this.name,
+            desc: this.desc,
+            rarity: this.rarity,
+            containsItem: this.containsItem,
+            possibleItems: this.possibleItems,
+            placementRules: this.placementRules,
+            size: this.size,
+            position: this.#position.toString(),
+            offset: this.#offset,
+            rotation: this.#rotation,
+            scale: this.#scale.toString(),
+            depth: this.#depth,
+            items: this.getSerializedItems()
+        }
+    }
+
+    static fromSerializableProp(serializedProp) {
+        let name = serializedProp.name;
+        let desc = serializedProp.desc;
+        let rarity = serializedProp.rarity;
+        let containsItem = serializedProp.containsItem;
+        let possibleItems = serializedProp.possibleItems;
+        let placementRules = serializedProp.placementRules;
+        let size = serializedProp.size;
+        let posArray = serializedProp.position.split(',');
+        let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
+        let rotation = serializedProp.rotation;
+        let scaleArray = serializedProp.scale.split(',');
+        let scale = new Point(parseInt(scaleArray[0]), parseInt(scaleArray[1]));
+        let depth = serializedProp.depth;
+        let items = serializedProp.items;
+
+        let deserializedItems = [];
+        for (const item of items) {
+            deserializedItems.push(Item.fromSerializableItem(item));
+        }
+
+        let prop = new Prop(name, desc, rarity, containsItem, possibleItems, placementRules, size);
+        prop.setPosition(pos);
+        prop.setOffset(serializedProp.offset.x, serializedProp.offset.y);
+        prop.setRotation(rotation);
+        prop.setScale(scale);
+        prop.setDepth(depth);
+        prop.setItems(deserializedItems); //items
+        return prop;
+    }
     
 
     getPathName() { 
@@ -79,6 +136,8 @@ class Prop {
     }
 
     // Setters.
+    setItems(items) { this.#items = items; }
+
     setPosition(position){
         if (!(position instanceof Point)) throw new Error("Position must be provided as Point.");
         this.#position = position;

@@ -1,7 +1,7 @@
 const { Point, shuffleArray } = require("@cozy-caves/utils");
 const seedrandom = require('seedrandom');
 const { Layout } = require("../layout/layout");
-const populateRoom = require("@cozy-caves/item-and-prop-generation");
+const populateRoom = require("@cozy-caves/item-and-prop-generation").populateRoom;
 const layoutList = require("../../layouts/layout-list.json");
 
 class RoomBuilder {
