@@ -5,12 +5,10 @@ import { TileID } from '@cozy-caves/utils';
 import { Viewport } from "pixi-viewport";
 import Popup from '../mapview/Popup';
 import PropHoverView from '../mapview/PropHoverView';
-import { Fade } from 'hamburger-react';
-import { Box, Collapse, Slide, Typography } from '@mui/material';
-
 const RendererCanvas = (props) => {
 	const {
 		dungeon,
+		hideProps,
 		pixiApp,
 		viewport
 	} = props;
@@ -172,7 +170,7 @@ const RendererCanvas = (props) => {
 			propsContainer.zIndex = 1000;
 
 			room.getTiles().forEach((tile) => tilesContainer.addChild(getTile(tile)));
-			if(room.getPropMap()) room.getPropMap().getPropList().forEach((prop) => propsContainer.addChild(getProp(prop)));
+			if(room.getPropMap() && !hideProps) room.getPropMap().getPropList().forEach((prop) => propsContainer.addChild(getProp(prop)));
 
 			roomContainer.addChild(tilesContainer);
 			roomContainer.addChild(propsContainer);

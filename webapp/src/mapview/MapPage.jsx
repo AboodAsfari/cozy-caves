@@ -5,6 +5,7 @@ import ToolBar from './ToolBar';
 const MapPage = (props) => {
 	const {
 		dungeon,
+		hideProps,
 		mapSettings,
 		setDungeon,
 		setMapSettings
@@ -14,7 +15,7 @@ const MapPage = (props) => {
 	const viewport = React.useRef();
 
 	return ( <>
-		<RendererCanvas dungeon={dungeon} viewport={viewport} pixiApp={pixiApp} />
+		<RendererCanvas dungeon={dungeon} viewport={viewport} pixiApp={pixiApp} hideProps={hideProps} />
 		<ToolBar mapSettings={mapSettings} setMapSettings={setMapSettings} dungeon={dungeon} 
 			setDungeon={setDungeon} viewport={viewport} pixiApp={pixiApp} />
     </> );
