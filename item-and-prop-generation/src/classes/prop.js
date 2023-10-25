@@ -108,23 +108,21 @@ class Prop {
         let placementRules = serializedProp.placementRules;
         let size = serializedProp.size;
         let posArray = serializedProp.position.split(',');
-        let offsetArray = serializedProp.offset.split(',');
         let pos = new Point(parseInt(posArray[0]), parseInt(posArray[1]));
-        let offset = new Point(parseInt(offsetArray[0]), parseInt(offsetArray[1]));
         let rotation = serializedProp.rotation;
         let scaleArray = serializedProp.scale.split(',');
         let scale = new Point(parseInt(scaleArray[0]), parseInt(scaleArray[1]));
         let depth = serializedProp.depth;
         let items = serializedProp.items;
 
-        deserializedItems = [];
+        let deserializedItems = [];
         for (const item of items) {
             deserializedItems.push(Item.fromSerializableItem(item));
         }
 
         let prop = new Prop(name, desc, rarity, containsItem, possibleItems, placementRules, size);
         prop.setPosition(pos);
-        prop.setOffset(offset);
+        prop.setOffset(serializedProp.offset.x, serializedProp.offset.y);
         prop.setRotation(rotation);
         prop.setScale(scale);
         prop.setDepth(depth);
