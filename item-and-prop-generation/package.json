@@ -1,6 +1,6 @@
 {
   "name": "@cozy-caves/item-and-prop-generation",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Populates room with items and props",
   "main": "index.js",
   "directories": {
@@ -12,7 +12,7 @@
   "author": "Cozy Caves Group",
   "license": "ISC",
   "devDependencies": {
-    "@cozy-caves/room-generation": "^1.2.1",
+    "@cozy-caves/room-generation": "^1.2.3",
     "@cozy-caves/utils": "^1.1.6"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 {
     "name": "@cozy-caves/room-generation",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "Generates rooms from a pool of scalable layouts.",
     "main": "index.js",
     "directories": {
@@ -15,7 +15,7 @@
     "license": "ISC",
     "dependencies": {
         "delaunator": "4.0.1",
-        "@cozy-caves/item-and-prop-generation": "^1.0.5",
+        "@cozy-caves/item-and-prop-generation": "^1.0.6",
         "@cozy-caves/utils": "^1.1.6",
         "seedrandom": "^3.0.5"
     },
